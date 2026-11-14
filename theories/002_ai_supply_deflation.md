@@ -324,3 +324,7 @@ AI 降本 → 以價格或品質優勢取得市場 → 增加產量、有效使�
 - [S8：Investor.gov，固定利率債券價格與市場利率](https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-86)
 
 以上來源中的研究與作者觀點不等同各機構的政策承諾。
+
+## 終局投資假說
+
+終局投資假說：若 Tesla＋SpaceX 合併，持續擴大完整成本優勢並提高每股價值，就以合理價格買進、長期持有。
