@@ -33,6 +33,11 @@
 - [SpaceX：股權直接交換企業與資源](evidence/spacex_equity_resource_exchange.md)：分開列示已完成併購、共同控制交易及尚待最終交割的頻譜合約。
 - [Anthropic、OpenAI：供應商投資與資源動員](evidence/anthropic_openai_supplier_equity.md)：區分投資核准、投資公告、採購合作與股票抵付帳款。
 
+## 簡報
+
+- [16 頁簡報與 PowerPoint 下載](slides/README.md)：涵蓋兩個理論、企業案例、成本試算與長期持有判準。
+- [逐頁文字與來源](slides/AI_eco_2026-11-14.md)：可在 Git 中追蹤內容差異。
+
 ## 比較研究與閱讀順序
 
 1. 閱讀理論 001，辨識融資、直接支付與貨幣功能的不同。
