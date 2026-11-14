@@ -45,6 +45,10 @@
 3. 閱讀[七家公司比較](research/ai_equity_pricing_power_2026-11-14.md)：Google、NVIDIA、台積電、Tesla、SpaceX、OpenAI、Anthropic。以公司角色與證據比較，不給單一總排名。
 4. 以理論 002 的每季追蹤表檢查聯合假說；長期持有的依據是循環持續成立。
 
+## 產業驗證案例
+
+- [Robotaxi 與有人計程車](research/robotaxi_tesla_waymo_uber_taxi_2026-11-14.md)：Tesla、Waymo、Uber 與傳統計程車的成本、利用率、平台費及證據缺口。
+
 ## 證據與修訂規則
 
 - **來源事實**：附原始來源、資料期間、幣別與單位；公司自述不等同獨立驗證。
