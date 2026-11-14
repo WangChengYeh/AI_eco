@@ -14,7 +14,7 @@
 
 ## 比較研究
 
-- [AI 公司：模型實力、定價權與股權交換力](research/ai_equity_pricing_power_2026-11-14.md)：Google、NVIDIA、SpaceX、OpenAI 與 Anthropic，2026-11-14 查核。
+- [AI 公司：模型實力、定價權與股權交換力](research/ai_equity_pricing_power_2026-11-14.md)：Google、NVIDIA、台積電、SpaceX、OpenAI 與 Anthropic，2026-11-14 查核。
 
 ## 核心問題
 
