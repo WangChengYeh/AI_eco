@@ -6,6 +6,8 @@
 
 - [理論 001：股權交換經濟](theories/001_equity_exchange_economy.md)：未來以公司股票交易各項資源，取代貨幣的理論假說。
 
+- [理論 002：數位 AI、實體 AI 與供給型通縮](theories/002_ai_supply_deflation.md)：成本、售價、總體通縮及股權購買力的連結。
+
 ## 證據集
 
 - [SpaceX：頂級 AI 公司股權交換資源](evidence/spacex_equity_resource_exchange.md)：頻譜、AI 併購與定價權的證據及限制。
@@ -53,4 +55,4 @@
 
 ## 研究狀態
 
-目前已建立研究框架、第一個理論假說與 SpaceX、Anthropic、OpenAI 的來源證據；尚未建立量化模型。
+目前已建立研究框架、股權交換與 AI 供給型通縮兩個理論假說，並蒐集企業與總體研究來源；尚未建立量化模型。
