@@ -12,6 +12,10 @@
 
 - [Anthropic、OpenAI：供應商投資與股權取得資源](evidence/anthropic_openai_supplier_equity.md)：NVIDIA、台積電投資與直接股權支付的證據界線。
 
+## 比較研究
+
+- [AI 公司：模型實力、定價權與股權交換力](research/ai_equity_pricing_power_2026-11-14.md)：Google、NVIDIA、SpaceX、OpenAI 與 Anthropic，2026-11-14 查核。
+
 ## 核心問題
 
 - AI 能力提升，如何轉化為生產力、營收與現金流？
