@@ -33,10 +33,12 @@
 - [SpaceX：股權直接交換企業與資源](evidence/spacex_equity_resource_exchange.md)：分開列示已完成併購、共同控制交易及尚待最終交割的頻譜合約。
 - [Anthropic、OpenAI：供應商投資與資源動員](evidence/anthropic_openai_supplier_equity.md)：區分投資核准、投資公告、採購合作與股票抵付帳款。
 
+- [Tesla＋SpaceX 可能合併的狀態](evidence/tesla_spacex_combination_status.md)：已披露評估程序，尚非已完成合併。
+
 ## 簡報
 
-- [16 頁簡報與 PowerPoint 下載](slides/README.md)：涵蓋兩個理論、企業案例、成本試算與長期持有判準。
-- [逐頁文字與來源](slides/AI_eco_2026-11-14.md)：可在 Git 中追蹤內容差異。
+- [新版簡報與歷史 PowerPoint](slides/README.md)：涵蓋兩個理論、全鏈成本、Robotaxi、token 供應鏈與終局假說。
+- [逐頁文字與來源](slides/AI_eco_2026-11-14_v3.md)：可在 Git 中追蹤內容差異。
 
 ## 比較研究與閱讀順序
 
@@ -51,6 +53,8 @@
 
 - [AI token 與五條算力供應鏈](research/ai_token_cost_stacks_2026-11-14.md)：Claude＋SpaceX 地面／太空、Google、OpenAI＋Microsoft／Oracle；比較電力、晶片、模型、API 售價與完整任務成本。
 
+- [鋰原料、電池、造車至計程車服務](theories/002_ai_supply_deflation.md)：檢驗跨階段降本如何傳到每付費載客公里。
+
 ## 證據與修訂規則
 
 - **來源事實**：附原始來源、資料期間、幣別與單位；公司自述不等同獨立驗證。
@@ -62,7 +66,9 @@
 
 ## 目前狀態
 
-2026-11-14 完成全文一致性修訂。已建立兩項理論、企業案例與七家公司比較；部分案例支持交易形式或營運進展，尚未完整驗證 AI 降本因果、普遍股權支付或全球通縮，也未建立量化估值模型。長期持有原則為合理價格與持續驗證，不保證報酬。
+2026-11-14 完成第二輪全文 review。已串接股權交易、AI token、機器人、鋰原料至載客服務與 Robotaxi 案例。兩家公司申報已披露特別委員會評估可能交易，合併仍未確定；詳見[交易情境證據](evidence/tesla_spacex_combination_status.md)。尚未完整驗證 AI 降本因果、普遍股權支付或全球通縮，也未建立量化估值模型。長期持有仍以合理價格、每股價值與持續驗證為條件。
+
+本輪修正項目與保留的資料缺口，見 [全文 review 紀錄](research/review_2026-11-14_v3.md)。
 
 ## 終局投資假說
 

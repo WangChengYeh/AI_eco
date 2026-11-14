@@ -1,27 +1,30 @@
 # AI 經濟學簡報
 
-**持續降本、股權交換與長期投資**，繁體中文，16 頁，2026-11-14。
+## 最新版：v3
 
-## 開啟簡報
+**完整成本、股權交換與 Tesla＋SpaceX 終局假說**，繁體中文，24 頁，2026-11-14。
 
-- [下載 PowerPoint](AI_eco_2026-11-14.pptx)：保留可編輯文字、9 個表格、1 個圖表及講者備註。
-- [逐頁文字與來源](AI_eco_2026-11-14.md)：供 Git 追蹤內容差異，含表格與圖表數據。
-- [原生可編輯簡報](https://chatgpt.com/space/page_df29a74b90bc8191aaf3af62593fc9be)：需原簡報存取權；本連結不變更分享設定。
+- [原生可編輯簡報](https://chatgpt.com/space/page_ec71302938748191b0e27622725310a1)
+- [下載 PowerPoint](AI_eco_2026-11-14_v3.pptx)
+- [逐頁文字、表格數據與來源](AI_eco_2026-11-14_v3.md)
+- [全文 review 紀錄](../research/review_2026-11-14_v3.md)
 
-## 內容
+新版包含兩項理論、股權證據、七家公司角色、五條 token 供應鏈、機器人與鋰原料至載客服務、Robotaxi／有人計程車、每股成果與合併評估狀態。最後一頁為使用者選定的條件式終局投資假說。
 
-1. 理論 001 與理論 002 的連結
-2. 完整任務成本、持續降本與競爭淘汰
-3. 降價與提高毛利率並存的假設示例
-4. 供給型通縮的成立條件
-5. 股權動員資源、直接支付與貨幣功能的證據層次
-6. SpaceX、Tesla、供應商投資及七家公司研究定位
-7. 長期持有的條件與每季追蹤表
+研究基準：[ffb61b6](https://github.com/WangChengYeh/AI_eco/tree/ffb61b6915a255a88ee32ed41e50852c4398ff92)。PowerPoint 文字、14 個表格、1 個圖表與講者備註可編輯。主要字型為 Noto Sans CJK TC；其他檢視器可能以替代字型呈現。
 
-## 版本與使用
+## 歷史版：初版 16 頁
 
-- 研究基準：[44becb7](https://github.com/WangChengYeh/AI_eco/tree/44becb78b93bbab7ce9435c8353034b003e8f49f)。
-- 本目錄保存簡報快照，不會與原生簡報自動同步。後續修訂需同時更新 PowerPoint 與逐頁文字。
-- 簡報分開呈現來源事實、理論推演與純假設示例；企業進展不等同 AI 降本的完整因果證明，亦不保證投資報酬。
-- 主要字型：Noto Sans CJK TC。未安裝此字型的檢視器可能使用替代字型。
-- 財務及交易來源列於各頁講者備註與逐頁文字。封面照片來源為 [Tesla Manufacturing](https://www.tesla.com/en_au/manufacturing)，火箭照片來源為 [WIRED 的 SpaceX 報導](https://www.wired.com/story/spacex-preps-for-three-block-5-launches-in-just-two-weeks/)；照片僅說明場景，不是 AI 效益證據。
+- [原始 PowerPoint](AI_eco_2026-11-14.pptx)
+- [原始逐頁文字與來源](AI_eco_2026-11-14.md)
+- [原生歷史簡報](https://chatgpt.com/space/page_df29a74b90bc8191aaf3af62593fc9be)
+
+初版基於 44becb7，未包含後續新增案例與終局命題，不作為目前完整論述。
+
+## 版本與證據口徑
+
+Git 中的檔案與原生簡報均為版本快照，不自動同步。後續修訂需同時更新簡報、逐頁文字及本索引。
+
+企業披露不等於獨立成本驗證，假設試算不代表企業預測。合併評估不等於簽約或完成，長期持有仍以成本、每股價值與合理價格為條件。
+
+照片僅說明場景，不作 AI 效益證據。製造照片：[Tesla Manufacturing](https://www.tesla.com/en_au/manufacturing)；火箭照片：[WIRED 的 SpaceX 報導](https://www.wired.com/story/spacex-preps-for-three-block-5-launches-in-just-two-weeks/)。來源亦列於相應頁備註。
