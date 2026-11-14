@@ -42,6 +42,46 @@
 
 這些來源支持「有通縮力量」的機制，同時不支持「AI 導入必然立即造成全面通縮」。也未直接驗證全面機器人化的終局情境。
 
+## 企業驗證主線：Tesla／SpaceX 的 AI 生產循環
+
+使用者補充：Tesla、SpaceX 大量使用 AI 造車、造機器人、造火箭、造 AI，降低成本並提高毛利率。這是理論 002 的核心企業機制假說，需分項驗證實際導入與因果效果。
+
+### 待驗證的正向循環
+
+數位 AI 協助研發、程式、模擬、排程與品質判定 → 實體 AI 執行部分生產與搬運 → 降低單位資源消耗、提高產能 → 更低成本製造車輛、機器人與算力設施 → 再投入更多 AI。
+
+「AI 造 AI」涵蓋 AI 協助軟體、研究及基礎設施工程，不預設已實現全自主研發或無人晶片工廠。「機器人造機器人」是規模化後的待驗證環節，不能以已能量產機器人直接推定已發生。
+
+| 場景 | 理論中的降本途徑，尚待量化 | 最重要的驗證指標 |
+| --- | --- | --- |
+| Tesla 造車 | AI 輔助設計、品質檢查、排程與機器人工作 | 同品質單車成本、工時、良率、折舊與售價 |
+| Tesla 造機器人 | AI 改善設計、訓練與裝配，機器人再參與生產 | 每台完整成本、實際有效工時、維護及回收期 |
+| SpaceX 造火箭與衛星 | AI 輔助工程、測試、製造與運營 | 單位製造成本、可靠度、每次任務全成本 |
+| SpaceX／xAI 造 AI | AI 輔助程式、研究、算力運維，基建整合降低交付成本 | 固定品質的訓練／任務成本、利用率、研發週期 |
+
+### 目前可核實的企業資料
+
+- Tesla 2026 Q3 汽車業務毛利率由去年同期 17.0% 升至 18.5%；申報亦列出產品組合、關稅退還與匯率等成本因素。[S4] 支持毛利改善的現象，未單獨識別 AI 的貢獻。
+- Tesla 同季更新稱 Optimus 已在 Fremont 產線開始生產，但仍屬 early ramp；Texas 工廠仍在建設。[S5] 支持生產進展，不等於機器人已大量降低全公司製造成本。
+- SpaceX 招股資料稱 COLOSSUS II 每 MW 建設成本低於業界基準，並把優勢歸因於垂直整合與建設能力；另將火箭重複使用列為降本機制。[S6] 這些支持成本工程能力，尚未分離 AI 本身的因果效果。
+
+因此 Tesla／SpaceX 是本理論的優先驗證案例，目前資料屬「部分結果、能力進展與公司陳述」，尚非完整證明「大量 AI 導入已造成造車、造機器人、造火箭、造 AI 全線降本增毛利」。需剔除量產規模、產品組合、原料、關稅、匯率與重複使用等其他因素，並比較 AI 導入前後或不同產線。
+
+### 降價與提高毛利率可以同時成立
+
+純假設、非公司預測，價格與成本使用同一任意單位：
+
+| 指標 | 導入前 | 導入後 |
+| --- | --- | --- |
+| 單位售價 | 100 | 90 |
+| 單位銷貨成本 | 80 | 60 |
+| 單位毛利 | 20 | 30 |
+| 毛利率 | 20% | 33.3% |
+
+成本降 25%、價格降 10%，消費者買得更便宜，企業毛利率仍上升。總毛利還受銷量影響，淨利與現金流還要扣除研發、其他費用及投資支出。
+
+這補上從企業走向總體的必要環節：AI 降本 → 部分成本節省傳給客戶 → 大量商品與服務降價 → 若範圍足夠廣且總需求未抵銷，形成供給型通縮。企業若完全保留節省、沒有降價，支持的是利潤提升，尚未支持消費物價下降。
+
 ## 時間情境
 
 | 情境 | 供需特徵 | 可能的價格結果 |
@@ -83,5 +123,9 @@
 - [S1：BIS，The impact of artificial intelligence on output and inflation，2024-04-17](https://www.bis.org/publications/working-paper-1179-impact-artificial-intelligence-output-and-inflation)
 - [S2：Federal Reserve，Artificial Intelligence and the U.S. Economy: Current Evidence，2026-11-12 更新](https://www.federalreserve.gov/econres/feds/artificial-intelligence-and-the-us-economy-current-evidence.htm)
 - [S3：IMF，Europe and the Global AI Race，2026-09-21](https://www.imf.org/en/news/articles/2026/09/20/sp091926-europe-and-global-ai-race)
+
+- [S4：Tesla 2026 Q3 Form 10-Q，成本與毛利率](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)
+- [S5：Tesla 2026 Q3 Quarterly Update，Robotics](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)
+- [S6：SpaceX 2026 招股申報，COLOSSUS II 與重複使用](https://www.sec.gov/Archives/edgar/data/1181412/000162828026039276/spaceexplorationtechnologi.htm)
 
 以上來源中的研究與作者觀點不等同各機構的政策承諾。
