@@ -10,6 +10,8 @@
 
 - [SpaceX：頂級 AI 公司股權交換資源](evidence/spacex_equity_resource_exchange.md)：頻譜、AI 併購與定價權的證據及限制。
 
+- [Anthropic、OpenAI：供應商投資與股權取得資源](evidence/anthropic_openai_supplier_equity.md)：NVIDIA、台積電投資與直接股權支付的證據界線。
+
 ## 核心問題
 
 - AI 能力提升，如何轉化為生產力、營收與現金流？
@@ -47,4 +49,4 @@
 
 ## 研究狀態
 
-目前已建立研究框架、第一個理論假說與 SpaceX 第一批來源證據；尚未建立量化模型。
+目前已建立研究框架、第一個理論假說與 SpaceX、Anthropic、OpenAI 的來源證據；尚未建立量化模型。
