@@ -49,6 +49,8 @@
 
 - [Robotaxi 與有人計程車](research/robotaxi_tesla_waymo_uber_taxi_2026-11-14.md)：Tesla、Waymo、Uber 與傳統計程車的成本、利用率、平台費及證據缺口。
 
+- [AI token 與五條算力供應鏈](research/ai_token_cost_stacks_2026-11-14.md)：Claude＋SpaceX 地面／太空、Google、OpenAI＋Microsoft／Oracle；比較電力、晶片、模型、API 售價與完整任務成本。
+
 ## 證據與修訂規則
 
 - **來源事實**：附原始來源、資料期間、幣別與單位；公司自述不等同獨立驗證。
