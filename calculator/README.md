@@ -10,9 +10,9 @@ Python 3.10 以上，僅使用標準函式庫，無需安裝套件。預設計�
 
 ### 網頁發佈
 
-`docs/index.html` 是可獨立開啟的網頁，包含本份主預測結果、完整樣式及公司／年度切換。GitHub Pages 設定：repo **Settings → Pages → Deploy from a branch → main → /docs → Save**。首次啟用後以 Pages 設定顯示的網站網址為準。
+根目錄 `index.html` 及 `docs/index.html` 是相同的完整網頁，包含本份主預測結果、樣式及公司／年度切換。GitHub Pages 設定：repo **Settings → Pages → Deploy from a branch → main → /(root) → Save**；若原已選 `/docs` 也可直接使用。啟用後以 Pages 設定顯示的網站網址為準。
 
-每次修正主預測後，執行 `python calculator/build_site.py` 同步重算網頁及 `calculator/forecast_summary.md`，再提交 Git。網站顯示已計算的結果，不需要 Python 後端；圖表使用固定版本 D3 靜態資源。資料與分析延續同一份 `current.json`。
+每次修正主預測後，執行 `python calculator/build_site.py` 同步重算兩個網頁入口及 `calculator/forecast_summary.md`，再提交 Git。網站顯示已計算的結果，不需要 Python 後端；圖表使用固定版本 D3 靜態資源。資料與分析延續同一份 `current.json`。
 
 在 repo 根目錄執行：
 

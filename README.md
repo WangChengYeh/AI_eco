@@ -37,9 +37,9 @@
 
 ## Python 年度預測 Calculator
 
-可瀏覽的預測頁使用 GitHub Pages，發佈來源為 `main` 分支的 `/docs`。首次啟用見下列設定；網頁包含完整樣式與互動，不需登入 ChatGPT，也不會在訪客瀏覽器執行 Python。
+可瀏覽的[主預測網頁](https://wangchengyeh.github.io/AI_eco/)使用 GitHub Pages；`main` 分支的根目錄及 `/docs` 都有完整入口。網頁包含完整樣式與互動，不需登入 ChatGPT，也不會在訪客瀏覽器執行 Python。
 
-更新同一份主預測後執行 `python calculator/build_site.py`，將重算結果及 `docs/index.html` 一起提交。GitHub Pages 啟用後，每次更新 `/docs` 都會重新發佈。
+更新同一份主預測後執行 `python calculator/build_site.py`，將重算結果、`index.html` 及 `docs/index.html` 一起提交；GitHub Pages 會依已設定的來源重新發佈。
 
 - [程式、中文參數說明與使用方式](calculator/README.md)：Tesla 8 項、SpaceX 11 項業務，逐年營收、毛利、營業利益、淨利、現金流與每股估值。
 - [主預測輸入](calculator/configs/current.json)：2027–2035 年，同一份分析持續更新；修訂歷史留在 Git，不建立「目前修正」情境。保守／樂觀參數只供另外執行敏感度檢查。

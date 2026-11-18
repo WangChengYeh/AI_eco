@@ -36,8 +36,9 @@ def build():
     source = re.sub(r"更新日 \d{4}-\d{2}-\d{2}", "更新日 " + config["metadata"]["as_of"], source)
     document = document[:frame.start(1)] + html.escape(source, quote=True) + document[frame.end(1):]
     path.write_text(document, encoding="utf-8")
+    (ROOT / "index.html").write_text(document, encoding="utf-8")
     (ROOT / "calculator/forecast_summary.md").write_text(summary_markdown([result]), encoding="utf-8")
-    print("Updated docs/index.html and calculator/forecast_summary.md from configs/current.json")
+    print("Updated index.html, docs/index.html and calculator/forecast_summary.md from configs/current.json")
 
 
 if __name__ == "__main__":
