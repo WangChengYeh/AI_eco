@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 forecast_output/
 calculator/examples/output/
+calculator/examples/optimus-output/

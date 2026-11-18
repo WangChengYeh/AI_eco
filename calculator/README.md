@@ -78,6 +78,29 @@ python calculator/forecast.py --scenario base \
 
 ## 參數曲線
 
+### 2027 Optimus 1,000 萬台：內用優先、餘量出租
+
+[optimus_10m.json](configs/optimus_10m.json) 保存使用者的單年生產假設，不覆蓋原有基準設定：
+
+```bash
+python calculator/forecast.py --config calculator/configs/optimus_10m.json \
+  --scenario optimus_10m --out forecast_output/optimus_10m
+```
+
+`robot_fleet` 計算自持機器人：年末數量＝期初＋當年生產－退役，年平均採年初／年末平均。示例為期初 0、全年均勻生產 1,000 萬台，故年平均可用 500 萬台，不能把年底全部台數乘上 12 個月租金。
+
+1. 先將年平均可用數量分配給 `internal_demand_robots`。
+2. 剩餘數量可供出租；實際平均付費台數取「可租數量 × rental_utilization」與 `rental_demand_robots` 的較小值。
+3. 外租營收＝平均付費台數 × `monthly_rent_usd` × 12。內用沒有銷售營收。
+4. 內用避免成本＝平均內用台數 × `internal_avoided_cost_usd_per_robot_year`，仍受公司可改善製造成本上限約束；租賃收入不套用此上限。
+5. 全部自持台數皆計維運成本，製造成本進 capex，折舊與退役帳面損失進成本並於現金流加回。折舊不超過剩餘帳面價值，退役按期初資產帳面值比例移除。
+
+此情境停用原先 Optimus 對外銷售，以及固定額度的機器人節省／capex／折舊，避免與新機器人資產池重算。`robot_fleet` 的內用節省與固定 `robotics_savings_usd` 不能同時為正。
+
+**使用者指定的只有 2027 年生產量及內用優先的分配規則。** 內用需求 100 萬台、出租率 50%、月租 2,000 美元、單台成本 20,000 美元及其他數值均為額外可改的示例；不是公司實績或生產可行性的證明。只預測 2027 年，未擅自延伸往後每年生產 1,000 萬台。
+
+自持製造投入可能造成現金缺口，即使損益表獲利也不代表資金足夠。未明列融資前，原有資金缺口與停用股價估值規則繼續適用。此版內用節省只抵銷 Tesla 指定製造業務，不推定全部台數都能取代人工，也未自動把供 SpaceX 使用的台數當成合併內部交易。
+
 大部分數值可填固定數字，或用以下物件：
 
 ```json

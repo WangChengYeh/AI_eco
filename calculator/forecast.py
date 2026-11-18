@@ -112,6 +112,11 @@ KIND_FIELDS = {
                  "depreciation_usd_per_vehicle_year", "km_per_vehicle_day", "operating_days",
                  "paid_km_share", "fare_usd_per_paid_km", "cash_cost_usd_per_total_km",
                  "fixed_cash_usd_per_vehicle_year", "fleet_capacity"},
+    "robot_fleet": {"opening_fleet", "production_units", "retirements", "fleet_capacity",
+                    "unit_manufacturing_cost_usd", "opening_net_book_value_usd",
+                    "depreciation_usd_per_robot_year", "internal_demand_robots",
+                    "internal_avoided_cost_usd_per_robot_year", "rental_utilization",
+                    "rental_demand_robots", "monthly_rent_usd", "cash_cost_usd_per_robot_year"},
     "compute": {"average_it_mw", "external_share", "internal_share", "external_utilization",
                 "internal_utilization", "availability", "price_usd_per_billable_mw_hour",
                 "electricity_usd_per_kwh", "pue", "idle_power_fraction",
@@ -166,6 +171,42 @@ def segment_forecast(segment, year, base_year, state):
             inputs = {"opening_fleet": opening, "additions": adds, "retirements": retirements,
                       "closing_fleet": closing, "average_fleet": average, "total_km": total_km,
                       "paid_km": paid_km, "vehicle_cost_usd": p("vehicle_cost_usd")}
+        elif kind == "robot_fleet":
+            opening = state.setdefault("fleet", number(segment.get("opening_fleet", 0), "opening_fleet", 0))
+            production, retirements = p("production_units"), p("retirements")
+            cost = p("unit_manufacturing_cost_usd")
+            if retirements > opening:
+                raise ModelError("robot retirements cannot exceed opening fleet")
+            closing = opening + production - retirements
+            if closing > p("fleet_capacity", closing):
+                raise ModelError("robot closing fleet exceeds fleet_capacity")
+            average = (opening + closing) / 2
+            demand = p("internal_demand_robots")
+            internal = min(average, demand)
+            rentable = max(average - internal, 0)
+            rented = min(rentable * p("rental_utilization", 0, 0, 1), p("rental_demand_robots", rentable))
+            opening_book = state.setdefault("robot_book", number(segment.get("opening_net_book_value_usd", opening * cost), "opening_net_book_value_usd", 0))
+            retired_book = opening_book * retirements / opening if opening else 0
+            extra_capex = production * cost
+            book_before_da = opening_book - retired_book + extra_capex
+            depreciation = min(book_before_da, average * p("depreciation_usd_per_robot_year"))
+            extra_da = depreciation + retired_book
+            state["robot_book"] = book_before_da - depreciation
+            state["fleet"] = closing
+            revenue = rented * p("monthly_rent_usd") * 12
+            # Every retained robot incurs operating costs, even if idle or used internally.
+            cogs = average * p("cash_cost_usd_per_robot_year") + extra_da
+            inputs = {"opening_fleet": opening, "production_units": production,
+                      "retirements": retirements, "closing_fleet": closing,
+                      "average_fleet": average, "average_internal_robots": internal,
+                      "average_rentable_robots": rentable, "average_rented_robots": rented,
+                      "average_idle_robots": rentable - rented,
+                      "year_end_internal_robots": min(closing, demand),
+                      "year_end_rentable_robots": max(closing - demand, 0),
+                      "internal_savings_requested_usd": internal * p("internal_avoided_cost_usd_per_robot_year"),
+                      "unit_manufacturing_cost_usd": cost, "monthly_rent_usd": p("monthly_rent_usd"),
+                      "closing_net_book_value_usd": state["robot_book"],
+                      "retirement_writeoff_usd": retired_book}
         elif kind == "compute":
             mw = p("average_it_mw")
             external, internal = p("external_share", 1, 0, 1), p("internal_share", 0, 0, 1)
@@ -238,7 +279,11 @@ def company_forecast(company, years):
             if used > p("passenger_production_capacity") + 1e-6:
                 raise ModelError(f"{year}: passenger sales + owned fleet additions exceed production capacity")
         eligible = [key for key in rows if company["segments"][key].get("robotics_eligible", False)]
-        requested_savings = p("robotics_savings_usd")
+        fleet_savings = sum(row["drivers"].get("internal_savings_requested_usd", 0) for row in rows.values())
+        explicit_savings = p("robotics_savings_usd")
+        if fleet_savings and explicit_savings:
+            raise ModelError("robot_fleet derived savings and robotics_savings_usd cannot both be positive")
+        requested_savings = explicit_savings + fleet_savings
         if requested_savings and any(company["segments"][key].get("cost_includes_robotics", True) for key in eligible):
             raise ModelError("robotics savings require cost_includes_robotics=false on eligible segments")
         pool = sum(rows[key]["cogs_usd"] for key in eligible)

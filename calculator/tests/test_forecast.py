@@ -265,5 +265,69 @@ class MergerAndValidation(unittest.TestCase):
             self.assertFalse(out.exists())
 
 
+class OptimusOwnedFleet(unittest.TestCase):
+    def robot(self, **overrides):
+        segment = {"kind": "robot_fleet", "opening_fleet": 10, "production_units": 10,
+                   "unit_manufacturing_cost_usd": 100, "opening_net_book_value_usd": 1000,
+                   "internal_demand_robots": 12, "internal_avoided_cost_usd_per_robot_year": 50,
+                   "rental_utilization": .5, "monthly_rent_usd": 100,
+                   "cash_cost_usd_per_robot_year": 2, "depreciation_usd_per_robot_year": 20}
+        segment.update(overrides)
+        return segment
+
+    def test_internal_priority_and_only_paid_external_rent_is_revenue(self):
+        r = model.segment_forecast(self.robot(), 2027, 2027, {})
+        self.assertEqual(r["drivers"]["average_fleet"], 15)
+        self.assertEqual(r["drivers"]["average_internal_robots"], 12)
+        self.assertEqual(r["drivers"]["average_rented_robots"], 1.5)
+        self.assertEqual(r["drivers"]["internal_savings_requested_usd"], 600)
+        self.assertEqual(r["revenue_usd"], 1800)
+        self.assertEqual(r["capex_usd"], 1000)
+        self.assertEqual(r["cogs_usd"], 330)
+
+    def test_internal_demand_consumes_capacity_before_rent(self):
+        r = model.segment_forecast(self.robot(internal_demand_robots=100), 2027, 2027, {})
+        self.assertEqual(r["revenue_usd"], 0)
+        self.assertEqual(r["drivers"]["average_internal_robots"], 15)
+
+    def test_unused_supply_is_not_automatically_rented(self):
+        r = model.segment_forecast(self.robot(rental_utilization=0), 2027, 2027, {})
+        self.assertEqual(r["revenue_usd"], 0)
+        self.assertEqual(r["drivers"]["average_idle_robots"], 3)
+        self.assertGreater(r["cogs_usd"], 0)
+        r = model.segment_forecast(self.robot(rental_demand_robots=.2), 2027, 2027, {})
+        self.assertEqual(r["drivers"]["average_rented_robots"], .2)
+
+    def test_depreciation_cannot_exceed_remaining_book_value(self):
+        state = {}
+        segment = self.robot(opening_fleet=1, production_units=0, opening_net_book_value_usd=50,
+                             depreciation_usd_per_robot_year=100)
+        first = model.segment_forecast(segment, 2027, 2027, state)
+        second = model.segment_forecast(segment, 2028, 2027, state)
+        self.assertEqual(first["da_usd"], 50)
+        self.assertEqual(second["da_usd"], 0)
+        self.assertEqual(second["drivers"]["closing_net_book_value_usd"], 0)
+
+    def test_existing_robot_savings_cannot_be_counted_twice(self):
+        c = fixture()
+        company = c["companies"]["a"]
+        company["segments"]["robots"] = {"name": "Robots", **self.robot()}
+        company["robotics_savings_usd"] = 1
+        with self.assertRaisesRegex(model.ModelError, "cannot both"):
+            model.forecast(c)
+
+    def test_ten_million_produced_are_half_year_average_and_need_financing(self):
+        config = json.loads((ROOT / "configs" / "optimus_10m.json").read_text())
+        result = model.forecast(config, "optimus_10m")
+        fleet = next(s for s in result["segments"] if s["segment"] == "optimus_owned")
+        self.assertEqual(fleet["drivers"]["closing_fleet"], 10000000)
+        self.assertEqual(fleet["drivers"]["average_fleet"], 5000000)
+        self.assertEqual(fleet["drivers"]["average_rented_robots"], 2000000)
+        self.assertEqual(fleet["revenue_usd"], 48e9)
+        self.assertAlmostEqual(result["companies"]["tesla"][0]["revenue_usd"], sum(s["revenue_usd"] for s in result["segments"] if s["company_id"] == "tesla"))
+        self.assertGreater(result["companies"]["tesla"][0]["funding_gap_usd"], 0)
+        self.assertIsNone(result["companies"]["tesla"][0]["price_pe_usd"])
+
+
 if __name__ == "__main__":
     unittest.main()
