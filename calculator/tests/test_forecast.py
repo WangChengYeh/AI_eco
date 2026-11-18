@@ -1,0 +1,269 @@
+"""Economic identities and failure cases; no network or external packages."""
+import copy
+import importlib.util
+import json
+import math
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location("forecast", ROOT / "forecast.py")
+model = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(model)
+
+
+def fixture(years=(2027,)):
+    return {
+        "schema_version": 1, "years": list(years), "scenarios": {"base": {}},
+        "companies": {"a": {
+            "name": "A", "opening_cash_usd": 100, "opening_debt_usd": 20,
+            "opening_shares": 10, "corporate_opex_usd": 5, "interest_rate": .1,
+            "tax_rate": .2, "pe_multiple": 10, "corporate_ev_cost_multiple": 2,
+            "nwc_revenue_ratio": .05, "opening_nwc_usd": 0,
+            "segments": {"product": {
+                "name": "Product", "kind": "unit", "units": 10, "price_usd": 10,
+                "unit_cost_usd": 5, "opex_usd": 10, "capex_revenue_ratio": .2,
+                "ev_sales_multiple": 2,
+            }},
+        }},
+    }
+
+
+def row(config):
+    return model.forecast(config)["companies"]["a"][0]
+
+
+class FinancialIdentities(unittest.TestCase):
+    def test_profit_cash_and_valuation_have_distinct_bridges(self):
+        r = row(fixture())
+        expected = {"revenue_usd": 100, "gross_profit_usd": 50,
+                    "operating_profit_usd": 35, "interest_usd": 2, "tax_usd": 6.6,
+                    "net_income_usd": 26.4, "economic_fcf_usd": 1.4,
+                    "cash_usd": 101.4, "price_pe_usd": 26.4, "price_sotp_usd": 27.14}
+        for key, value in expected.items():
+            self.assertAlmostEqual(r[key], value, msg=key)
+
+    def test_equity_financing_adds_cash_and_dilutes_not_income(self):
+        config = fixture()
+        config["companies"]["a"].update(equity_raised_usd=50, equity_issue_price_usd=5)
+        r = row(config)
+        self.assertAlmostEqual(r["net_income_usd"], 26.4)
+        self.assertEqual(r["shares"], 20)
+        self.assertAlmostEqual(r["cash_usd"], 151.4)
+        self.assertAlmostEqual(r["eps_usd"], 26.4 / 15)
+        self.assertAlmostEqual(r["price_pe_usd"], 13.2)
+
+    def test_sbc_expense_addback_and_dilution_are_separate(self):
+        config = fixture()
+        config["companies"]["a"].update(tax_rate=0, sbc_expense_usd=10, sbc_dilution_rate=.1)
+        r = row(config)
+        self.assertAlmostEqual(r["net_income_usd"], 23)
+        self.assertAlmostEqual(r["cash_fcf_usd"] - r["economic_fcf_usd"], 10)
+        self.assertEqual(r["shares"], 11)
+
+    def test_annual_split_reduces_price_not_equity_value(self):
+        original = row(fixture())
+        config = fixture()
+        config["companies"]["a"]["stock_split"] = 3
+        split = row(config)
+        self.assertEqual(split["shares"], 30)
+        self.assertAlmostEqual(split["price_sotp_usd"] * 3, original["price_sotp_usd"])
+
+    def test_depreciation_is_expensed_and_added_back_once(self):
+        config = fixture()
+        config["companies"]["a"]["tax_rate"] = 0
+        config["companies"]["a"]["segments"]["product"]["da_usd"] = 10
+        r = row(config)
+        self.assertEqual(r["cogs_usd"], 60)
+        self.assertEqual(r["da_usd"], 10)
+        self.assertAlmostEqual(r["cash_fcf_usd"], 8)
+
+    def test_working_capital_releases_on_revenue_decline(self):
+        config = fixture((2027, 2028))
+        config["companies"]["a"]["segments"]["product"]["units"] = {"value": 10, "growth": -.5}
+        rows = model.forecast(config)["companies"]["a"]
+        self.assertEqual(rows[1]["delta_nwc_usd"], -2.5)
+
+    def test_funding_gap_suppresses_valuation_and_is_not_auto_financed(self):
+        config = fixture((2027, 2028))
+        config["companies"]["a"]["segments"]["product"]["capex_usd"] = 1000
+        rows = model.forecast(config)["companies"]["a"]
+        self.assertGreater(rows[0]["funding_gap_usd"], 0)
+        self.assertIsNone(rows[0]["price_sotp_usd"])
+        self.assertIsNone(rows[1]["price_pe_usd"])
+        self.assertEqual(rows[0]["debt_usd"], 20)
+
+    def test_loss_making_company_has_no_pe_price_or_tax_benefit(self):
+        config = fixture()
+        config["companies"]["a"]["corporate_opex_usd"] = 100
+        r = row(config)
+        self.assertLess(r["net_income_usd"], 0)
+        self.assertEqual(r["tax_usd"], 0)
+        self.assertIsNone(r["price_pe_usd"])
+
+
+class BusinessDrivers(unittest.TestCase):
+    def test_subscription_uses_average_accounts_and_twelve_months(self):
+        segment = {"kind": "subscription", "average_subscribers": 10,
+                   "monthly_price_usd": 5, "monthly_cost_usd": 2}
+        r = model.segment_forecast(segment, 2027, 2027, {})
+        self.assertEqual(r["revenue_usd"], 600)
+        self.assertEqual(r["gross_profit_usd"], 360)
+
+    def test_owned_fleet_rollforward_and_purchases_are_capex(self):
+        segment = {"kind": "robotaxi", "opening_fleet": 10, "additions": 10,
+                   "vehicle_cost_usd": 100, "depreciation_usd_per_vehicle_year": 30,
+                   "km_per_vehicle_day": 100, "operating_days": 1, "paid_km_share": .5,
+                   "fare_usd_per_paid_km": 2, "cash_cost_usd_per_total_km": .2,
+                   "fixed_cash_usd_per_vehicle_year": 10}
+        state = {}
+        r = model.segment_forecast(segment, 2027, 2027, state)
+        self.assertEqual(r["drivers"]["average_fleet"], 15)
+        self.assertEqual(r["revenue_usd"], 1500)
+        self.assertEqual(r["cogs_usd"], 900)
+        self.assertEqual(r["capex_usd"], 1000)
+        self.assertEqual(r["da_usd"], 450)
+        self.assertEqual(state["fleet"], 20)
+
+    def test_unpaid_km_still_consumes_cash(self):
+        segment = {"kind": "robotaxi", "opening_fleet": 1, "operating_days": 10,
+                   "km_per_vehicle_day": 10, "paid_km_share": 0,
+                   "cash_cost_usd_per_total_km": 2}
+        r = model.segment_forecast(segment, 2027, 2027, {})
+        self.assertEqual(r["revenue_usd"], 0)
+        self.assertEqual(r["cogs_usd"], 200)
+
+    def test_compute_mw_kwh_conversion_and_internal_capacity_not_sold(self):
+        segment = {"kind": "compute", "average_it_mw": 1, "external_share": .5,
+                   "internal_share": .5, "external_utilization": 1,
+                   "internal_utilization": 1, "availability": 1,
+                   "price_usd_per_billable_mw_hour": 10, "electricity_usd_per_kwh": .1,
+                   "pue": 1, "idle_power_fraction": 0}
+        r = model.segment_forecast(segment, 2027, 2027, {})
+        self.assertEqual(r["revenue_usd"], 43800)
+        self.assertEqual(r["drivers"]["electricity_kwh"], 8760000)
+        self.assertEqual(r["cogs_usd"], 876000)
+
+    def test_compute_cannot_sell_capacity_reserved_for_own_models(self):
+        with self.assertRaises(model.ModelError):
+            model.segment_forecast({"kind": "compute", "external_share": .8, "internal_share": .3}, 2027, 2027, {})
+
+    def test_prelaunch_development_still_spends_cash(self):
+        r = model.segment_forecast({"kind": "compute", "start_year": 2030,
+                                    "opex_usd": 5, "capex_usd": 10}, 2027, 2027, {})
+        self.assertEqual(r["revenue_usd"], 0)
+        self.assertEqual(r["operating_profit_usd"], -5)
+        self.assertEqual(r["capex_usd"], 10)
+
+    def test_robot_savings_capped_and_no_artificial_revenue(self):
+        config = fixture()
+        c = config["companies"]["a"]
+        c.update(robotics_savings_usd=1000, robotics_max_cogs_share=.2)
+        c["segments"]["product"].update(robotics_eligible=True, cost_includes_robotics=False)
+        r = row(config)
+        self.assertEqual(r["revenue_usd"], 100)
+        self.assertEqual(r["robotics_savings_usd"], 10)
+        self.assertEqual(r["cogs_usd"], 40)
+        c["segments"]["product"]["cost_includes_robotics"] = True
+        with self.assertRaises(model.ModelError):
+            model.forecast(config)
+
+    def test_production_shared_between_sales_and_owned_fleet(self):
+        config = fixture()
+        c = config["companies"]["a"]
+        c.update(passenger_production_capacity=10, passenger_segment_id="product", robotaxi_segment_id="fleet")
+        c["segments"]["fleet"] = {"name": "Fleet", "kind": "robotaxi", "additions": 1}
+        with self.assertRaisesRegex(model.ModelError, "production capacity"):
+            model.forecast(config)
+
+
+class MergerAndValidation(unittest.TestCase):
+    def test_merger_uses_exchange_ratio_instead_of_adding_prices(self):
+        config = fixture()
+        config["companies"]["b"] = copy.deepcopy(config["companies"]["a"])
+        config["companies"]["b"].update(name="B", opening_shares=20)
+        config["merger"] = {"enabled": True, "acquirer": "a", "target": "b",
+                            "target_exchange_ratio": .5, "pe_multiple": 10}
+        result = model.forecast(config)
+        combined = result["merger"][0]
+        self.assertEqual(combined["shares"], 20)
+        self.assertEqual(combined["revenue_usd"], 200)
+        self.assertAlmostEqual(combined["price_pe_usd"], 26.4)
+        self.assertNotAlmostEqual(combined["price_pe_usd"], sum(rows[0]["price_pe_usd"] for rows in result["companies"].values()))
+
+    def test_merger_elimination_removes_revenue_and_seller_ev(self):
+        config = fixture()
+        config["companies"]["b"] = copy.deepcopy(config["companies"]["a"])
+        config["merger"] = {"enabled": True, "acquirer": "a", "target": "b",
+                            "intercompany_revenue_usd": 10, "intercompany_ev_elimination_usd": 20}
+        merged = model.forecast(config)["merger"][0]
+        self.assertEqual(merged["revenue_usd"], 190)
+        self.assertAlmostEqual(merged["net_income_usd"], 52.8)
+        self.assertAlmostEqual(merged["sotp_equity_value_usd"], 522.8)
+
+    def test_curves_absolute_override_and_cap(self):
+        spec = {"value": 100, "growth": .1, "annual": {"2029": 140}, "cap": 135}
+        self.assertAlmostEqual(model.parameter(spec, 2028, 2027), 110)
+        self.assertEqual(model.parameter(spec, 2029, 2027), 135)
+        self.assertAlmostEqual(model.parameter(spec, 2030, 2027), 133.1)
+        self.assertEqual(model.parameter({"value": 100, "growth": -.5, "floor": 40}, 2029, 2027), 40)
+        with self.assertRaises(model.ModelError):
+            model.parameter({"value": 100, "floor": 50, "cap": 40}, 2027, 2027)
+
+    def test_reject_invalid_numbers_years_and_override_typos(self):
+        for value in [-1, float("nan"), float("inf"), True]:
+            with self.subTest(value=value), self.assertRaises(model.ModelError):
+                model.parameter(value, 2027, 2027)
+        config = fixture((2027, 2029))
+        with self.assertRaises(model.ModelError):
+            model.forecast(config)
+        with self.assertRaises(model.ModelError):
+            model.patch(fixture(), "companies.a.typo", 1)
+
+    def test_no_silent_missing_financing_price_or_impossible_retirements(self):
+        config = fixture()
+        config["companies"]["a"]["equity_raised_usd"] = 10
+        with self.assertRaises(model.ModelError):
+            model.forecast(config)
+        with self.assertRaises(model.ModelError):
+            model.segment_forecast({"kind": "robotaxi", "opening_fleet": 1, "retirements": 2}, 2027, 2027, {})
+
+    def test_example_scenarios_reconcile_and_keep_original_input(self):
+        config = json.loads((ROOT / "configs" / "example.json").read_text())
+        before = copy.deepcopy(config)
+        for scenario in config["scenarios"]:
+            result = model.forecast(config, scenario)
+            json.dumps(result, allow_nan=False)
+            for rows in result["companies"].values():
+                for r in rows:
+                    segments = [s for s in result["segments"] if s["company"] == r["company"] and s["year"] == r["year"]]
+                    self.assertAlmostEqual(sum(s["revenue_usd"] for s in segments), r["revenue_usd"], places=3)
+                    self.assertAlmostEqual(sum(s["gross_profit_usd"] for s in segments), r["gross_profit_usd"], places=3)
+                    self.assertAlmostEqual(r["net_income_usd"] + r["da_usd"] - r["capex_usd"] - r["delta_nwc_usd"], r["economic_fcf_usd"], places=3)
+        self.assertEqual(config, before)
+
+    def test_cli_override_after_scenario_and_csv_exports(self):
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "out"
+            run = subprocess.run([sys.executable, str(ROOT / "forecast.py"), "--scenario", "bear",
+                                  "--set", "companies.tesla.pe_multiple=12", "--out", str(out)], capture_output=True, text=True)
+            self.assertEqual(run.returncode, 0, run.stderr)
+            result = json.loads((out / "results.json").read_text())["results"][0]
+            self.assertEqual(result["companies"]["tesla"][0]["pe_multiple"], 12)
+            self.assertTrue((out / "segments.csv").exists())
+            self.assertTrue((out / "companies.csv").read_bytes().startswith(b"\xef\xbb\xbf"))
+            self.assertFalse((out / "merger.csv").exists())
+
+    def test_cli_invalid_override_returns_two_and_no_partial_files(self):
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "out"
+            run = subprocess.run([sys.executable, str(ROOT / "forecast.py"), "--set", "companies.tesla.bad=1", "--out", str(out)], capture_output=True, text=True)
+            self.assertEqual(run.returncode, 2)
+            self.assertFalse(out.exists())
+
+
+if __name__ == "__main__":
+    unittest.main()

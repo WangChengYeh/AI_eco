@@ -35,6 +35,16 @@
 
 - [Tesla＋SpaceX 可能合併的狀態](evidence/tesla_spacex_combination_status.md)：已披露評估程序，尚非已完成合併。
 
+## Python 年度預測 Calculator
+
+- [程式、中文參數說明與使用方式](calculator/README.md)：Tesla 7 項、SpaceX 11 項業務，逐年營收、毛利、營業利益、淨利、現金流與股價情境。
+- [示例假設 JSON](calculator/configs/example.json)：預設 2027–2035 年，含保守／基準／樂觀情境，可自訂產能、用量、價格、降本、capex、股本與估值倍數。
+- 支援單獨公司與假想合併年度快照，區分自用與對外收入、換股及稀釋。所有預設數字是未校準示例，不作公司指引或既成交易。
+
+```bash
+python calculator/forecast.py --scenario all --out forecast_output
+```
+
 ## 簡報
 
 - [新版簡報與歷史 PowerPoint](slides/README.md)：涵蓋兩個理論、全鏈成本、Robotaxi、token 供應鏈與終局假說。
@@ -66,10 +76,13 @@
 
 ## 目前狀態
 
-2026-11-14 完成第二輪全文 review。已串接股權交易、AI token、機器人、鋰原料至載客服務與 Robotaxi 案例。兩家公司申報已披露特別委員會評估可能交易，合併仍未確定；詳見[交易情境證據](evidence/tesla_spacex_combination_status.md)。尚未完整驗證 AI 降本因果、普遍股權支付或全球通縮，也未建立量化估值模型。長期持有仍以合理價格、每股價值與持續驗證為條件。
+2026-11-19 新增 Python calculator，將營運假設、財務計算與每股估值分開；範例並非已驗證預測。
+
+2026-11-14 完成第二輪全文 review。已串接股權交易、AI token、機器人、鋰原料至載客服務與 Robotaxi 案例。兩家公司申報已披露特別委員會評估可能交易，合併仍未確定；詳見[交易情境證據](evidence/tesla_spacex_combination_status.md)。尚未完整驗證 AI 降本因果、普遍股權支付或全球通縮，已新增可重算的情境估值計算器，但尚未以完整實績校準。長期持有仍以合理價格、每股價值與持續驗證為條件。
 
 本輪修正項目與保留的資料缺口，見 [全文 review 紀錄](research/review_2026-11-14_v3.md)。
 
 ## 終局投資假說
 
 終局投資假說：若 Tesla＋SpaceX 合併，持續擴大完整成本優勢並提高每股價值，就以合理價格買進、長期持有。
+

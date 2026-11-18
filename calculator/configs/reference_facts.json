@@ -1,0 +1,46 @@
+{
+  "checked_at": "2026-11-19",
+  "purpose": "只供校準參照，不由 forecast.py 自動匯入；季度及九個月值不是全年預測。",
+  "facts": [
+    {
+      "company": "Tesla",
+      "metric": "vehicle_deliveries",
+      "period": "2026-Q3",
+      "value": 486532,
+      "unit": "vehicles",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026064366/exhibit991111111.htm",
+      "status": "company_disclosed",
+      "mapping_note": "季度交付資料，不能直接當全年銷量或自有Robotaxi數量。"
+    },
+    {
+      "company": "Tesla",
+      "metric": "energy_storage_deployments",
+      "period": "2026-Q3",
+      "value": 13.7,
+      "unit": "GWh",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026064366/exhibit991111111.htm",
+      "status": "company_disclosed",
+      "mapping_note": "儲能部署量，不等於年度產能，亦不提供每GWh售價。"
+    },
+    {
+      "company": "SpaceX",
+      "metric": "connectivity_revenue",
+      "period": "2026-Q3",
+      "value": 5248000000,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "Connectivity合計，不能再把同筆消費者、企業與終端硬體收入加一次。"
+    },
+    {
+      "company": "SpaceX",
+      "metric": "connectivity_revenue",
+      "period": "2026-01-01/2026-09-30",
+      "value": 12796000000,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "前九個月合計，與Q3為重疊期間，不能相加。"
+    }
+  ]
+}
