@@ -91,7 +91,8 @@ class LifecycleEconomics(unittest.TestCase):
         orbit = next(s for s in r["segments"] if s["segment"] == "orbital_compute" and s["year"] == 2027)
         self.assertEqual(robots["drivers"]["production_units"], 10000000)
         self.assertAlmostEqual(orbit["drivers"]["average_it_mw"], 125)
-        late = next(s for s in r["segments"] if s["segment"] == "orbital_compute" and s["year"] == 2035)
+        self.assertEqual(c["years"], list(range(2027, 2032)))
+        late = next(s for s in r["segments"] if s["segment"] == "orbital_compute" and s["year"] == 2031)
         self.assertAlmostEqual(late["drivers"]["year_end_it_mw"], 12000)
         for rows in r["companies"].values():
             for a in rows:

@@ -34,18 +34,15 @@
     "analysis_id": "tesla_spacex",
     "forecast_policy": "同一主預測持續修訂；base是程式識別碼，bear/bull僅為敏感度檢查，修訂版本由Git管理。",
     "input_provenance_file": "input_provenance.json",
-    "workflow_sop": "../SOP.md"
+    "workflow_sop": "../SOP.md",
+    "forecast_horizon_policy": "依使用者要求，主預測只估至2031年（含），不輸出更遠年度。"
   },
   "years": [
     2027,
     2028,
     2029,
     2030,
-    2031,
-    2032,
-    2033,
-    2034,
-    2035
+    2031
   ],
   "companies": {
     "tesla": {

@@ -51,6 +51,10 @@ def build():
     if not frame:
         raise ValueError("standalone page template has no data-srcdoc document")
     source = html.unescape(frame[1])
+    start, end = config["years"][0], config["years"][-1]
+    source = re.sub(r"\d{4}–\d{4} · 更新日", f"{start}–{end} · 更新日", source)
+    source = source.replace("+'，2027至2035年，單位'+def.unit",
+                            "+'，'+rows[0].year+'至'+rows[rows.length-1].year+'年，單位'+def.unit")
     # Keep displayed assumptions tied to the same input that produced results.
     source = re.sub(r'(<table class="table table-sm"><tbody(?: id="ts-assumptions")?>).*?(</tbody></table>)',
                     lambda m: '<table class="table table-sm"><tbody id="ts-assumptions"></tbody></table>',

@@ -50,7 +50,7 @@
 更新同一份主預測後執行 `python calculator/build_site.py`，將重算結果、`index.html` 及 `docs/index.html` 一起提交；GitHub Pages 會依已設定的來源重新發佈。
 
 - [程式、中文參數說明與使用方式](calculator/README.md)：Tesla 8 項、SpaceX 11 項業務，逐年營收、毛利、營業利益、淨利、現金流與每股估值。
-- [主預測輸入](calculator/configs/current.json)：2027–2035 年，同一份分析持續更新；修訂歷史留在 Git，不建立「目前修正」情境。保守／樂觀參數只供另外執行敏感度檢查。
+- [主預測輸入](calculator/configs/current.json)：2027–2031 年，同一份分析持續更新；修訂歷史留在 Git，不建立「目前修正」情境。保守／樂觀參數只供另外執行敏感度檢查。
 - [計算檢視與修正規則](calculator/FORECAST_REVIEW.md)、[主預測計算結果](calculator/forecast_summary.md)：連結理論、資產壽命、降本、股票支付與每股稀釋。
 - 支援單獨公司與假想合併年度快照，區分自用與對外收入、換股及稀釋。依理論 001，資金缺口可用新股支付合格資源，現金需求與新增股數同步重算。目前假設保留 Optimus 2027 年生產 1,000 萬台、內用優先並出租餘量，以及太空算力 2027 年底大量量產；量產規模、價格及成本等其餘數字仍為未校準示例，不作公司指引或既成交易。
 
