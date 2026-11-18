@@ -301,6 +301,107 @@ class MergerAndValidation(unittest.TestCase):
             self.assertFalse(out.exists())
 
 
+class StockResourceExchange(unittest.TestCase):
+    def config(self, **overrides):
+        config = fixture()
+        c = config["companies"]["a"]
+        c["opening_cash_usd"] = 0
+        c["segments"]["product"]["capex_usd"] = 100
+        c["stock_payment"] = {"enabled": True, "capex_eligible_ratio": 1,
+                              "opex_eligible_ratio": 0, "acceptance_ratio": 1,
+                              "reference_price_usd": 10}
+        c["stock_payment"].update(overrides)
+        return config
+
+    def test_direct_shares_replace_capex_cash_and_dilute_without_revenue(self):
+        r = row(self.config())
+        self.assertAlmostEqual(r["funding_gap_before_stock_usd"], 98.6)
+        self.assertAlmostEqual(r["stock_paid_capex_usd"], 98.6)
+        self.assertEqual(r["stock_paid_opex_usd"], 0)
+        self.assertAlmostEqual(r["cash_capex_usd"], 21.4)
+        self.assertAlmostEqual(r["resource_shares_issued"], 9.86)
+        self.assertAlmostEqual(r["shares"], 19.86)
+        self.assertEqual(r["cash_usd"], 0)
+        self.assertEqual(r["funding_gap_usd"], 0)
+        self.assertEqual(r["cash_equity_raised_usd"], 0)
+        self.assertEqual(r["revenue_usd"], 100)
+        self.assertAlmostEqual(r["net_income_usd"], 26.4)
+        self.assertEqual(r["valuation_status"], "stock_payment_assumed")
+        self.assertAlmostEqual(r["price_pe_usd"], 26.4 * 10 / 19.86)
+
+    def test_no_gap_means_no_extra_shares(self):
+        config = self.config()
+        config["companies"]["a"]["opening_cash_usd"] = 1000
+        r = row(config)
+        self.assertEqual(r["stock_payment_usd"], 0)
+        self.assertEqual(r["shares"], 10)
+
+    def test_partial_supplier_acceptance_leaves_residual_need(self):
+        r = row(self.config(acceptance_ratio=.5))
+        self.assertEqual(r["stock_payment_usd"], 60)
+        self.assertAlmostEqual(r["funding_gap_usd"], 38.6)
+        self.assertEqual(r["valuation_status"], "conditional_unfunded")
+
+    def test_issuance_limit_bounds_resource_purchase(self):
+        r = row(self.config(max_new_shares=2))
+        self.assertEqual(r["stock_payment_usd"], 20)
+        self.assertEqual(r["resource_shares_issued"], 2)
+        self.assertAlmostEqual(r["funding_gap_usd"], 78.6)
+
+    def test_discount_means_more_dilution_for_same_resources(self):
+        normal, discounted = row(self.config()), row(self.config(discount_rate=.5))
+        self.assertEqual(normal["stock_payment_usd"], discounted["stock_payment_usd"])
+        self.assertAlmostEqual(discounted["resource_shares_issued"], normal["resource_shares_issued"] * 2)
+        self.assertLess(discounted["price_pe_usd"], normal["price_pe_usd"])
+
+    def test_opex_stock_payment_keeps_expenses_and_uses_non_cash_addback(self):
+        config = self.config(capex_eligible_ratio=0, opex_eligible_ratio=1)
+        r = row(config)
+        self.assertAlmostEqual(r["stock_paid_opex_usd"], 65)
+        self.assertAlmostEqual(r["funding_gap_usd"], 33.6)
+        self.assertEqual(r["stock_paid_capex_usd"], 0)
+        self.assertAlmostEqual(r["net_income_usd"], 26.4)
+        self.assertAlmostEqual(r["cash_fcf_usd"], r["economic_fcf_usd"] + r["sbc_expense_usd"] + r["stock_payment_usd"])
+
+    def test_no_eligible_resources_cannot_turn_shares_into_fake_cash(self):
+        r = model.settle_resources_with_stock({"enabled": True, "opex_eligible_ratio": 1,
+                                               "reference_price_usd": 10}, 2027, 2027, -50, 0, 0)
+        self.assertEqual(r["stock_payment_usd"], 0)
+
+    def test_existing_cash_raise_is_not_raised_again_as_stock_payment(self):
+        config = self.config()
+        config["companies"]["a"].update(equity_raised_usd=100, equity_issue_price_usd=5)
+        r = row(config)
+        self.assertEqual(r["cash_equity_raised_usd"], 100)
+        self.assertEqual(r["cash_equity_shares_issued"], 20)
+        self.assertEqual(r["stock_payment_usd"], 0)
+
+    def test_stock_payment_keeps_asset_cost_and_depreciation(self):
+        config = self.config()
+        config["companies"]["a"]["segments"]["product"]["da_usd"] = 10
+        r = row(config)
+        config["companies"]["a"]["stock_payment"]["enabled"] = False
+        before = row(config)
+        for key in ["capex_usd", "da_usd", "cogs_usd", "net_income_usd", "economic_fcf_usd"]:
+            self.assertEqual(r[key], before[key], key)
+
+    def test_invalid_agreed_price_rejected(self):
+        for extra in [{"reference_price_usd": 0}, {"discount_rate": 1}, {"acceptance_ratio": 2}]:
+            with self.assertRaises(model.ModelError):
+                row(self.config(**extra))
+
+    def test_current_analysis_covers_gaps_and_compounds_real_share_issuance(self):
+        c = json.loads((ROOT / "configs" / "current.json").read_text())
+        result = model.forecast(c, "base")
+        for rows in result["companies"].values():
+            for r in rows:
+                self.assertAlmostEqual(r["funding_gap_usd"], 0)
+                self.assertEqual(r["cash_equity_raised_usd"], 0)
+                self.assertEqual(r["capex_usd"], r["cash_capex_usd"] + r["stock_paid_capex_usd"])
+        self.assertGreater(result["companies"]["tesla"][0]["resource_shares_issued"], 0)
+        self.assertGreater(result["companies"]["spacex"][1]["resource_shares_issued"], 0)
+
+
 class OrbitalRamp(unittest.TestCase):
     def segment(self, **overrides):
         segment = {"kind": "orbital_compute", "opening_it_mw": 0,

@@ -4,11 +4,12 @@
     "as_of": "2026-11-19",
     "currency": "USD",
     "input_status": "illustrative",
-    "description": "目前同一份累積分析：保留所有既有業務，修正2027 Optimus生產1,000萬台、內用優先、餘量出租，以及太空算力2027年底大量量產時程。使用者未指定的量、價格、成本及後續年度均為示例假設。",
+    "description": "目前同一份累積分析：保留所有既有業務，修正2027 Optimus生產1,000萬台、內用優先、餘量出租，以及太空算力2027年底大量量產時程。使用者未指定的量、價格、成本及後續年度均為示例假設。 累積加入理論001：資金缺口以新股換取資源，依協議價與接受度重算現金支出及每股稀釋。",
     "observed_sources_file": "reference_facts.json",
     "user_assumptions": {
       "optimus_production_2027": 10000000,
-      "orbital_mass_production": "2027年底"
+      "orbital_mass_production": "2027年底",
+      "stock_resource_exchange": "有資金缺口時，用新發股票支付資源並計入稀釋"
     },
     "additional_assumptions": {
       "orbital_manufactured_2027_mw": 1000,
@@ -19,7 +20,10 @@
       "external_share": 0.8,
       "external_utilization": 0.75,
       "price_usd_per_billable_mw_hour": 3500,
-      "post_2028_orbital_new_it_mw_per_year": 3000
+      "post_2028_orbital_new_it_mw_per_year": 3000,
+      "stock_payment_tesla_reference_usd": 250,
+      "stock_payment_spacex_reference_usd": 100,
+      "stock_payment_acceptance_ratio": 1
     },
     "analysis_id": "tesla_spacex_current"
   },
@@ -341,6 +345,16 @@
           "volume_unit": "average robots / robot-months",
           "notes": "2027全年均勻生產，年平均可用500萬台。平均先內用100萬台，餘400萬台供出租，50%出租率即年平均付費200萬台。全部自持成本進capex，無內部銷售營收。內用節省上限為合格製造COGS的30%，不是可無限取代人力。 2028年後未另假設新生產；既有資產仍維運，未設定退役，須日後校準。"
         }
+      },
+      "stock_payment": {
+        "enabled": true,
+        "capex_eligible_ratio": 1,
+        "opex_eligible_ratio": 1,
+        "acceptance_ratio": 1,
+        "reference_price_usd": 250,
+        "discount_rate": 0,
+        "cash_buffer_usd": 0,
+        "notes": "理論001的情境假設：供應商接受股份直接支付資源，資本支出優先，再抵付合格現金營運支出。參考協議價為示例，未連結同年稀釋後估值，並非已簽約或無限融資的實證。"
       }
     },
     "spacex": {
@@ -737,6 +751,16 @@
           "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
           "volume_unit": "annual revenue bundle"
         }
+      },
+      "stock_payment": {
+        "enabled": true,
+        "capex_eligible_ratio": 1,
+        "opex_eligible_ratio": 1,
+        "acceptance_ratio": 1,
+        "reference_price_usd": 100,
+        "discount_rate": 0,
+        "cash_buffer_usd": 0,
+        "notes": "理論001的情境假設：供應商接受股份直接支付資源，資本支出優先，再抵付合格現金營運支出。參考協議價為示例，未連結同年稀釋後估值，並非已簽約或無限融資的實證。"
       }
     }
   },

@@ -282,7 +282,48 @@ COMPANY_FIELDS = {
     "sbc_dilution_rate", "sbc_expense_usd", "stock_split", "dividends_usd", "buybacks_usd", "buyback_price_usd",
     "robotics_savings_usd", "robotics_max_cogs_share", "robotics_capex_usd", "robotics_da_usd",
     "passenger_production_capacity", "robotaxi_segment_id", "passenger_segment_id",
+    "stock_payment",
 }
+
+
+def settle_resources_with_stock(spec, year, base_year, cash_before, capex, cash_opex):
+    """Replace eligible cash resource payments with directly issued shares.
+
+    No cash financing proceeds or revenue are created. Contract prices are inputs,
+    deliberately independent of the same-year post-dilution valuation.
+    """
+    if not isinstance(spec, dict):
+        raise ModelError("stock_payment must be an object")
+    allowed = {"enabled", "capex_eligible_ratio", "opex_eligible_ratio", "acceptance_ratio",
+               "reference_price_usd", "discount_rate", "max_new_shares", "cash_buffer_usd", "notes"}
+    if set(spec) - allowed:
+        raise ModelError("unknown stock_payment fields")
+    enabled = spec.get("enabled", False)
+    if not isinstance(enabled, bool):
+        raise ModelError("stock_payment.enabled must be boolean")
+    def p(key, default=0, maximum=None):
+        return parameter(spec.get(key, default), year, base_year, "stock_payment." + key, 0, maximum)
+    result = {"stock_payment_usd": 0.0, "stock_paid_capex_usd": 0.0,
+              "stock_paid_opex_usd": 0.0, "resource_shares_issued": 0.0,
+              "stock_payment_price_usd": None}
+    if not enabled:
+        return result
+    acceptance = p("acceptance_ratio", 1, 1)
+    eligible_capex = capex * p("capex_eligible_ratio", 1, 1) * acceptance
+    eligible_opex = cash_opex * p("opex_eligible_ratio", 0, 1) * acceptance
+    needed = max(p("cash_buffer_usd") - cash_before, 0)
+    amount = min(needed, eligible_capex + eligible_opex)
+    price = p("reference_price_usd") * (1 - p("discount_rate", 0, 1))
+    if amount and price <= 0:
+        raise ModelError("stock resource payment requires a positive agreed share price after discount")
+    if "max_new_shares" in spec:
+        amount = min(amount, p("max_new_shares") * price)
+    if not amount:
+        return result
+    capex_part = min(amount, eligible_capex)
+    return {"stock_payment_usd": amount, "stock_paid_capex_usd": capex_part,
+            "stock_paid_opex_usd": amount - capex_part,
+            "resource_shares_issued": amount / price, "stock_payment_price_usd": price}
 
 
 def company_forecast(company, years):
@@ -298,6 +339,7 @@ def company_forecast(company, years):
     nwc = number(company.get("opening_nwc_usd", 0), "opening_nwc_usd", 0)
     states, summaries, details = {}, [], []
     funding_failed = False
+    stock_payment_assumed = False
     for year in years:
         def p(key, default=0, minimum=0, maximum=None):
             return parameter(company.get(key, default), year, base, key, minimum, maximum)
@@ -363,11 +405,19 @@ def company_forecast(company, years):
             raise ModelError("positive buybacks_usd requires positive buyback_price_usd")
         issued = raised / issue_price if raised else 0
         retired = buybacks / buyback_price if buybacks else 0
-        diluted = opening_shares * (1 + p("sbc_dilution_rate", 0, 0, 1)) + issued - retired
+        cash_before_stock = cash + cash_fcf + new_debt - repaid + raised - buybacks - dividends
+        # Only resource expenditures are eligible; taxes, interest, dividends,
+        # debt repayments and noncash DA/SBC are not a new resource-payment pool.
+        cash_operating_cost = max(cogs + sum(row["opex_usd"] for row in rows.values()) + corporate_opex - da - sbc, 0)
+        stock = settle_resources_with_stock(company.get("stock_payment", {}), year, base,
+                                            cash_before_stock, capex, cash_operating_cost)
+        stock_payment_assumed = stock_payment_assumed or stock["stock_payment_usd"] > 0
+        cash_fcf += stock["stock_payment_usd"]
+        diluted = opening_shares * (1 + p("sbc_dilution_rate", 0, 0, 1)) + issued + stock["resource_shares_issued"] - retired
         if diluted <= 0:
             raise ModelError("buybacks cannot eliminate all outstanding shares")
         weighted = (opening_shares + diluted) / 2
-        closing_cash = cash + cash_fcf + new_debt - repaid + raised - buybacks - dividends
+        closing_cash = cash_before_stock + stock["stock_payment_usd"]
         # A negative balance is an unfunded deficit, never silently an overdraft/financing round.
         funding_failed = funding_failed or closing_cash < 0
         ev = sum(row["revenue_usd"] * row["ev_sales_multiple"] for row in rows.values()) - corporate_opex * p("corporate_ev_cost_multiple")
@@ -382,8 +432,14 @@ def company_forecast(company, years):
             "interest_usd": interest, "tax_usd": tax, "net_income_usd": net,
             "da_usd": da, "capex_usd": capex, "delta_nwc_usd": delta_nwc,
             "economic_fcf_usd": economic_fcf, "cash_fcf_usd": cash_fcf,
+            "cash_capex_usd": capex - stock["stock_paid_capex_usd"],
+            "cash_before_stock_payment_usd": cash_before_stock,
+            "funding_gap_before_stock_usd": max(0.0, -cash_before_stock),
+            "cash_equity_raised_usd": raised, "cash_equity_shares_issued": issued,
+            "resource_dilution_fraction": stock["resource_shares_issued"] / diluted,
+            "stock_payment_assumed": stock_payment_assumed, **stock,
             "sbc_expense_usd": sbc, "cash_usd": closing_cash, "debt_usd": closing_debt,
-            "funding_gap_usd": max(-closing_cash, 0), "funding_failed": funding_failed,
+            "funding_gap_usd": max(0.0, -closing_cash), "funding_failed": funding_failed,
             "shares": diluted, "weighted_average_shares": weighted,
             "eps_usd": net / weighted, "year_end_share_earnings_usd": net / diluted,
             "pe_multiple": pe, "sotp_enterprise_value_usd": ev,
@@ -392,7 +448,7 @@ def company_forecast(company, years):
             # These prices use the specified debt and shares BEFORE unspecified financing.
             "price_pe_usd": net * pe / diluted if net > 0 else None,
             "price_sotp_usd": equity / diluted if equity > 0 else None,
-            "valuation_status": "conditional_unfunded" if funding_failed else "scenario",
+            "valuation_status": "conditional_unfunded" if funding_failed else ("stock_payment_assumed" if stock_payment_assumed else "scenario"),
             "price_pe_unavailable_reason": "non_positive_net_income" if net <= 0 else None,
             "price_sotp_unavailable_reason": "non_positive_equity_value" if equity <= 0 else None,
             "robotics_savings_usd": savings,
@@ -448,6 +504,7 @@ def merger_forecast(config, summaries, years):
         ev = a["sotp_enterprise_value_usd"] + b["sotp_enterprise_value_usd"] - p("intercompany_ev_elimination_usd") + synergy * p("synergy_ev_multiple")
         equity = ev + a["cash_usd"] + b["cash_usd"] - a["debt_usd"] - b["debt_usd"] - cost
         funded = not (a["funding_failed"] or b["funding_failed"]) and a["cash_usd"] + b["cash_usd"] >= cost
+        stock_assumed = a.get("stock_payment_assumed", False) or b.get("stock_payment_assumed", False)
         combined.append({"year": year, "company": f"{acquirer}+{target} (pro forma)",
                          "revenue_usd": a["revenue_usd"] + b["revenue_usd"] - eliminated,
                          "intercompany_revenue_eliminated_usd": eliminated,
@@ -457,7 +514,8 @@ def merger_forecast(config, summaries, years):
                          "transaction_cost_usd": cost, "sotp_equity_value_usd": equity,
                          "price_pe_usd": net * p("pe_multiple") / shares if net > 0 else None,
                          "price_sotp_usd": equity / shares if equity > 0 else None,
-                         "valuation_status": "scenario" if funded else "conditional_unfunded",
+                         "valuation_status": ("stock_payment_assumed" if stock_assumed else "scenario") if funded else "conditional_unfunded",
+                         "stock_payment_assumed": stock_assumed,
                          "price_pe_unavailable_reason": "non_positive_net_income" if net <= 0 else None,
                          "price_sotp_unavailable_reason": "non_positive_equity_value" if equity <= 0 else None,
                          "funding_failed": not funded})
@@ -500,6 +558,8 @@ def forecast(config, scenario="base"):
         warnings.append("示例假設，未校準公司財報；輸出為情境計算，不是公司指引。")
     if any(row["funding_failed"] for rows in summaries.values() for row in rows):
         warnings.append("有未融資缺口：仍顯示融資前條件估值；補入借款、利息或增發稀釋後須重新計算。")
+    if any(row["stock_payment_usd"] > 0 for rows in summaries.values() for row in rows):
+        warnings.append("已依股票交換資源假設減少現金支出並增發股份；估值已計稀釋，仍以交易對手接受指定條件為前提。")
     if any(row["robotics_savings_requested_usd"] > row["robotics_savings_usd"] + 1e-6 for rows in summaries.values() for row in rows):
         warnings.append("機器人節省超過可改善成本上限，已按 robotics_max_cogs_share 截斷。")
     if any(row["drivers"].get("capacity_limited") for row in details):
