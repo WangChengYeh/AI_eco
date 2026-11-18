@@ -122,6 +122,14 @@ KIND_FIELDS = {
                 "electricity_usd_per_kwh", "pue", "idle_power_fraction",
                 "cash_overhead_usd_per_mw_year", "hardware_da_usd_per_mw_year"},
 }
+KIND_FIELDS["orbital_compute"] = (KIND_FIELDS["compute"] - {
+    "average_it_mw", "hardware_da_usd_per_mw_year"
+}) | {
+    "opening_it_mw", "opening_inventory_mw", "opening_net_book_value_usd",
+    "manufactured_it_mw", "deployment_limit_mw", "commissioning_yield",
+    "commissioning_start_month", "hardware_cost_usd_per_mw",
+    "deployment_cost_usd_per_mw", "asset_life_years",
+}
 
 
 def segment_forecast(segment, year, base_year, state):
@@ -207,8 +215,37 @@ def segment_forecast(segment, year, base_year, state):
                       "unit_manufacturing_cost_usd": cost, "monthly_rent_usd": p("monthly_rent_usd"),
                       "closing_net_book_value_usd": state["robot_book"],
                       "retirement_writeoff_usd": retired_book}
-        elif kind == "compute":
-            mw = p("average_it_mw")
+        elif kind in ("compute", "orbital_compute"):
+            orbital_drivers = {}
+            if kind == "orbital_compute":
+                opening = state.setdefault("commissioned_mw", p("opening_it_mw"))
+                inventory = state.setdefault("inventory_mw", p("opening_inventory_mw"))
+                produced = p("manufactured_it_mw")
+                deployment = min(inventory + produced, p("deployment_limit_mw", inventory + produced))
+                commissioned = deployment * p("commissioning_yield", 1, 0, 1)
+                month = p("commissioning_start_month", 10, 1, 12)
+                if not month.is_integer():
+                    raise ModelError("commissioning_start_month must be an integer from 1 to 12")
+                closing = opening + commissioned
+                # New capacity ramps linearly from zero across the remaining months.
+                # October start -> 3/12 of a year x 1/2 average of new end-year MW.
+                mw = opening + commissioned * (13 - month) / 24
+                hardware, launch = p("hardware_cost_usd_per_mw"), p("deployment_cost_usd_per_mw")
+                extra_capex = produced * hardware + deployment * launch
+                book = state.setdefault("orbital_book", p("opening_net_book_value_usd", opening * (hardware + launch) + inventory * hardware))
+                before_da = book + extra_capex
+                writeoff = min(before_da, (deployment - commissioned) * (hardware + launch))
+                depreciation = min(max(before_da - writeoff, 0), mw * (hardware + launch) / p("asset_life_years", 4, 1e-9))
+                extra_da = depreciation + writeoff
+                state.update(commissioned_mw=closing, inventory_mw=inventory + produced - deployment,
+                             orbital_book=max(before_da - extra_da, 0))
+                orbital_drivers = {"manufactured_it_mw": produced, "opening_it_mw": opening,
+                                   "deployment_attempted_mw": deployment, "commissioned_new_it_mw": commissioned,
+                                   "year_end_it_mw": closing, "closing_inventory_mw": state["inventory_mw"],
+                                   "commissioning_start_month": month, "deployment_writeoff_usd": writeoff,
+                                   "closing_net_book_value_usd": state["orbital_book"]}
+            else:
+                mw = p("average_it_mw")
             external, internal = p("external_share", 1, 0, 1), p("internal_share", 0, 0, 1)
             if external + internal > 1 + 1e-12:
                 raise ModelError("compute external_share + internal_share must be <= 1")
@@ -218,10 +255,11 @@ def segment_forecast(segment, year, base_year, state):
             busy = available * (external * ext_util + internal * own_util)
             energy_kwh = mw * 1000 * 8760 * p("pue", 1, 1) * (busy + (1 - busy) * p("idle_power_fraction", 0.15, 0, 1))
             revenue = billable_mwh * p("price_usd_per_billable_mw_hour")
-            extra_da = mw * p("hardware_da_usd_per_mw_year")
+            if kind == "compute":
+                extra_da = mw * p("hardware_da_usd_per_mw_year")
             cogs = energy_kwh * p("electricity_usd_per_kwh") + mw * p("cash_overhead_usd_per_mw_year") + extra_da
             inputs = {"average_it_mw": mw, "external_share": external, "internal_share": internal,
-                      "billable_mwh": billable_mwh, "electricity_kwh": energy_kwh}
+                      "billable_mwh": billable_mwh, "electricity_kwh": energy_kwh, **orbital_drivers}
     # Pre-launch R&D, capex and depreciation are intentionally NOT suppressed.
     opex, capex = p("opex_usd"), p("capex_usd") + revenue * p("capex_revenue_ratio") + extra_capex
     da = p("da_usd") + revenue * p("da_revenue_ratio") + extra_da
@@ -499,7 +537,7 @@ def summary_markdown(results):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=Path(__file__).parent / "configs" / "example.json")
+    parser.add_argument("--config", type=Path, default=Path(__file__).parent / "configs" / "current.json")
     parser.add_argument("--scenario", default="all", help="all or a named JSON scenario")
     parser.add_argument("--set", action="append", default=[], metavar="PATH=JSON", help="override after scenario, repeatable")
     parser.add_argument("--out", type=Path, default=Path("forecast_output"))

@@ -1,0 +1,784 @@
+{
+  "schema_version": 1,
+  "metadata": {
+    "as_of": "2026-11-19",
+    "currency": "USD",
+    "input_status": "illustrative",
+    "description": "目前同一份累積分析：保留所有既有業務，修正2027 Optimus生產1,000萬台、內用優先、餘量出租，以及太空算力2027年底大量量產時程。使用者未指定的量、價格、成本及後續年度均為示例假設。",
+    "observed_sources_file": "reference_facts.json",
+    "user_assumptions": {
+      "optimus_production_2027": 10000000,
+      "orbital_mass_production": "2027年底"
+    },
+    "additional_assumptions": {
+      "orbital_manufactured_2027_mw": 1000,
+      "orbital_manufactured_2028_mw": 3000,
+      "commissioning_start_month_2027": 10,
+      "hardware_usd_per_mw": 20000000,
+      "launch_and_deployment_usd_per_mw": 5000000,
+      "external_share": 0.8,
+      "external_utilization": 0.75,
+      "price_usd_per_billable_mw_hour": 3500,
+      "post_2028_orbital_new_it_mw_per_year": 3000
+    },
+    "analysis_id": "tesla_spacex_current"
+  },
+  "years": [
+    2027,
+    2028,
+    2029,
+    2030,
+    2031,
+    2032,
+    2033,
+    2034,
+    2035
+  ],
+  "companies": {
+    "tesla": {
+      "name": "Tesla",
+      "opening_cash_usd": 40000000000.0,
+      "opening_debt_usd": 8000000000.0,
+      "opening_shares": 3500000000.0,
+      "corporate_opex_usd": {
+        "value": 3000000000.0,
+        "growth": 0.07,
+        "annual": {}
+      },
+      "sbc_expense_usd": {
+        "value": 2000000000.0,
+        "growth": 0.08,
+        "annual": {}
+      },
+      "interest_rate": 0.05,
+      "tax_rate": 0.21,
+      "pe_multiple": 45,
+      "corporate_ev_cost_multiple": 5,
+      "nwc_revenue_ratio": 0.06,
+      "opening_nwc_usd": 6000000000.0,
+      "debt_issued_usd": 0,
+      "debt_repaid_usd": 0,
+      "equity_raised_usd": 0,
+      "equity_issue_price_usd": 250,
+      "sbc_dilution_rate": 0.01,
+      "stock_split": 1,
+      "dividends_usd": 0,
+      "buybacks_usd": 0,
+      "buyback_price_usd": 250,
+      "robotics_savings_usd": 0,
+      "robotics_max_cogs_share": 0.3,
+      "robotics_capex_usd": 0,
+      "robotics_da_usd": 0,
+      "passenger_production_capacity": {
+        "value": 3000000.0,
+        "growth": 0.14,
+        "annual": {}
+      },
+      "passenger_segment_id": "passenger_vehicles",
+      "robotaxi_segment_id": "robotaxi",
+      "notes": "包括股數、現金、債務在內均為示例，不是公司基準。上游鋰／電池與自用機器人納入成本及 capex，沒有虛構內部營收。",
+      "segments": {
+        "passenger_vehicles": {
+          "name": "乘用車對外銷售（不含另列 FSD）",
+          "kind": "unit",
+          "units": {
+            "value": 2000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 40000,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 30000,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 4000000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.05,
+          "da_revenue_ratio": 0.02,
+          "ev_sales_multiple": 2,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "robotics_eligible": true,
+          "cost_includes_robotics": false,
+          "volume_unit": "vehicles"
+        },
+        "semi": {
+          "name": "Semi 對外銷售",
+          "kind": "unit",
+          "units": {
+            "value": 25000,
+            "growth": 0.25,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 180000,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 140000,
+            "growth": -0.04,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 500000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.05,
+          "da_revenue_ratio": 0.02,
+          "ev_sales_multiple": 2,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "robotics_eligible": true,
+          "cost_includes_robotics": false,
+          "volume_unit": "vehicles"
+        },
+        "energy": {
+          "name": "Megapack／Powerwall 等儲能",
+          "kind": "unit",
+          "units": {
+            "value": 70,
+            "growth": 0.18,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 220000000.0,
+            "growth": -0.04,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 155000000.0,
+            "growth": -0.05,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 1000000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.08,
+          "da_revenue_ratio": 0.025,
+          "ev_sales_multiple": 3,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "volume_unit": "GWh"
+        },
+        "fsd": {
+          "name": "FSD 外部平均訂閱（排除自有 Robotaxi）",
+          "kind": "subscription",
+          "average_subscribers": {
+            "value": 2000000.0,
+            "growth": 0.2,
+            "annual": {}
+          },
+          "monthly_price_usd": {
+            "value": 100,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "monthly_cost_usd": {
+            "value": 20,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 288000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.02,
+          "da_revenue_ratio": 0.01,
+          "ev_sales_multiple": 7,
+          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "volume_unit": "average paid accounts"
+        },
+        "robotaxi": {
+          "name": "自有無人車隊載客服務",
+          "kind": "robotaxi",
+          "opening_fleet": 5000,
+          "additions": {
+            "value": 20000,
+            "growth": 0.35,
+            "annual": {}
+          },
+          "retirements": {
+            "value": 0,
+            "growth": 0,
+            "annual": {
+              "2032": 5000,
+              "2033": 10000,
+              "2034": 15000,
+              "2035": 20000
+            }
+          },
+          "fleet_capacity": {
+            "value": 100000,
+            "growth": 0.4,
+            "annual": {}
+          },
+          "vehicle_cost_usd": {
+            "value": 25000,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "depreciation_usd_per_vehicle_year": {
+            "value": 4000,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "km_per_vehicle_day": 350,
+          "operating_days": 340,
+          "paid_km_share": 0.65,
+          "fare_usd_per_paid_km": {
+            "value": 0.9,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "cash_cost_usd_per_total_km": {
+            "value": 0.14,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "fixed_cash_usd_per_vehicle_year": {
+            "value": 4000,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 500000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "capex_usd": {
+            "value": 100000000.0,
+            "growth": 0.15,
+            "annual": {}
+          },
+          "ev_sales_multiple": 5,
+          "notes": "新增車半年度貢獻，退休車同樣用年初／年底平均。車隊車製造成本進 capex，不進對外汽車營收。折舊另列、不從 capex 自動推導。",
+          "volume_unit": "paid vehicle-km"
+        },
+        "optimus_external": {
+          "name": "Optimus 對外銷售",
+          "kind": "unit",
+          "units": 0,
+          "price_usd": {
+            "value": 30000,
+            "growth": -0.05,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 25000,
+            "growth": -0.08,
+            "annual": {}
+          },
+          "opex_usd": 0,
+          "capex_revenue_ratio": 0.08,
+          "da_revenue_ratio": 0.03,
+          "ev_sales_multiple": 5,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "volume_unit": "external robots"
+        },
+        "services_other": {
+          "name": "充電、售後、租賃與其他淨額校準項",
+          "kind": "unit",
+          "units": {
+            "value": 1,
+            "growth": 0,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 8000000000.0,
+            "growth": 0.1,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 6000000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 300000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.03,
+          "da_revenue_ratio": 0.02,
+          "ev_sales_multiple": 1,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。 必須排除上述各業務；不包含自有 Robotaxi 載客服務。",
+          "volume_unit": "annual revenue bundle"
+        },
+        "optimus_owned": {
+          "name": "Optimus 自持：優先內用、剩餘出租",
+          "kind": "robot_fleet",
+          "opening_fleet": 0,
+          "production_units": {
+            "value": 0,
+            "annual": {
+              "2027": 10000000
+            }
+          },
+          "retirements": 0,
+          "fleet_capacity": 10000000,
+          "unit_manufacturing_cost_usd": 20000,
+          "opening_net_book_value_usd": 0,
+          "depreciation_usd_per_robot_year": 4000,
+          "internal_demand_robots": 1000000,
+          "internal_avoided_cost_usd_per_robot_year": 30000,
+          "rental_utilization": 0.5,
+          "rental_demand_robots": 10000000,
+          "monthly_rent_usd": 2000,
+          "cash_cost_usd_per_robot_year": 2000,
+          "opex_usd": 1000000000,
+          "capex_usd": 100000000,
+          "ev_sales_multiple": 5,
+          "volume_unit": "average robots / robot-months",
+          "notes": "2027全年均勻生產，年平均可用500萬台。平均先內用100萬台，餘400萬台供出租，50%出租率即年平均付費200萬台。全部自持成本進capex，無內部銷售營收。內用節省上限為合格製造COGS的30%，不是可無限取代人力。 2028年後未另假設新生產；既有資產仍維運，未設定退役，須日後校準。"
+        }
+      }
+    },
+    "spacex": {
+      "name": "SpaceX",
+      "opening_cash_usd": 25000000000.0,
+      "opening_debt_usd": 20000000000.0,
+      "opening_shares": 8000000000.0,
+      "corporate_opex_usd": {
+        "value": 2000000000.0,
+        "growth": 0.08,
+        "annual": {}
+      },
+      "sbc_expense_usd": {
+        "value": 1000000000.0,
+        "growth": 0.08,
+        "annual": {}
+      },
+      "interest_rate": 0.06,
+      "tax_rate": 0.21,
+      "pe_multiple": 40,
+      "corporate_ev_cost_multiple": 5,
+      "nwc_revenue_ratio": 0.03,
+      "opening_nwc_usd": 1000000000.0,
+      "debt_issued_usd": 0,
+      "debt_repaid_usd": 0,
+      "equity_raised_usd": 0,
+      "equity_issue_price_usd": 100,
+      "sbc_dilution_rate": 0.015,
+      "stock_split": 1,
+      "dividends_usd": 0,
+      "buybacks_usd": 0,
+      "buyback_price_usd": 100,
+      "robotics_savings_usd": 0,
+      "robotics_max_cogs_share": 0,
+      "robotics_capex_usd": 0,
+      "robotics_da_usd": 0,
+      "notes": "全部數值為示例。發射只計外部客戶，Starlink 自用發射與衛星建設放 Connectivity capex。Grok／X／Cursor 為模型細分，不代表財報單獨揭露。",
+      "segments": {
+        "launch_external": {
+          "name": "Falcon／Starship 外部發射及太空合約",
+          "kind": "unit",
+          "units": {
+            "value": 80,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 100000000.0,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 55000000.0,
+            "growth": -0.04,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 1500000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.15,
+          "da_revenue_ratio": 0.05,
+          "ev_sales_multiple": 4,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "volume_unit": "external mission equivalents"
+        },
+        "starlink_consumer": {
+          "name": "Starlink 消費者服務",
+          "kind": "subscription",
+          "average_subscribers": {
+            "value": 15000000.0,
+            "growth": 0.16,
+            "annual": {}
+          },
+          "monthly_price_usd": {
+            "value": 65,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "monthly_cost_usd": {
+            "value": 20,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 1404000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.35,
+          "da_revenue_ratio": 0.15,
+          "ev_sales_multiple": 5,
+          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "volume_unit": "average paid accounts"
+        },
+        "starlink_enterprise": {
+          "name": "Starlink 企業／政府／航空航海合約",
+          "kind": "unit",
+          "units": {
+            "value": 1,
+            "growth": 0,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 8000000000.0,
+            "growth": 0.16,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 3500000000.0,
+            "growth": 0.13,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 1000000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.3,
+          "da_revenue_ratio": 0.1,
+          "ev_sales_multiple": 5,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。 排除另列消費者、D2C 與終端硬體收入。",
+          "volume_unit": "annual contract revenue bundle"
+        },
+        "direct_to_cell": {
+          "name": "Direct-to-Cell 合作收入，等效付費連線",
+          "kind": "subscription",
+          "average_subscribers": {
+            "value": 10000000.0,
+            "growth": 0.35,
+            "annual": {}
+          },
+          "monthly_price_usd": {
+            "value": 2,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "monthly_cost_usd": {
+            "value": 1,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 28800000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.02,
+          "da_revenue_ratio": 0.01,
+          "ev_sales_multiple": 5,
+          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "volume_unit": "average paid connections"
+        },
+        "starlink_hardware": {
+          "name": "Starlink 終端硬體",
+          "kind": "unit",
+          "units": {
+            "value": 4000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 300,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 310,
+            "growth": -0.04,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 100000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.02,
+          "da_revenue_ratio": 0.01,
+          "ev_sales_multiple": 1,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "volume_unit": "terminals"
+        },
+        "ground_compute": {
+          "name": "地面算力租賃及自用基建",
+          "kind": "compute",
+          "start_year": 2027,
+          "average_it_mw": {
+            "value": 1800,
+            "growth": 0.18,
+            "annual": {}
+          },
+          "external_share": 0.65,
+          "internal_share": 0.35,
+          "availability": 0.95,
+          "external_utilization": 0.75,
+          "internal_utilization": 0.7,
+          "price_usd_per_billable_mw_hour": {
+            "value": 3500,
+            "growth": -0.06,
+            "annual": {}
+          },
+          "electricity_usd_per_kwh": 0.08,
+          "pue": 1.15,
+          "idle_power_fraction": 0.15,
+          "cash_overhead_usd_per_mw_year": {
+            "value": 2000000.0,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "hardware_da_usd_per_mw_year": {
+            "value": 6000000.0,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 200000000.0,
+            "growth": 0.1,
+            "annual": {}
+          },
+          "capex_usd": {
+            "value": 12000000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "ev_sales_multiple": 4,
+          "notes": "MW 為全年平均 IT 容量。自用份額沒有算力銷售營收。capex 含擴建／汰換，須自行校準。",
+          "volume_unit": "billable MW-hour"
+        },
+        "orbital_compute": {
+          "name": "太空算力：2027年底量產情境",
+          "kind": "orbital_compute",
+          "start_year": 2027,
+          "opening_it_mw": 0,
+          "opening_inventory_mw": 0,
+          "opening_net_book_value_usd": 0,
+          "manufactured_it_mw": {
+            "value": 3000,
+            "annual": {
+              "2027": 1000
+            }
+          },
+          "deployment_limit_mw": {
+            "value": 3000,
+            "annual": {
+              "2027": 1000
+            }
+          },
+          "commissioning_yield": 1,
+          "commissioning_start_month": {
+            "value": 1,
+            "annual": {
+              "2027": 10
+            }
+          },
+          "hardware_cost_usd_per_mw": 20000000,
+          "deployment_cost_usd_per_mw": 5000000,
+          "asset_life_years": 4,
+          "external_share": 0.8,
+          "internal_share": 0.2,
+          "availability": 0.95,
+          "external_utilization": 0.75,
+          "internal_utilization": 0.7,
+          "price_usd_per_billable_mw_hour": {
+            "value": 3500,
+            "growth": -0.06
+          },
+          "electricity_usd_per_kwh": 0,
+          "pue": 1,
+          "idle_power_fraction": 0.15,
+          "cash_overhead_usd_per_mw_year": 2000000,
+          "opex_usd": {
+            "value": 500000000,
+            "growth": 0.1
+          },
+          "capex_usd": 0,
+          "ev_sales_multiple": 4,
+          "volume_unit": "billable MW-hour",
+          "notes": "量產時程是使用者假設，並非已驗證進度。額外假設2027製造1GW、10月起均勻部署至年底；2028新製造3GW、全年均勻部署。硬體成本包括晶片、衛星、發電、散熱與通訊設備，另列發射部署費；電力現金單價0不代表系統免費。新增產能未以全年年底容量計費。地面算力不自動減少。 2029年以後每年新增3GW及不退役為延伸示例，不是使用者已指定或工程壽命保證。"
+        },
+        "grok_subscriptions": {
+          "name": "Grok 消費者與企業訂閱",
+          "kind": "subscription",
+          "average_subscribers": {
+            "value": 10000000.0,
+            "growth": 0.2,
+            "annual": {}
+          },
+          "monthly_price_usd": {
+            "value": 20,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "monthly_cost_usd": {
+            "value": 3,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 288000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.02,
+          "da_revenue_ratio": 0.01,
+          "ev_sales_multiple": 7,
+          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "volume_unit": "average paid accounts"
+        },
+        "grok_api": {
+          "name": "Grok API，百萬計費 tokens",
+          "kind": "unit",
+          "units": {
+            "value": 200000000.0,
+            "growth": 0.25,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 2,
+            "growth": -0.1,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 0.2,
+            "growth": -0.05,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 500000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.02,
+          "da_revenue_ratio": 0.01,
+          "ev_sales_multiple": 7,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "volume_unit": "million billable tokens"
+        },
+        "cursor": {
+          "name": "Cursor 平均付費席位",
+          "kind": "subscription",
+          "average_subscribers": {
+            "value": 3000000.0,
+            "growth": 0.2,
+            "annual": {}
+          },
+          "monthly_price_usd": {
+            "value": 25,
+            "growth": -0.02,
+            "annual": {}
+          },
+          "monthly_cost_usd": {
+            "value": 10,
+            "growth": -0.03,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 108000000.0,
+            "growth": 0.12,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.02,
+          "da_revenue_ratio": 0.01,
+          "ev_sales_multiple": 7,
+          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "volume_unit": "average paid seats"
+        },
+        "x_and_other": {
+          "name": "X 廣告、其他及校準項",
+          "kind": "unit",
+          "units": {
+            "value": 1,
+            "growth": 0,
+            "annual": {}
+          },
+          "price_usd": {
+            "value": 4000000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "unit_cost_usd": {
+            "value": 2500000000.0,
+            "growth": 0.07,
+            "annual": {}
+          },
+          "opex_usd": {
+            "value": 400000000.0,
+            "growth": 0.08,
+            "annual": {}
+          },
+          "capex_revenue_ratio": 0.03,
+          "da_revenue_ratio": 0.02,
+          "ev_sales_multiple": 2,
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "volume_unit": "annual revenue bundle"
+        }
+      }
+    }
+  },
+  "merger": {
+    "enabled": false,
+    "start_year": 2028,
+    "acquirer": "tesla",
+    "target": "spacex",
+    "target_exchange_ratio": 0.3,
+    "new_shares": 0,
+    "transaction_cost_usd": 2000000000.0,
+    "net_operating_synergy_usd": {
+      "value": 1000000000.0,
+      "growth": 0.1,
+      "annual": {}
+    },
+    "tax_rate": 0.21,
+    "pe_multiple": 45,
+    "synergy_ev_multiple": 10,
+    "intercompany_revenue_usd": 0,
+    "notes": "純假設快照；每1股SpaceX換0.3股Tesla。new_shares不產生募資現金。每年應輸入當年股本單位適用比例。營收抵銷假設買方已將同額費用化；未實現資產利得另行校準。",
+    "intercompany_ev_elimination_usd": 0
+  },
+  "scenarios": {
+    "base": {},
+    "bear": {
+      "companies.tesla.segments.passenger_vehicles.units.growth": 0.03,
+      "companies.tesla.segments.robotaxi.additions.growth": 0.15,
+      "companies.tesla.pe_multiple": 25,
+      "companies.spacex.segments.starlink_consumer.average_subscribers.growth": 0.08,
+      "companies.spacex.segments.ground_compute.external_utilization": 0.5,
+      "companies.spacex.pe_multiple": 25
+    },
+    "bull": {
+      "companies.tesla.segments.passenger_vehicles.units.growth": 0.14,
+      "companies.tesla.passenger_production_capacity.growth": 0.18,
+      "companies.tesla.segments.robotaxi.additions.growth": 0.55,
+      "companies.tesla.segments.robotaxi.fleet_capacity.growth": 0.6,
+      "companies.tesla.pe_multiple": 60,
+      "companies.spacex.segments.starlink_consumer.average_subscribers.growth": 0.22,
+      "companies.spacex.segments.ground_compute.external_utilization": 0.9,
+      "companies.spacex.pe_multiple": 55
+    }
+  }
+}

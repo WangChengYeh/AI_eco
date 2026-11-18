@@ -38,8 +38,8 @@
 ## Python 年度預測 Calculator
 
 - [程式、中文參數說明與使用方式](calculator/README.md)：Tesla 7 項、SpaceX 11 項業務，逐年營收、毛利、營業利益、淨利、現金流與股價情境。
-- [示例假設 JSON](calculator/configs/example.json)：預設 2027–2035 年，含保守／基準／樂觀情境，可自訂產能、用量、價格、降本、capex、股本與估值倍數。
-- 支援單獨公司與假想合併年度快照，區分自用與對外收入、換股及稀釋。所有預設數字是未校準示例，不作公司指引或既成交易。
+- [目前累積假設 JSON](calculator/configs/current.json)：預設 2027–2035 年，含保守／基準／樂觀情境，可自訂產能、用量、價格、降本、capex、股本與估值倍數。
+- 支援單獨公司與假想合併年度快照，區分自用與對外收入、換股及稀釋。目前假設保留 Optimus 2027 年生產 1,000 萬台、內用優先並出租餘量，以及太空算力 2027 年底大量量產；量產規模、價格及成本等其餘數字仍為未校準示例，不作公司指引或既成交易。
 
 ```bash
 python calculator/forecast.py --scenario all --out forecast_output

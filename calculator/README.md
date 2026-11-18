@@ -2,7 +2,7 @@
 
 Python 3.10 以上，僅使用標準函式庫，無需安裝套件。預設計算 2027–2035 年，可在 JSON 修改年度、業務與假設。
 
-**預設是可執行的示例模型，不是已校準的投資預測。所有預設數字，包括股數、現金、負債、倍數與換股比例，都是示例假設。** 公司實際披露另存於 [reference_facts.json](configs/reference_facts.json)，不會自動覆寫模型。使用前先以實際資料校準起點，再調整未來假設。
+預設讀取 [current.json](configs/current.json)，持續修正同一份累積分析。**除了明列的使用者假設，其餘數字（包括股數、現金、負債、倍數與換股比例）仍為未校準示例，不是公司指引。** 公司實際披露另存於 [reference_facts.json](configs/reference_facts.json)，不會自動覆寫模型。初始教學用 [example.json](configs/example.json) 保留供對照，不再是預設。
 
 ## 快速開始
 
@@ -19,7 +19,7 @@ python calculator/forecast.py --scenario base --out forecast_output/base
 python calculator/forecast.py --config my_assumptions.json --scenario base
 ```
 
-複製 [example.json](configs/example.json) 後修改，或用 `--set` 臨時覆寫。路徑拼錯會報錯，避免參數沒有生效。
+複製 [current.json](configs/current.json) 後修改，或用 `--set` 臨時覆寫。路徑拼錯會報錯，避免參數沒有生效。
 
 ```bash
 # Robotaxi 付費公里車資改為 $0.60，Tesla 本益比改為 35 倍
@@ -40,10 +40,11 @@ python calculator/forecast.py --scenario base \
   --set merger.target_exchange_ratio=0.3 \
   --out forecast_output/combined
 
-# 測試太空算力 2030 年有 100 MW 平均 IT 容量
-# 必須同時自行修改發射／設備 capex、折舊、電力與營運成本
+# 修正同一分析的 2027 年太空算力製造量為 500 MW
+# 發射部署容量亦須一起調整
 python calculator/forecast.py --scenario base \
-  --set 'companies.spacex.segments.orbital_compute.average_it_mw.annual={"2030":100}' \
+  --set 'companies.spacex.segments.orbital_compute.manufactured_it_mw.annual={"2027":500}' \
+  --set 'companies.spacex.segments.orbital_compute.deployment_limit_mw.annual={"2027":500}' \
   --out forecast_output/orbital_experiment
 ```
 
@@ -66,7 +67,7 @@ python calculator/forecast.py --scenario base \
 | SpaceX | direct_to_cell | 合作變現的平均等效付費連線，非官方揭露用戶量 |
 | SpaceX | starlink_hardware | 對外終端硬體，台／年 |
 | SpaceX | ground_compute | 地面算力租賃與自用基建的整體成本 |
-| SpaceX | orbital_compute | 太空算力，預設商業容量為 0，研發及建設仍花錢 |
+| SpaceX | orbital_compute | 太空算力，採用使用者的 2027 年底大量量產時程假設 |
 | SpaceX | grok_subscriptions | Grok 外部訂閱 |
 | SpaceX | grok_api | Grok API，數量為「百萬計費 tokens」 |
 | SpaceX | cursor | 平均付費席位 |
@@ -77,6 +78,22 @@ python calculator/forecast.py --scenario base \
 鋰礦、精煉、電池與自用機器人影響成本、capex 和折舊。只要沒有對外銷售，就不另創造合併營收。Starshield 等政府業務應依實際合約歸到外部太空任務或企業／政府通訊，避免兩邊重算。自有 Robotaxi 的生產不計對外賣車收入。暫未預設第三方車主平台業務；若新增，應只計平台費，不能把全額車資全算 Tesla 收入。
 
 ## 參數曲線
+
+### 同一份分析：2027 年底太空算力量產
+
+`current.json` 同時保留 Optimus 的既有修正，並將太空算力由原本未商轉的示例改為 `orbital_compute`。不是獨立的新分析，也不把量產時程視為公司已驗證進度。
+
+- 使用者指定：2027 年底大量量產。
+- 額外規模示例：2027 年製造 1,000 MW，10 月起均勻部署，最多部署 1,000 MW，投運成功率 100%；2028 起每年製造及部署 3,000 MW。這些數量、月份、成功率均可修改，不是使用者已指定的數字。
+- 全年平均可用 MW＝期初已投運 MW＋當年新投運 MW × `(13－部署起始月份) / 24`。
+- 因此示例 2027 年底為 1 GW，但 2027 年平均只有 0.125 GW；2028 的年平均為 2.5 GW，含前一年 1 GW 全年貢獻及當年新增容量的平均貢獻。
+- 已製造但受 `deployment_limit_mw` 限制而未部署的設備留作庫存，不產生服務收入；次年可繼續部署。
+- `commissioning_yield` 只對當年嘗試部署容量生效；失敗資產按可用帳面值記損失，不留下虛構投運容量。
+- 製造投入＝當年製造 MW × `hardware_cost_usd_per_mw`，發射部署投入＝當年嘗試部署 MW × `deployment_cost_usd_per_mw`。兩者列 capex，不計內部發射銷售收入。
+- 示範單位成本為硬體／衛星／發電／散熱／通訊 2,000 萬美元／MW，發射部署 500 萬美元／MW，4 年折舊；實際數值尚待校準。期初、製造與庫存使用簡化資產池，折舊及失敗損失不超過剩餘帳面值；不是完整世代／資產會計帳。
+- 對外服務份額 80%、自用 20%，地面算力不因太空量產而自動減少；不再額外把自用算力算成模型銷售收入。
+
+目前預測期仍為 2027–2035。Optimus 僅在 2027 年生產 1,000 萬台，未另指定後續生產；後續持有、維運及未退役是假設延伸，需隨有效壽命更新。太空設備退役、世代替換及後續製造節奏也應隨新資料修正。
 
 ### 2027 Optimus 1,000 萬台：內用優先、餘量出租
 
@@ -175,7 +192,7 @@ python calculator/forecast.py --config calculator/configs/optimus_10m.json \
 
 `price_usd_per_billable_mw_hour` 是算力服務收入的等效換算，**不是電力售價**。模型沒有用公開 token 牌價反推 GPU 成本，也沒有建立 GPU 世代、模型吞吐與訂閱用量間的物理容量推導，這些需要另外校準。若 Grok 向外部雲端付費，應加入對應業務成本。
 
-太空算力預設容量為 0。啟用時必須另外輸入發射、衛星、散熱、通訊、汰換 capex／折舊及現金支出，不能只把地面電價改成 0 就當太空成本。
+初始 example.json 的太空算力仍為 0；目前分析改用上列製造／部署模型。太空發電沒有外購電費時，也必須計入發電、散熱、通訊及汰換的資本與現金支出，不能只把地面電價改成 0 就當太空成本。
 
 ### 機器人降本
 

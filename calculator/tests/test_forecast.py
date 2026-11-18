@@ -265,6 +265,71 @@ class MergerAndValidation(unittest.TestCase):
             self.assertFalse(out.exists())
 
 
+class OrbitalRamp(unittest.TestCase):
+    def segment(self, **overrides):
+        segment = {"kind": "orbital_compute", "opening_it_mw": 0,
+                   "manufactured_it_mw": 1000, "deployment_limit_mw": 1000,
+                   "commissioning_yield": 1, "commissioning_start_month": 10,
+                   "external_share": 1, "internal_share": 0, "availability": 1,
+                   "external_utilization": 1, "price_usd_per_billable_mw_hour": 1,
+                   "hardware_cost_usd_per_mw": 10, "deployment_cost_usd_per_mw": 2,
+                   "asset_life_years": 4}
+        segment.update(overrides)
+        return segment
+
+    def test_q4_linear_ramp_is_one_eighth_of_end_year_capacity(self):
+        r = model.segment_forecast(self.segment(), 2027, 2027, {})
+        self.assertEqual(r["drivers"]["year_end_it_mw"], 1000)
+        self.assertEqual(r["drivers"]["average_it_mw"], 125)
+        self.assertEqual(r["revenue_usd"], 125 * 8760)
+        self.assertEqual(r["capex_usd"], 12000)
+
+    def test_december_ramp_does_not_bill_a_full_year(self):
+        r = model.segment_forecast(self.segment(commissioning_start_month=12), 2027, 2027, {})
+        self.assertAlmostEqual(r["drivers"]["average_it_mw"], 1000 / 24)
+
+    def test_commissioned_capacity_contributes_next_full_year(self):
+        state = {}
+        model.segment_forecast(self.segment(), 2027, 2027, state)
+        r = model.segment_forecast(self.segment(manufactured_it_mw=0, commissioning_start_month=1), 2028, 2027, state)
+        self.assertEqual(r["drivers"]["average_it_mw"], 1000)
+        self.assertEqual(r["capex_usd"], 0)
+
+    def test_manufactured_backlog_is_not_commissioned_revenue(self):
+        state = {}
+        r = model.segment_forecast(self.segment(deployment_limit_mw=0), 2027, 2027, state)
+        self.assertEqual(r["revenue_usd"], 0)
+        self.assertEqual(r["capex_usd"], 10000)
+        self.assertEqual(r["drivers"]["closing_inventory_mw"], 1000)
+        r = model.segment_forecast(self.segment(manufactured_it_mw=0, commissioning_start_month=1), 2028, 2027, state)
+        self.assertEqual(r["drivers"]["year_end_it_mw"], 1000)
+        self.assertEqual(r["capex_usd"], 2000)
+
+    def test_commissioning_failure_reduces_capacity_and_writes_off_assets(self):
+        r = model.segment_forecast(self.segment(commissioning_yield=.5), 2027, 2027, {})
+        self.assertEqual(r["drivers"]["year_end_it_mw"], 500)
+        self.assertEqual(r["drivers"]["deployment_writeoff_usd"], 6000)
+        self.assertGreaterEqual(r["drivers"]["closing_net_book_value_usd"], 0)
+        self.assertLessEqual(r["da_usd"], r["capex_usd"])
+
+    def test_invalid_month_or_average_capacity_conflict_rejected(self):
+        for extra in [{"commissioning_start_month": 13}, {"commissioning_start_month": 10.5}, {"average_it_mw": 1000}]:
+            with self.assertRaises(model.ModelError):
+                model.segment_forecast(self.segment(**extra), 2027, 2027, {})
+
+    def test_combined_user_assumptions_keep_optimus_and_add_2028_orbital(self):
+        config = json.loads((ROOT / "configs" / "current.json").read_text())
+        result = model.forecast(config, "base")
+        robots = [s for s in result["segments"] if s["segment"] == "optimus_owned"]
+        orbital = [s for s in result["segments"] if s["segment"] == "orbital_compute"]
+        self.assertEqual(robots[0]["drivers"]["production_units"], 10000000)
+        self.assertEqual(robots[1]["drivers"]["production_units"], 0)
+        self.assertEqual(orbital[0]["drivers"]["average_it_mw"], 125)
+        self.assertEqual(orbital[1]["drivers"]["average_it_mw"], 2500)
+        self.assertEqual(orbital[1]["drivers"]["year_end_it_mw"], 4000)
+        self.assertEqual(len(result["companies"]["tesla"]), 9)
+
+
 class OptimusOwnedFleet(unittest.TestCase):
     def robot(self, **overrides):
         segment = {"kind": "robot_fleet", "opening_fleet": 10, "production_units": 10,
