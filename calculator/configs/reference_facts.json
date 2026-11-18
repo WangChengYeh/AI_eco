@@ -62,6 +62,30 @@
       "status": "company_disclosed",
       "checked_at": "2026-11-19",
       "mapping_note": "已裝置年產能超過125,000台；不是實際產速，亦不是2027最終產能。模型只取已知下限作待校準產速錨點。"
+    },
+    {
+      "id": "tesla_optimus_texas_long_term_design_capacity",
+      "company": "Tesla",
+      "metric": "optimus_texas_long_term_design_annual_capacity",
+      "period": "2026-Q1 disclosure",
+      "value": 10000000,
+      "unit": "robots/year",
+      "source": "https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf",
+      "status": "company_disclosed_design_target",
+      "checked_at": "2026-11-19",
+      "mapping_note": "產線設計／長期年產能，不是2027全年實際產量；不能直接取代年度產量輸入。"
+    },
+    {
+      "id": "tesla_optimus_fremont_design_capacity",
+      "company": "Tesla",
+      "metric": "optimus_fremont_design_annual_capacity",
+      "period": "2026-Q1 disclosure",
+      "value": 1000000,
+      "unit": "robots/year",
+      "source": "https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf",
+      "status": "company_disclosed_design_target",
+      "checked_at": "2026-11-19",
+      "mapping_note": "產線設計／長期年產能，不是2027全年實際產量；不能直接取代年度產量輸入。"
     }
   ]
 }

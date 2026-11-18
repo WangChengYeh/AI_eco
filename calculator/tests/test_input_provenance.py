@@ -30,7 +30,8 @@ class DataProvenance(unittest.TestCase):
             p.validate_data(self.config, self.registry, self.facts)
 
     def test_wrong_source_lower_bound_fails_even_if_input_mapping_matches(self):
-        self.facts["facts"][-1]["value"] = 250000
+        source = next(f for f in self.facts["facts"] if f["id"] == "tesla_cybercab_installed_capacity_2026q3")
+        source["value"] = 250000
         with self.assertRaisesRegex(ValueError, "source lower bound"):
             p.validate_data(self.config, self.registry, self.facts)
 

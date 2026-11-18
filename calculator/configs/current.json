@@ -10,7 +10,9 @@
       "optimus_production_2027": 10000000,
       "orbital_mass_production": "2027年底",
       "stock_resource_exchange": "有資金缺口時，用新發股票支付資源並計入稀釋",
-      "robotaxi_full_production": "2027年中達全速量產（模型以2027-07-01實作）"
+      "robotaxi_full_production": "2027年中達全速量產（模型以2027-07-01實作）",
+      "optimus_internal_priority": "Optimus優先內部使用",
+      "optimus_surplus_rental": "內部用不完的Optimus出租"
     },
     "additional_assumptions": {
       "orbital_manufactured_2027_mw": 1000,
@@ -35,7 +37,9 @@
     "forecast_policy": "同一主預測持續修訂；base是程式識別碼，bear/bull僅為敏感度檢查，修訂版本由Git管理。",
     "input_provenance_file": "input_provenance.json",
     "workflow_sop": "../SOP.md",
-    "forecast_horizon_policy": "依使用者要求，主預測只估至2031年（含），不輸出更遠年度。"
+    "forecast_horizon_policy": "依使用者要求，主預測只估至2031年（含），不輸出更遠年度。",
+    "assumption_research_file": "user_assumption_research.json",
+    "assumption_review_status": "searched_not_fully_validated"
   },
   "years": [
     2027,

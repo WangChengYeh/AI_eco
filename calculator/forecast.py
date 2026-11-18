@@ -724,6 +724,8 @@ def forecast(config, scenario="base"):
     warnings = []
     if resolved.get("metadata", {}).get("input_status") != "calibrated":
         warnings.append("示例假設，未校準公司財報；輸出為情境計算，不是公司指引。")
+    if resolved.get("metadata", {}).get("assumption_review_status") == "searched_not_fully_validated":
+        warnings.append("使用者假設已做網路與Musk訊息搜尋；部分僅支持方向或長期產能，尚未支持指定年度產量、滿產時點或股票普遍接受度。")
     if any(row["funding_failed"] for rows in summaries.values() for row in rows):
         warnings.append("有未融資缺口：仍顯示融資前條件估值；補入借款、利息或增發稀釋後須重新計算。")
     if any(row["stock_payment_usd"] > 0 for rows in summaries.values() for row in rows):

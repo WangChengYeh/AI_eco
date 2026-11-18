@@ -48,6 +48,8 @@ def main():
     def read(name):
         return json.loads((config_dir / name).read_text(encoding="utf-8"))
     validate_data(read("current.json"), read("input_provenance.json"), read("reference_facts.json"))
+    from review_assumptions import validate_research
+    validate_research(read("current.json"), read("user_assumption_research.json"), read("input_provenance.json"))
     subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", "calculator/tests", "-q"], cwd=ROOT, check=True)
     subprocess.run([sys.executable, "calculator/forecast.py", "--out", "forecast_output"], cwd=ROOT, check=True)
     # Validate optional sensitivities before changing published HTML.

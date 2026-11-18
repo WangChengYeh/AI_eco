@@ -10,6 +10,8 @@ Python 3.10 以上，僅使用標準函式庫，無需安裝套件。預設計�
 
 標準流程統一為 [四步驟 SOP](../SOP.md)：理論 → 數據 → Forecast Python → HTML。查核資料後使用 `python calculator/run_pipeline.py`，而不是只修改網頁數字。`configs/input_provenance.json` 將本輪Robotaxi關鍵參數連到使用者假設、公司披露或模型補充假設；目前仍非全業務已校準。
 
+`configs/user_assumption_research.json` 覆蓋每項主預測使用者假設的網路及Musk訊息搜尋，另列重要理論強版本。新增／修改使用者假設必須同步重新查核，否則 pipeline 停止。查核完成不等於原數量獲證實；本輪保留條件計算數字，新增網頁查核表與[可讀報告](../research/user_assumption_review_2026-11-19.md)，逐項明列原始來源、Musk原貼／原片入口、轉述與讀取限制。
+
 ### Robotaxi 2027年中全速
 
 主預測改用 `production_ramp`：`full_rate_year=2027`、`full_rate_month=7` 保留使用者時程；年化產速先以已披露裝置產能的下限125,000台作錨點。年初20%產速、半年線性爬坡、全部自持、部署延遲1月均為模型假設，不是公司已確認產速或部署承諾。

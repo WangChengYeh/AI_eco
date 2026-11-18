@@ -1,6 +1,6 @@
 {
   "checked_at": "2026-11-19",
-  "coverage": "本輪優先覆蓋Robotaxi關鍵參數，未覆蓋業務維持未校準，不代表全模型已完成實證驗證。",
+  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。",
   "records": [
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.value",
@@ -30,7 +30,8 @@
       "classification": "user_assumption",
       "basis": "使用者指定2027年中達全速量產。",
       "fact_ids": [],
-      "checked_at": "2026-11-19"
+      "checked_at": "2026-11-19",
+      "research_claim_id": "robotaxi_mid2027"
     },
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.full_rate_month",
@@ -39,7 +40,8 @@
       "classification": "user_assumption",
       "basis": "將年中具體映射為7月1日開始穩定產速。",
       "fact_ids": [],
-      "checked_at": "2026-11-19"
+      "checked_at": "2026-11-19",
+      "research_claim_id": "robotaxi_mid2027"
     },
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.initial_rate_fraction",
@@ -128,6 +130,18 @@
       "classification": "model_assumption",
       "basis": "實收每付費公里車資及下降曲線假設，尚需服務數據。",
       "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.optimus_owned.production_units.annual.2027",
+      "value": 10000000,
+      "unit": "robots/year",
+      "classification": "user_assumption",
+      "basis": "使用者指定2027產量；查得長期設計年產能1,000萬台，不能視為支持當年實際產量。",
+      "fact_ids": [
+        "tesla_optimus_texas_long_term_design_capacity"
+      ],
+      "research_claim_id": "optimus_2027_volume",
       "checked_at": "2026-11-19"
     }
   ]

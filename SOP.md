@@ -7,7 +7,7 @@
 | 步驟 | 要完成的事 | 固定產物 | 通過條件 |
 | --- | --- | --- | --- |
 | 1．理論 | 寫清因果、成立條件及可推翻證據：股權能換哪些資源；AI如何降低完整任務成本 | `theories/001_equity_exchange_economy.md`、`theories/002_ai_supply_deflation.md` | 命題能對應成本、產量、利用率、股數等可計算參數 |
-| 2．數據 | 查原始來源，記期間、單位、原值、不等號及查核日；區分公司披露、使用者假設、模型補充假設 | `calculator/configs/reference_facts.json`、`input_provenance.json`、`current.json` | 來源與輸入對應；未知數不冒充已知值；產能、產量、投運及付費用量不混用 |
+| 2．數據 | 每項使用者假設必須網路搜尋，包含Musk的X、訪談、股東會及財報發言；記支持與限縮證據、期間、單位及原值 | `calculator/configs/reference_facts.json`、`input_provenance.json`、`user_assumption_research.json`、`current.json` | 每項有搜尋記錄、來源與判定；目標與實績、產能與產量、直接原文與媒體轉述分開 |
 | 3．Forecast Python | 按月爬坡及部署、逐年遞推損益、投資、資產汰換、現金、股票支付與每股稀釋 | `calculator/forecast.py`、`forecast_summary.md`、`forecast_output/` | 數據映射檢查、單元測試及所有敏感度計算成功；資料未校準仍明列 |
 | 4．HTML 輸出 | 同步最新輸入、假設表及結果，產生可直接開啟的頁面，提交 Git並驗證 Pages | `index.html`、`docs/index.html` | 網站顯示本輪數字，圖表與公司／年度切換正常；保留一份主預測 |
 
@@ -20,6 +20,10 @@ python calculator/run_pipeline.py
 ```
 
 程式先驗證數據映射及測試，再重算主預測、另外執行敏感度檢查，最後重建 HTML。失敗會停止，不把部分結果發佈為完成。資料查核仍需人或研究流程開啟原始來源，程式不把數值一致性當成企業事實已被證實。
+
+所有 `metadata.user_assumptions` 都必須有網路與Musk訊息搜尋記錄。新增假設、修改假設卻未同步重新查核，pipeline會停止。支持程度可為直接、部分、尚未支持原命題或強版本未成立；允許保留待驗證假設作條件計算，不能改標實證。影片原片與主辦方入口優先；第三方逐字稿可作線索，必須明示原片是否已核對。X原頁403不視為原文驗證成功。
+
+本輪完整結果見 [使用者假設與Musk訊息查核](research/user_assumption_review_2026-11-19.md)：覆蓋現行6項使用者輸入及6項理論／交易強版本。2027 Optimus生產1,000萬台尚未有支持；原始文件支持的是長期年產能設計。Musk傾向出租有發言線索，但租金、出租率未公布。年中擴Cybercab產線未證明已滿產；太空算力起發射、合理產速與大規模部署也不是同一日期或數量。
 
 提交同一輪變更的理論／來源／輸入、Python與HTML。GitHub Pages 由已設定的來源發佈，網址固定為 [主預測](https://wangchengyeh.github.io/AI_eco/)。
 

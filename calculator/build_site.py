@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 
 from forecast import forecast, parameter, summary_markdown
+from review_assumptions import validate_research, report_markdown
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,8 +40,12 @@ def assumptions(config):
 
 def build():
     config = json.loads((ROOT / "calculator/configs/current.json").read_text(encoding="utf-8"))
+    research = json.loads((ROOT / "calculator/configs/user_assumption_research.json").read_text(encoding="utf-8"))
+    validate_research(config, research)
     result = forecast(config)
-    data = [{"scenario": "base", "assumptions": assumptions(config), "companies": result["companies"], "segments": [
+    evidence = [{"title": r["title"], "verdict": r["verdict_label"], "finding": r["finding"],
+                 "limits": r["limits"], "musk": r["musk_search"]} for r in research["claims"]]
+    data = [{"scenario": "base", "evidence": evidence, "assumptions": assumptions(config), "companies": result["companies"], "segments": [
         {k: v for k, v in row.items() if k in {
             "year", "company_id", "segment", "segment_name", "revenue_usd",
             "operating_profit_usd", "capex_usd", "drivers"}}
@@ -74,6 +79,13 @@ el('ts-assumptions').replaceChildren(...data[0].assumptions.map(([label,value])=
  el('ts-robotaxi-detail').textContent=taxi?(()=>{const d=taxi.drivers;return r.year+' Robotaxi：製造 '+fmt(d.manufactured_units)+' 輛／新投運 '+fmt(d.additions)+' 輛／平均服役 '+fmt(d.average_fleet)+' 輛／年底待投運 '+fmt(d.pending_deployment_units)+' 輛；營收 '+fmt(taxi.revenue_usd,1e9)+' 十億美元。';})():'';""")
     if "四步驟 SOP" not in source:
         source = source.replace('<h2>Tesla／SpaceX 主預測</h2>', '<h2>Tesla／SpaceX 主預測</h2>\n<div class="text-small"><a href="https://github.com/WangChengYeh/AI_eco/blob/main/SOP.md" target="_blank" rel="noopener">四步驟 SOP：理論 → 數據 → Forecast Python → HTML</a></div>')
+    if 'id="ts-evidence"' not in source:
+        source = source.replace('<div class="viz-grid" aria-live="polite">',
+            '<details><summary>使用者假設查核（含Musk訊息）</summary><div class="text-small">已搜尋支持與限縮證據；方向／目標不等於已實現產量，原始影片未核對及X原頁403均明列。</div><div class="table-responsive"><table class="table table-sm"><thead><tr><th>假設</th><th>判定</th><th>支持與限制</th></tr></thead><tbody id="ts-evidence"></tbody></table></div><a href="https://github.com/WangChengYeh/AI_eco/blob/main/research/user_assumption_review_2026-11-19.md" target="_blank" rel="noopener">來源、Musk原貼／原片入口與搜尋紀錄</a></details>\n<div class="viz-grid" aria-live="polite">')
+        source = source.replace(marker, marker + """
+el('ts-evidence').replaceChildren(...data[0].evidence.map(r=>{
+ const tr=document.createElement('tr');for(const text of [r.title,r.verdict,r.finding+' '+r.limits+' Musk：'+r.musk]){const td=document.createElement('td');td.textContent=text;tr.appendChild(td);}return tr;
+}));""")
     payload = json.dumps(data, ensure_ascii=False, allow_nan=False, separators=(",", ":")).replace("<", "\\u003c")
     source, count = re.subn(r'(<script type="application/json" id="ts-data">).*?(</script>)',
                            lambda m: m[1] + payload + m[2], source, flags=re.S)
@@ -81,9 +93,15 @@ el('ts-assumptions').replaceChildren(...data[0].assumptions.map(([label,value])=
         raise ValueError("standalone page must contain exactly one primary forecast dataset")
     source = re.sub(r"更新日 \d{4}-\d{2}-\d{2}", "更新日 " + config["metadata"]["as_of"], source)
     document = document[:frame.start(1)] + html.escape(source, quote=True) + document[frame.end(1):]
+    # User-activated source links open independently; the frame keeps an opaque
+    # origin and cannot execute scripts in the containing document.
+    document = document.replace('sandbox="allow-scripts"', 'sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"')
     path.write_text(document, encoding="utf-8")
     (ROOT / "index.html").write_text(document, encoding="utf-8")
     (ROOT / "calculator/forecast_summary.md").write_text(summary_markdown([result]), encoding="utf-8")
+    report = ROOT / "research/user_assumption_review_2026-11-19.md"
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text(report_markdown(research), encoding="utf-8")
     print("Updated index.html, docs/index.html and calculator/forecast_summary.md from configs/current.json")
 
 

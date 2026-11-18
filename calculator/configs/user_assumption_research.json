@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-19",
+  "coverage": "現行主預測全部6項使用者輸入，另查6項理論強版本／交易與投資命題；模型補充參數未全部獲實證校準。",
+  "sources": {
+    "tesla_q1": {
+      "title": "Tesla 2026Q1 Update：長期Optimus產能",
+      "url": "https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf",
+      "access": "primary_text_read",
+      "access_note": "原始PDF已讀：第6頁列德州產線長期年產能設計1,000萬台。"
+    },
+    "tesla_q3": {
+      "title": "Tesla 2026Q3 Update：產線狀態",
+      "url": "https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf",
+      "access": "primary_text_read",
+      "access_note": "原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。"
+    },
+    "tesla_sec": {
+      "title": "Tesla 2026Q3 10-Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+      "access": "primary_text_read",
+      "access_note": "原始申報已讀；含營運限制、資金需求及潛在交易委員會。"
+    },
+    "spacex_sec": {
+      "title": "SpaceX 2026Q3 10-Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "access": "primary_text_read",
+      "access_note": "原始申報已讀；頻譜交易有股份對價，但分階段交割。"
+    },
+    "ai1": {
+      "title": "SpaceX AI1官方頁",
+      "url": "https://new.spacex.com/spacexai/starmind",
+      "access": "primary_indexed_only",
+      "access_note": "官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。"
+    },
+    "baron_host": {
+      "title": "Baron Capital：2026-11-06 Musk訪談原片入口",
+      "url": "https://www.baroncapitalgroup.com/conference-2026/fireside-chat-ron-baron-elon-musk",
+      "access": "primary_event_locator",
+      "access_note": "主辦方活動頁與日期已定位；本輪未取得原片可核對字幕。"
+    },
+    "baron_transcript": {
+      "title": "Baron訪談第三方逐字稿",
+      "url": "https://www.elonmuskarchive.org/video/baron-investment-conference-2026-11-06",
+      "access": "secondary_transcript_read",
+      "access_note": "逐字稿可讀，非主辦方認證；發言歸屬及數字須回看原片，不能標成已觀看驗證。"
+    },
+    "rental_report": {
+      "title": "Musk出租Optimus報導",
+      "url": "https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them",
+      "access": "secondary_report_read",
+      "access_note": "2026-11-06報導已讀；提及傾向出租，未公布租金。"
+    },
+    "call_report": {
+      "title": "Tesla 2026Q3 Musk發言轉述",
+      "url": "https://www.shacknews.com/article/151108/tesla-optimus-robot-delay-end-of-2027",
+      "access": "secondary_report_read",
+      "access_note": "2026-10-21電話會議發言轉述：預計2027年底向外部公司交付；不是原始電話會議字幕。"
+    },
+    "musk_x_factory": {
+      "title": "Musk X原貼：Cybertruck產線調整",
+      "url": "https://x.com/elonmusk/status/2118591788701421573",
+      "access": "primary_unreadable_403",
+      "access_note": "原貼URL已定位，直接讀取403；正文僅能透過報導交叉檢查。"
+    },
+    "musk_x_expansion": {
+      "title": "Musk X原貼：June/July擴線",
+      "url": "https://x.com/elonmusk/status/2119130949434888330",
+      "access": "primary_unreadable_403",
+      "access_note": "原貼URL已定位，直接讀取403；搜尋索引及轉述提及2027年6/7月拆線擴產，並非滿產承諾。"
+    },
+    "factory_report": {
+      "title": "TeslaNorth：2026-11-06產線調整報導",
+      "url": "https://teslanorth.com/2026/11/06/tesla-cybertruck-wind-down-cybercab-2027/",
+      "access": "secondary_report_read",
+      "access_note": "報導已讀並追到Musk原貼；原頁未能直接讀取。"
+    },
+    "internal_report": {
+      "title": "2024年Musk內用優先時程報導",
+      "url": "https://www.theguardian.com/technology/article/2024/jul/23/elon-musk-tesla-humanoid-robots-optimus",
+      "access": "secondary_indexed_only",
+      "access_note": "搜尋到2024-07-22 Musk內用優先發言；舊時間目標不能視為2027實績。"
+    },
+    "stanford": {
+      "title": "Stanford AI Index 2025：固定能力推論價格",
+      "url": "https://hai.stanford.edu/ai-index/2025-ai-index-report/research-and-development",
+      "access": "primary_indexed_read",
+      "access_note": "原始研究搜尋內容可讀：固定測試能力門檻的API查詢價格大幅下降，不等於各供應商完整成本或毛利。"
+    },
+    "bis": {
+      "title": "BIS WP1179：AI、產出與通膨",
+      "url": "https://www.bis.org/publications/working-paper-1179-impact-artificial-intelligence-output-and-inflation",
+      "access": "primary_text_read",
+      "access_note": "原始研究已讀；供給與需求效果並存，通膨方向取決於時序與預期。"
+    },
+    "economist_musk": {
+      "title": "The Economist：Musk談AI通縮影片",
+      "url": "https://www.youtube.com/watch?v=8YEdm-ZTgT4",
+      "access": "primary_video_metadata_only",
+      "access_note": "發佈者影片搜尋說明提及Musk預測通縮；未取得完整可讀字幕，不能當宏觀實證。"
+    },
+    "anthropic": {
+      "title": "Anthropic：Microsoft與NVIDIA合作",
+      "url": "https://www.anthropic.com/news/microsoft-nvidia-anthropic-announce-strategic-partnerships",
+      "access": "primary_text_read",
+      "access_note": "原始公告已讀；描述供應商投資與算力採購，未寫股份抵付帳款。"
+    },
+    "openai": {
+      "title": "OpenAI與NVIDIA合作公告",
+      "url": "https://openai.com/index/openai-nvidia-systems-partnership/",
+      "access": "primary_text_read",
+      "access_note": "2025-09-22原始意向公告已讀；投資與部署為分階段計畫，不代表股票抵付採購。"
+    },
+    "tsmc": {
+      "title": "TSMC 2026-11-10董事會決議",
+      "url": "https://pr.tsmc.com/system/files/newspdf/attachment/e05987700f76438755c64d950b3b0b99369aeed2/1110%20board%20meeting%20%28E%29_final_wmn.pdf",
+      "access": "primary_text_read",
+      "access_note": "原始PDF已讀；核准Anthropic與OpenAI各不逾5億美元投資，不等於已完成投資或股票支付晶圓款。"
+    },
+    "investor": {
+      "title": "Investor.gov：資產配置與分散",
+      "url": "https://www.investor.gov/additional-resources/general-resources/publications-research/info-sheets/beginners-guide-asset",
+      "access": "primary_indexed_read",
+      "access_note": "官方教育資料已定位：長期投資仍須管理集中及資產風險。"
+    }
+  },
+  "claims": [
+    {
+      "id": "optimus_2027_volume",
+      "title": "Optimus 2027實際產量",
+      "claim": "2027年生產1,000萬台Optimus。",
+      "user_values": {
+        "optimus_production_2027": 10000000
+      },
+      "verdict": "not_supported_as_stated",
+      "verdict_label": "尚未支持當年產量",
+      "finding": "Tesla Q1原始文件支持德州第二代產線的長期年產能設計1,000萬台。",
+      "limits": "長期年產能不是2027全年產量。Q3仍列德州建廠及Fremont初期爬坡；未查得2027實際生產1,000萬台的原始指引。",
+      "musk_search": "已搜尋Musk本人X及財報發言；報導提到2027開產或年底外部交付，未確認2027產量1,000萬台。",
+      "forecast_action": "保留原使用者數值，明確標示未獲證據支持；不得改標已校準。",
+      "search_queries": [
+        "site.x.com/elonmusk \"Optimus\" \"10 million\" \"2027\"",
+        "Musk Optimus 2027 10 million robots November 2026 X"
+      ],
+      "source_ids": [
+        "tesla_q1",
+        "tesla_q3",
+        "call_report"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "optimus_internal",
+      "title": "Optimus優先內用",
+      "claim": "Optimus優先內部使用。",
+      "user_values": {
+        "optimus_internal_priority": "Optimus優先內部使用"
+      },
+      "verdict": "partial_support",
+      "verdict_label": "內用方向有支持",
+      "finding": "找到Musk先內用、後對外的歷年說法與近期報導。",
+      "limits": "尚無平均內用100萬台或每台年省3萬美元的可核對實績；舊時程已變動。",
+      "musk_search": "已搜尋Tesla internal use原話；2024發言只作方向與歷史目標，不當2027進度證據。",
+      "forecast_action": "保留內用優先規則；需求、驗收效率及可節省人工仍為模型假設。",
+      "search_queries": [
+        "site.x.com/elonmusk \"Tesla internal use\" \"next year\" \"2026\"",
+        "site.tesla.com Optimus internal use factories 2026"
+      ],
+      "source_ids": [
+        "internal_report",
+        "rental_report",
+        "tesla_q3"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "optimus_rental",
+      "title": "Optimus剩餘出租",
+      "claim": "內部用不完的Optimus出租。",
+      "user_values": {
+        "optimus_surplus_rental": "內部用不完的Optimus出租"
+      },
+      "verdict": "partial_support",
+      "verdict_label": "出租方向有支持",
+      "finding": "11月6日Baron訪談逐字稿及報導均記載Musk傾向出租。",
+      "limits": "未公布月租、簽約數及出租率；傾向出租不證明2027全年可出租200萬平均台數。",
+      "musk_search": "已定位主辦方原片及第三方逐字稿；租賃段落原片尚未直接核對，不把轉述冒充已觀看。",
+      "forecast_action": "保留商業模式假設；月租2,000美元、50%出租率與全年可租時間仍未校準。",
+      "search_queries": [
+        "Musk Optimus ten million 2027 internal rental robots",
+        "site.baroncapitalgroup.com 2026 Elon Musk interview Optimus rent November 6"
+      ],
+      "source_ids": [
+        "baron_host",
+        "baron_transcript",
+        "rental_report",
+        "call_report"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "orbital_2027",
+      "title": "2027年底太空算力量產",
+      "claim": "2027年底太空算力大量量產。",
+      "user_values": {
+        "orbital_mass_production": "2027年底"
+      },
+      "verdict": "partial_support",
+      "verdict_label": "有目標支持，規模待核",
+      "finding": "SpaceX官方索引有late2027快速製造部署目標；Musk談過2027起發射。",
+      "limits": "11月Baron第三方逐字稿轉述為2027先少量、2028顯著放量、2029更大規模；與2027即大量的口徑有差異。2027製造1GW、部署1GW均未被證實；年化產速不等於全年累計。",
+      "musk_search": "已找Musk六月訪談及十一月訪談線索；後者第三方稿與原片入口已記錄，未冒稱直接驗證錄影。",
+      "forecast_action": "保留使用者時程，將官方目標、近期Musk轉述及模型GW數值分開展示。",
+      "search_queries": [
+        "Musk orbital AI satellites late 2027 AI1 175 kW 2026",
+        "site.spacex.com \"2027\" \"orbital\" \"compute\""
+      ],
+      "source_ids": [
+        "ai1",
+        "baron_host",
+        "baron_transcript"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "robotaxi_mid2027",
+      "title": "Robotaxi年中滿產",
+      "claim": "2027年中達全速量產。",
+      "user_values": {
+        "robotaxi_full_production": "2027年中達全速量產（模型以2027-07-01實作）"
+      },
+      "verdict": "partial_support",
+      "verdict_label": "支持擴線，不支持已達滿產",
+      "finding": "查到Musk年中調整Cybertruck產線、6/7月擴Cybercab線的原貼URL及轉述。",
+      "limits": "拆線或擴產時點不是完成爬坡、滿產台數或監管放行。7月起滿產與年化125,000台仍是兩個獨立模型假設。",
+      "musk_search": "兩個Musk X原貼均直接讀取403；記錄為原貼未讀、轉述已定位，不能視為原文直接核實。",
+      "forecast_action": "保留年中假設及下限產速錨點；暫不據擴線消息任意提高產量。",
+      "search_queries": [
+        "Musk Cybercab production mid 2027 full speed November 2026 X",
+        "site.x.com/elonmusk/status \"Cybercab\" \"June/July\""
+      ],
+      "source_ids": [
+        "musk_x_factory",
+        "musk_x_expansion",
+        "factory_report",
+        "tesla_q3"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "stock_resources",
+      "title": "資金缺口用股票換資源",
+      "claim": "有資金缺口，以新發股票取得資源。",
+      "user_values": {
+        "stock_resource_exchange": "有資金缺口時，用新發股票支付資源並計入稀釋"
+      },
+      "verdict": "partial_support",
+      "verdict_label": "特定交易支持",
+      "finding": "SpaceX頻譜交易申報列有股份對價，直接支持特定資產可用股權交換。",
+      "limits": "交易另含現金與債務安排；不支持所有日常資源100%接受股份，或每個資金缺口都能無限發股補足。協議價不是市場通用貨幣價。",
+      "musk_search": "已搜尋Musk及公司股權資源案例；具體契約以SEC條款為主，不以個人願景取代。",
+      "forecast_action": "保留股票支付機制及稀釋計算，接受度100%與固定協議價繼續標為模型假設。",
+      "search_queries": [
+        "SpaceX stock spectrum acquisition EchoStar shares 2026 equity payment",
+        "site.sec.gov SpaceX shares currency stock payments suppliers 2026",
+        "Elon Musk SpaceX stock currency pay suppliers shares 2026"
+      ],
+      "source_ids": [
+        "spacex_sec"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "equity_currency",
+      "title": "股票取代貨幣",
+      "claim": "頂級AI公司股票成為通用計價及支付工具。",
+      "user_values": {},
+      "verdict": "not_established",
+      "verdict_label": "強版本尚未成立",
+      "finding": "股權作特定企業及資產對價有案例，支持資源交換功能的局部擴張。",
+      "limits": "尚無本輪證據證明廣泛商品以股權標價、第三方日常再支付或股票取代法幣。",
+      "musk_search": "Musk談過貨幣未來可能不重要；這不等於他確認股票取代貨幣，不能把兩個命題混為一談。",
+      "forecast_action": "保留理論001的待驗證強版本，不預設貨幣化已實現。",
+      "search_queries": [
+        "Elon Musk AI deflation abundance money irrelevant robots 2026 interview",
+        "site.sec.gov SpaceX shares currency stock payments suppliers 2026"
+      ],
+      "source_ids": [
+        "spacex_sec",
+        "economist_musk"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "ai_deflation",
+      "title": "AI降本與全球通縮",
+      "claim": "數位與實體AI持續降本，帶來世界通縮。",
+      "user_values": {},
+      "verdict": "partial_support",
+      "verdict_label": "降本有支持，通縮有條件",
+      "finding": "Stanford固定能力門檻的推論價格資料支持部分數位AI價格下降；BIS研究支持生產力供給擴張可抑制通膨。",
+      "limits": "API查詢價格不是供應商完整任務成本。BIS同時指出投資與收入需求效果可能推升物價，未證明全球必然通縮。",
+      "musk_search": "已找到The Economist發佈的Musk通縮訪談影片與描述，屬Musk預測，未當宏觀實績。",
+      "forecast_action": "售價、成本、利用率、折舊各自建模，不因通縮理論自動提高毛利。",
+      "search_queries": [
+        "site.hai.stanford.edu AI index 2025 inference cost 280 fold GPT 3.5",
+        "site.bis.org work1179 artificial intelligence inflation",
+        "Elon Musk AI deflation abundance money irrelevant robots 2026 interview"
+      ],
+      "source_ids": [
+        "stanford",
+        "bis",
+        "economist_musk"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "ai_moats",
+      "title": "軟體及物流護城河",
+      "claim": "數位與實體AI可複製既有能力並取代軟體、物流公司。",
+      "user_values": {},
+      "verdict": "not_established",
+      "verdict_label": "競爭機制有依據，全面取代未證實",
+      "finding": "AI價格下降及Robotaxi部署顯示部分任務自動化與新競爭途徑。",
+      "limits": "全面取代、任何服務都能低成本複製及單一企業永遠領先尚未有直接證據；資料、整合、監管、利用率與現場維運仍影響全成本。",
+      "musk_search": "已搜尋Musk相關論述；其機器人生產力推測不等於各產業護城河已消失。",
+      "forecast_action": "以可重建成本及追趕時間檢驗，維持競爭與營運成本限制。",
+      "search_queries": [
+        "Elon Musk AI moat software logistics robots copy 2026",
+        "Elon Musk AI deflation abundance money irrelevant robots 2026 interview"
+      ],
+      "source_ids": [
+        "stanford",
+        "tesla_sec",
+        "baron_host"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "supplier_equity",
+      "title": "OpenAI／Anthropic股票付供應商",
+      "claim": "OpenAI與Anthropic用股票支付NVIDIA及台積電採購。",
+      "user_values": {},
+      "verdict": "not_supported_as_stated",
+      "verdict_label": "投資有證據，抵付未證實",
+      "finding": "Anthropic與OpenAI公告供應商投資和算力合作；TSMC董事會核准兩家公司股權投資。",
+      "limits": "核准投資、現金入股與算力採購不能直接視為用股份抵付GPU或晶圓帳款；未查到對應的直接抵付條款。",
+      "musk_search": "已搜尋公司原始公告；Musk不是這些交易條款的充分證據來源，不以他的評論補齊未披露契約。",
+      "forecast_action": "保留供應商投資案例，避免當作普遍股票支付的實證。",
+      "search_queries": [
+        "site.tsmc.com OpenAI Anthropic equity shares payment Nvidia",
+        "site.anthropic.com Nvidia Microsoft investment 2025 2026 partnership",
+        "Elon Musk Anthropic OpenAI TSMC Nvidia shares payment supplier 2026"
+      ],
+      "source_ids": [
+        "anthropic",
+        "openai",
+        "tsmc"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "merger",
+      "title": "Tesla與SpaceX合併",
+      "claim": "Tesla與SpaceX會合併。",
+      "user_values": {},
+      "verdict": "partial_support",
+      "verdict_label": "評估已披露，成交未定",
+      "finding": "兩家公司原始季度申報均披露特別委員會評估可能交易。",
+      "limits": "未有本輪驗證的最終合併協議、換股條件或已交割證據；文件明示可能不成交。",
+      "musk_search": "找到Musk財報會議相關轉述；交易狀態以兩家公司申報為準。",
+      "forecast_action": "主預測維持分公司，合併只保留可選假想快照。",
+      "search_queries": [
+        "site.sec.gov Tesla SpaceX merger special committee November 2026",
+        "Elon Musk Tesla SpaceX merger October 2026 special committees"
+      ],
+      "source_ids": [
+        "tesla_sec",
+        "spacex_sec"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "hold_forever",
+      "title": "買進後不必再檢視",
+      "claim": "持有持續降低AI成本的公司股票便可完全不再管理。",
+      "user_values": {},
+      "verdict": "not_established",
+      "verdict_label": "無法作為保證命題",
+      "finding": "長期生產力與資源交換循環是可追蹤的投資假說。",
+      "limits": "沒有來源能保證持續成本領先、任意價格買入都獲利或永不需要檢視；稀釋、估值、投入與治理均可能改變每股結果。",
+      "musk_search": "已納入Musk未來願景，但未找到能證明永久報酬或免檢視的證據。",
+      "forecast_action": "保留長期持有假說，SOP持續驗證每股成果，不能改成收益保證。",
+      "search_queries": [
+        "site.investor.gov long term holding individual stock risk diversification",
+        "Elon Musk AI moat software logistics robots copy 2026"
+      ],
+      "source_ids": [
+        "investor",
+        "tesla_sec"
+      ],
+      "searched_at": "2026-11-19"
+    }
+  ]
+}
