@@ -104,6 +104,7 @@ COMMON_SEGMENT_FIELDS = {
     "name", "kind", "start_year", "end_year", "notes", "opex_usd",
     "capex_usd", "capex_revenue_ratio", "da_usd", "da_revenue_ratio",
     "ev_sales_multiple", "robotics_eligible", "cost_includes_robotics", "volume_unit",
+    "automation_eligible_cash_cost_ratio",
 }
 KIND_FIELDS = {
     "unit": {"units", "capacity_units", "price_usd", "unit_cost_usd"},
@@ -130,6 +131,56 @@ KIND_FIELDS["orbital_compute"] = (KIND_FIELDS["compute"] - {
     "commissioning_start_month", "hardware_cost_usd_per_mw",
     "deployment_cost_usd_per_mw", "asset_life_years",
 }
+for _kind in ("robot_fleet", "robotaxi", "orbital_compute"):
+    KIND_FIELDS[_kind] |= {"service_life_years", "depreciation_life_years"}
+for _kind in ("robot_fleet", "robotaxi"):
+    KIND_FIELDS[_kind] |= {"replace_retired"}
+
+
+def asset_rollforward(state, year, new_assets, service_life, da_life,
+                      opening_units=0, opening_unit_cost=0, replace=False,
+                      replacement_unit_cost=0):
+    """Vintage ledger: historical cost, in-service exposure, expiry and replacement.
+
+    New assets are (quantity, historical unit cost, commissioning month). Monthly
+    midpoints reproduce a uniform annual ramp without treating year-end capacity
+    as full-year output. Lifetimes are fixed at each vintage's commissioning.
+    """
+    service_life = number(service_life, "service_life_years", 1)
+    da_life = number(da_life, "depreciation_life_years", 1e-9)
+    if not isinstance(replace, bool):
+        raise ModelError("replace_retired must be boolean")
+    if "asset_vintages" not in state:
+        state["asset_vintages"] = ([{"units": opening_units, "cost": opening_unit_cost,
+            "born": year, "life": service_life, "da_life": da_life}] if opening_units else [])
+    vintages = state["asset_vintages"]
+    opening = sum(v["units"] for v in vintages if v["born"] < year and v["born"] + v["life"] >= year)
+    for units, cost, month in new_assets:
+        if units:
+            vintages.append({"units": units, "cost": cost, "born": year + (month - .5) / 12,
+                             "life": service_life, "da_life": da_life})
+    expired = [v for v in vintages if year <= v["born"] + v["life"] < year + 1]
+    replacements = sum(v["units"] for v in expired) if replace else 0
+    if replace:
+        for v in expired:
+            vintages.append({"units": v["units"], "cost": replacement_unit_cost,
+                             "born": v["born"] + v["life"],
+                             "life": service_life, "da_life": da_life})
+    average = depreciation = writeoff = book = closing = 0.0
+    for v in vintages:
+        born, dead = v["born"], v["born"] + v["life"]
+        value = v["units"] * v["cost"]
+        average += v["units"] * max(min(year + 1, dead) - max(year, born), 0)
+        depreciation += value / v["da_life"] * max(min(year + 1, dead, born + v["da_life"]) - max(year, born), 0)
+        if year <= dead < year + 1:
+            writeoff += value * max(1 - v["life"] / v["da_life"], 0)
+        if dead >= year + 1:
+            closing += v["units"]
+            book += value * max(1 - (year + 1 - born) / v["da_life"], 0)
+    state["asset_vintages"] = [v for v in vintages if v["born"] + v["life"] >= year + 1]
+    return {"opening": opening, "closing": closing, "average": average,
+            "retirements": sum(v["units"] for v in expired), "replacements": replacements,
+            "da": depreciation + writeoff, "writeoff": writeoff, "book": book}
 
 
 def segment_forecast(segment, year, base_year, state):
@@ -166,7 +217,7 @@ def segment_forecast(segment, year, base_year, state):
             if retirements > opening:
                 raise ModelError("robotaxi retirements cannot exceed opening fleet")
             closing = opening + adds - retirements
-            if closing > p("fleet_capacity", closing):
+            if "service_life_years" not in segment and closing > p("fleet_capacity", closing):
                 raise ModelError("robotaxi closing fleet exceeds fleet_capacity")
             average = (opening + closing) / 2
             total_km = average * p("km_per_vehicle_day") * p("operating_days", 365, 0, 366)
@@ -175,10 +226,33 @@ def segment_forecast(segment, year, base_year, state):
             extra_da = average * p("depreciation_usd_per_vehicle_year")
             cogs = total_km * p("cash_cost_usd_per_total_km") + average * p("fixed_cash_usd_per_vehicle_year") + extra_da
             extra_capex = adds * p("vehicle_cost_usd")
+            lifecycle = None
+            if "service_life_years" in segment:
+                if retirements:
+                    raise ModelError("use automatic service-life retirements, not manual retirements, with vintage accounting")
+                lifecycle = asset_rollforward(state, year,
+                    [(adds / 12, p("vehicle_cost_usd"), month) for month in range(1, 13)],
+                    p("service_life_years", 6, 1), p("depreciation_life_years", 6, 1e-9),
+                    opening_units=opening, opening_unit_cost=p("vehicle_cost_usd"),
+                    replace=segment.get("replace_retired", False), replacement_unit_cost=p("vehicle_cost_usd"))
+                opening, closing, average = lifecycle["opening"], lifecycle["closing"], lifecycle["average"]
+                retirements = lifecycle["retirements"]
+                adds += lifecycle["replacements"]
+                if closing > p("fleet_capacity", closing) + 1e-6:
+                    raise ModelError("robotaxi closing fleet exceeds fleet_capacity")
+                total_km = average * p("km_per_vehicle_day") * p("operating_days", 365, 0, 366)
+                paid_km = total_km * p("paid_km_share", .6, 0, 1)
+                revenue = paid_km * p("fare_usd_per_paid_km")
+                extra_da = lifecycle["da"]
+                extra_capex = adds * p("vehicle_cost_usd")
+                cogs = total_km * p("cash_cost_usd_per_total_km") + average * p("fixed_cash_usd_per_vehicle_year") + extra_da
             state["fleet"] = closing
             inputs = {"opening_fleet": opening, "additions": adds, "retirements": retirements,
                       "closing_fleet": closing, "average_fleet": average, "total_km": total_km,
                       "paid_km": paid_km, "vehicle_cost_usd": p("vehicle_cost_usd")}
+            if lifecycle:
+                inputs.update(replacement_units=lifecycle["replacements"],
+                              closing_net_book_value_usd=lifecycle["book"], retirement_writeoff_usd=lifecycle["writeoff"])
         elif kind == "robot_fleet":
             opening = state.setdefault("fleet", number(segment.get("opening_fleet", 0), "opening_fleet", 0))
             production, retirements = p("production_units"), p("retirements")
@@ -186,7 +260,7 @@ def segment_forecast(segment, year, base_year, state):
             if retirements > opening:
                 raise ModelError("robot retirements cannot exceed opening fleet")
             closing = opening + production - retirements
-            if closing > p("fleet_capacity", closing):
+            if "service_life_years" not in segment and closing > p("fleet_capacity", closing):
                 raise ModelError("robot closing fleet exceeds fleet_capacity")
             average = (opening + closing) / 2
             demand = p("internal_demand_robots")
@@ -201,10 +275,30 @@ def segment_forecast(segment, year, base_year, state):
             extra_da = depreciation + retired_book
             state["robot_book"] = book_before_da - depreciation
             state["fleet"] = closing
+            replacements = 0
+            if "service_life_years" in segment:
+                if retirements:
+                    raise ModelError("use automatic service-life retirements, not manual retirements, with vintage accounting")
+                lifecycle = asset_rollforward(state, year,
+                    [(production / 12, cost, month) for month in range(1, 13)],
+                    p("service_life_years", 5, 1), p("depreciation_life_years", 5, 1e-9),
+                    opening_units=opening, opening_unit_cost=opening_book / opening if opening else cost,
+                    replace=segment.get("replace_retired", False), replacement_unit_cost=cost)
+                opening, closing, average = lifecycle["opening"], lifecycle["closing"], lifecycle["average"]
+                retirements, replacements = lifecycle["retirements"], lifecycle["replacements"]
+                if closing > p("fleet_capacity", closing) + 1e-6:
+                    raise ModelError("robot closing fleet exceeds fleet_capacity")
+                internal = min(average, demand)
+                rentable = max(average - internal, 0)
+                rented = min(rentable * p("rental_utilization", 0, 0, 1), p("rental_demand_robots", rentable))
+                extra_capex = (production + replacements) * cost
+                extra_da, retired_book = lifecycle["da"], lifecycle["writeoff"]
+                state.update(robot_book=lifecycle["book"], fleet=closing)
             revenue = rented * p("monthly_rent_usd") * 12
             # Every retained robot incurs operating costs, even if idle or used internally.
             cogs = average * p("cash_cost_usd_per_robot_year") + extra_da
             inputs = {"opening_fleet": opening, "production_units": production,
+                      "replacement_units": replacements, "total_manufactured_units": production + replacements,
                       "retirements": retirements, "closing_fleet": closing,
                       "average_fleet": average, "average_internal_robots": internal,
                       "average_rentable_robots": rentable, "average_rented_robots": rented,
@@ -239,9 +333,34 @@ def segment_forecast(segment, year, base_year, state):
                 extra_da = depreciation + writeoff
                 state.update(commissioned_mw=closing, inventory_mw=inventory + produced - deployment,
                              orbital_book=max(before_da - extra_da, 0))
+                retired_mw = 0
+                if "service_life_years" in segment:
+                    lots = state.setdefault("inventory_lots", [[inventory, hardware]] if inventory else [])
+                    if produced:
+                        lots.append([produced, hardware])
+                    remaining, deployed_hardware_cost = deployment, 0.0
+                    for lot in lots:
+                        used = min(lot[0], remaining)
+                        deployed_hardware_cost += used * lot[1]
+                        lot[0] -= used
+                        remaining -= used
+                    state["inventory_lots"] = [lot for lot in lots if lot[0] > 1e-9]
+                    per_mw = deployed_hardware_cost / deployment + launch if deployment else 0
+                    writeoff = (deployment - commissioned) * per_mw
+                    lifecycle = asset_rollforward(state, year,
+                        [(commissioned / (13 - int(month)), per_mw, m) for m in range(int(month), 13)],
+                        p("service_life_years", 4, 1), p("depreciation_life_years", p("asset_life_years", 4), 1e-9),
+                        opening_units=opening,
+                        opening_unit_cost=max(book - inventory * hardware, 0) / opening if opening else 0)
+                    opening, closing, mw = lifecycle["opening"], lifecycle["closing"], lifecycle["average"]
+                    retired_mw = lifecycle["retirements"]
+                    extra_da = lifecycle["da"] + writeoff
+                    state.update(commissioned_mw=closing,
+                                 orbital_book=lifecycle["book"] + sum(q * cost for q, cost in state["inventory_lots"]))
                 orbital_drivers = {"manufactured_it_mw": produced, "opening_it_mw": opening,
                                    "deployment_attempted_mw": deployment, "commissioned_new_it_mw": commissioned,
                                    "year_end_it_mw": closing, "closing_inventory_mw": state["inventory_mw"],
+                                   "retired_it_mw": retired_mw,
                                    "commissioning_start_month": month, "deployment_writeoff_usd": writeoff,
                                    "closing_net_book_value_usd": state["orbital_book"]}
             else:
@@ -265,6 +384,12 @@ def segment_forecast(segment, year, base_year, state):
     da = p("da_usd") + revenue * p("da_revenue_ratio") + extra_da
     # Explicit/revenue-based DA is part of COGS; special-kind DA already included.
     cogs += da - extra_da
+    if kind in ("compute", "orbital_compute") and inputs.get("billable_mwh", 0):
+        # Entire segment cost / external billed output: includes internal/idle
+        # capacity costs, excludes corporate overhead and funding charges.
+        inputs["segment_cost_per_billable_mw_hour_usd"] = (cogs + opex) / inputs["billable_mwh"]
+    if kind == "robot_fleet" and inputs.get("average_fleet", 0):
+        inputs["segment_cost_per_robot_year_usd"] = (cogs + opex) / inputs["average_fleet"]
     return {"active": active, "volume_unit": segment.get("volume_unit", "see config notes"),
             "revenue_usd": revenue, "cogs_usd": cogs,
             "gross_profit_usd": revenue - cogs, "opex_usd": opex,
@@ -366,11 +491,15 @@ def company_forecast(company, years):
         requested_savings = explicit_savings + fleet_savings
         if requested_savings and any(company["segments"][key].get("cost_includes_robotics", True) for key in eligible):
             raise ModelError("robotics savings require cost_includes_robotics=false on eligible segments")
-        pool = sum(rows[key]["cogs_usd"] for key in eligible)
-        savings = min(requested_savings, pool * p("robotics_max_cogs_share", 0, 0, 1))
+        cash_pools = {key: max(rows[key]["cogs_usd"] - rows[key]["da_usd"], 0) *
+            parameter(company["segments"][key].get("automation_eligible_cash_cost_ratio", 1),
+                      year, base, "automation_eligible_cash_cost_ratio", 0, 1) for key in eligible}
+        pool = sum(cash_pools.values())
+        savings = min(requested_savings, pool,
+                      sum(rows[key]["cogs_usd"] for key in eligible) * p("robotics_max_cogs_share", 0, 0, 1))
         robot_da = p("robotics_da_usd")
         for key in eligible:
-            allocated = savings * rows[key]["cogs_usd"] / pool if pool else 0
+            allocated = savings * cash_pools[key] / pool if pool else 0
             rows[key]["cogs_usd"] -= allocated
             rows[key]["gross_profit_usd"] += allocated
             rows[key]["operating_profit_usd"] += allocated
@@ -561,7 +690,7 @@ def forecast(config, scenario="base"):
     if any(row["stock_payment_usd"] > 0 for rows in summaries.values() for row in rows):
         warnings.append("已依股票交換資源假設減少現金支出並增發股份；估值已計稀釋，仍以交易對手接受指定條件為前提。")
     if any(row["robotics_savings_requested_usd"] > row["robotics_savings_usd"] + 1e-6 for rows in summaries.values() for row in rows):
-        warnings.append("機器人節省超過可改善成本上限，已按 robotics_max_cogs_share 截斷。")
+        warnings.append("機器人節省已受可自動化現金成本與 robotics_max_cogs_share 雙重限制，未抵銷折舊或不可改善成本。")
     if any(row["drivers"].get("capacity_limited") for row in details):
         warnings.append("部分對外銷量已受 capacity_units 限制。")
     return {"scenario": scenario, "metadata": resolved.get("metadata", {}),
@@ -585,9 +714,10 @@ def money(value, scale=1):
 
 
 def summary_markdown(results):
-    lines = ["# Tesla／SpaceX 年度情境計算", "", "金額：十億美元，股價：美元／股。淨利不正時 P/E 估值不適用；股權價值不正時 SOTP 不適用。資金缺口另列，不隱藏融資前條件估值。", ""]
+    lines = ["# Tesla／SpaceX 年度預測", "", "金額：十億美元，股價：美元／股。淨利不正時 P/E 估值不適用；股權價值不正時 SOTP 不適用。資金缺口另列，不隱藏融資前條件估值。", ""]
     for result in results:
-        lines += [f"## {result['scenario']}", "", *result["warnings"], "",
+        label = "主預測" if result["scenario"] == "base" else f"敏感度檢查：{result['scenario']}"
+        lines += [f"## {label}", "", *result["warnings"], "",
                   "| 公司 | 年度 | 營收 | 毛利 | 營業利益 | 淨利 | 經濟 FCF | P/E 股價 | SOTP 股價 |",
                   "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
         for rows in result["companies"].values():
@@ -605,7 +735,7 @@ def summary_markdown(results):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path(__file__).parent / "configs" / "current.json")
-    parser.add_argument("--scenario", default="all", help="all or a named JSON scenario")
+    parser.add_argument("--scenario", default="base", help="base = primary forecast; bear/bull/all = optional sensitivity checks")
     parser.add_argument("--set", action="append", default=[], metavar="PATH=JSON", help="override after scenario, repeatable")
     parser.add_argument("--out", type=Path, default=Path("forecast_output"))
     args = parser.parse_args(argv)

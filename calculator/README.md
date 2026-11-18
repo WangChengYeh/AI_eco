@@ -4,16 +4,18 @@ Python 3.10 以上，僅使用標準函式庫，無需安裝套件。預設計�
 
 預設讀取 [current.json](configs/current.json)，持續修正同一份累積分析。**除了明列的使用者假設，其餘數字（包括股數、現金、負債、倍數與換股比例）仍為未校準示例，不是公司指引。** 公司實際披露另存於 [reference_facts.json](configs/reference_facts.json)，不會自動覆寫模型。初始教學用 [example.json](configs/example.json) 保留供對照，不再是預設。
 
+只有一份主預測。`base` 是內部識別碼；修訂由 Git 保存，不是可選情境。「目前修正」不是情境名稱。`bear`／`bull` 只供敏感度檢查，不代表不同修訂版本。檢視原則見 [FORECAST_REVIEW.md](FORECAST_REVIEW.md)，最新重算見 [forecast_summary.md](forecast_summary.md)。
+
 ## 快速開始
 
 在 repo 根目錄執行：
 
 ```bash
-# 一次計算保守、基準、樂觀情境
+# 重算同一份主預測（預設只產生 base）
 python calculator/forecast.py --out forecast_output
 
-# 只算基準情境
-python calculator/forecast.py --scenario base --out forecast_output/base
+# 額外執行保守／樂觀敏感度檢查
+python calculator/forecast.py --scenario all --out forecast_output/sensitivity
 
 # 使用你自己的 JSON
 python calculator/forecast.py --config my_assumptions.json --scenario base
@@ -60,6 +62,7 @@ python calculator/forecast.py --scenario base \
 | Tesla | fsd | 外部全年平均付費訂閱數，不含自有 Robotaxi |
 | Tesla | robotaxi | 自有車隊，車數、付費公里、車資與後勤 |
 | Tesla | optimus_external | 對外機器人，台／年 |
+| Tesla | optimus_owned | 自持機器人，內用、出租、維運與替換 |
 | Tesla | services_other | 充電、售後、租賃及其他年度校準項 |
 | SpaceX | launch_external | 外部發射與太空合約的等效任務，不含自用發射 |
 | SpaceX | starlink_consumer | Starlink 全年平均消費者付費用戶 |
@@ -85,19 +88,19 @@ python calculator/forecast.py --scenario base \
 
 - 使用者指定：2027 年底大量量產。
 - 額外規模示例：2027 年製造 1,000 MW，10 月起均勻部署，最多部署 1,000 MW，投運成功率 100%；2028 起每年製造及部署 3,000 MW。這些數量、月份、成功率均可修改，不是使用者已指定的數字。
-- 全年平均可用 MW＝期初已投運 MW＋當年新投運 MW × `(13－部署起始月份) / 24`。
+- 沒有退役時，全年平均可用 MW＝期初已投運 MW＋當年新投運 MW × `(13－部署起始月份) / 24`；有退役時按各月投運批次的實際服務期間積分。
 - 因此示例 2027 年底為 1 GW，但 2027 年平均只有 0.125 GW；2028 的年平均為 2.5 GW，含前一年 1 GW 全年貢獻及當年新增容量的平均貢獻。
 - 已製造但受 `deployment_limit_mw` 限制而未部署的設備留作庫存，不產生服務收入；次年可繼續部署。
 - `commissioning_yield` 只對當年嘗試部署容量生效；失敗資產按可用帳面值記損失，不留下虛構投運容量。
 - 製造投入＝當年製造 MW × `hardware_cost_usd_per_mw`，發射部署投入＝當年嘗試部署 MW × `deployment_cost_usd_per_mw`。兩者列 capex，不計內部發射銷售收入。
-- 示範單位成本為硬體／衛星／發電／散熱／通訊 2,000 萬美元／MW，發射部署 500 萬美元／MW，4 年折舊；實際數值尚待校準。期初、製造與庫存使用簡化資產池，折舊及失敗損失不超過剩餘帳面值；不是完整世代／資產會計帳。
+- 示範單位成本為硬體／衛星／發電／散熱／通訊 2,000 萬美元／MW，發射部署 500 萬美元／MW；4 年服務與折舊壽命是模型補充假設。按月度投運批次追蹤原始成本、折舊與退役，庫存採先進先出成本，未投運不折舊。失敗部署費用及設備成本當年認列損失。
 - 對外服務份額 80%、自用 20%，地面算力不因太空量產而自動減少；不再額外把自用算力算成模型銷售收入。
 
-目前預測期仍為 2027–2035。Optimus 僅在 2027 年生產 1,000 萬台，未另指定後續生產；後續持有、維運及未退役是假設延伸，需隨有效壽命更新。太空設備退役、世代替換及後續製造節奏也應隨新資料修正。
+目前預測期為 2027–2035。Optimus 2027 年擴張性生產 1,000 萬台，其後未另填擴張生產；模型補充 5 年壽命、到期等量替換，替換生產另外計成本，不算免費延壽。太空設備 4 年後退役；每年 3 GW 新部署須同時替換到期容量與擴張，穩定年底容量為 12 GW，不能一直累加到 25 GW。壽命與替換規則需隨新資料更新。
 
 ### 2027 Optimus 1,000 萬台：內用優先、餘量出租
 
-[optimus_10m.json](configs/optimus_10m.json) 保存使用者的單年生產假設，不覆蓋原有基準設定：
+[optimus_10m.json](configs/optimus_10m.json) 僅保存早期單年計算供追溯，主預測一律使用 `current.json`：
 
 ```bash
 python calculator/forecast.py --config calculator/configs/optimus_10m.json \
@@ -110,11 +113,11 @@ python calculator/forecast.py --config calculator/configs/optimus_10m.json \
 2. 剩餘數量可供出租；實際平均付費台數取「可租數量 × rental_utilization」與 `rental_demand_robots` 的較小值。
 3. 外租營收＝平均付費台數 × `monthly_rent_usd` × 12。內用沒有銷售營收。
 4. 內用避免成本＝平均內用台數 × `internal_avoided_cost_usd_per_robot_year`，仍受公司可改善製造成本上限約束；租賃收入不套用此上限。
-5. 全部自持台數皆計維運成本，製造成本進 capex，折舊與退役帳面損失進成本並於現金流加回。折舊不超過剩餘帳面價值，退役按期初資產帳面值比例移除。
+5. 全部自持台數皆計維運成本，製造成本進 capex，折舊與退役帳面損失進成本並於現金流加回。主預測依投運批次計歷史成本及壽命，不以當年較低造價回溯重估舊設備。`replacement_units` 與原先 `production_units` 分列，合計為實際當年製造量。
 
-此情境停用原先 Optimus 對外銷售，以及固定額度的機器人節省／capex／折舊，避免與新機器人資產池重算。`robot_fleet` 的內用節省與固定 `robotics_savings_usd` 不能同時為正。
+主預測停用原先 Optimus 對外銷售，以及固定額度的機器人節省／capex／折舊，避免與自持資產重算。`robot_fleet` 的內用節省與固定 `robotics_savings_usd` 不能同時為正。
 
-**使用者指定的只有 2027 年生產量及內用優先的分配規則。** 內用需求 100 萬台、出租率 50%、月租 2,000 美元、單台成本 20,000 美元及其他數值均為額外可改的示例；不是公司實績或生產可行性的證明。只預測 2027 年，未擅自延伸往後每年生產 1,000 萬台。
+**使用者指定的只有 2027 年生產量及內用優先的分配規則。** 內用需求 100 萬台、出租率 50%、月租 2,000 美元、單台成本 20,000 美元及 5 年汰換規則均為模型補充假設。後續等量替換不代表每年擴張生產 1,000 萬台。
 
 自持製造投入可能造成現金缺口，即使損益表獲利也不代表資金足夠。未明列融資前，資金缺口照實保留，股價仍顯示為融資前條件估值。此版內用節省只抵銷 Tesla 指定製造業務，不推定全部台數都能取代人工，也未自動把供 SpaceX 使用的台數當成合併內部交易。
 
@@ -173,7 +176,9 @@ python calculator/forecast.py --config calculator/configs/optimus_10m.json \
 
 新車／退役車視為平均年中變動。空駛仍耗電、維修及折舊。每車固定現金成本應含保險、清潔、支援、場站等；避免和業務 opex 重算。
 
-車輛購置不一次列為當年費用，而以 capex 支出、折舊費用及現金流加回連結。折舊需自行填入，模型不自動推導殘值、世代、退休資產或減損。因此結果是情境估計，不是固定資產會計帳。`passenger_production_capacity` 檢查外部乘用車銷量＋自有車隊新增是否超出總產能；不把不夠產能的情境當成可交付預測。
+車輛購置以 capex、折舊費用及現金流加回連結。主預測採 6 年服務與折舊壽命、到期等量替換；既有 5,000 輛示例車視為 2027 年初新投入。`passenger_production_capacity` 檢查外部乘用車銷量＋車隊擴張新增＋替換車，避免超出總產能。
+
+`robotaxi`／`robot_fleet`／`orbital_compute` 填入 `service_life_years` 啟用投運批次帳；`depreciation_life_years` 決定直線折舊期間；服務期短於折舊期時，退役認列剩餘帳面損失。自持車與機器人可用 `replace_retired=true` 在到期時等量替換，支付當年製造成本；太空算力依當年製造與部署上限投入，沒有額外免費替換。此模式的 `retirements` 必須為 0，避免自動與手動重複退役。歷史示例若不填服務壽命，保留原簡化方法；不可拿它作已校準的長期資產帳。
 
 ### 地面／太空算力
 
@@ -196,9 +201,9 @@ python calculator/forecast.py --config calculator/configs/optimus_10m.json \
 
 ### 機器人降本
 
-公司層 `robotics_savings_usd` 只分配到 `robotics_eligible=true` 的業務，且不超過這些業務 COGS 的 `robotics_max_cogs_share`。有效節省超額時會截斷並警示。
+公司層節省只分配到 `robotics_eligible=true` 的業務，總額不超過「扣除折舊後現金成本 × automation_eligible_cash_cost_ratio」與「COGS × robotics_max_cogs_share」的較小值。主預測可自動化現金成本占比設 30%，是待校準成本拆分假設；不把折舊或全部材料成本當成可被機器人省掉。按合格現金成本分配，有效節省超額時截斷並警示。
 
-參與分配的 `cost_includes_robotics` 必須設為 false，表示 unit cost 的基準尚未包含**這筆額外節省**。原本的成本曲線下降可以代表材料、製程等其他改善；若已包含相同機器人效果，不能再疊加。節省額為機器人現金維運與接管後、機器人折舊前的淨節省。新增內用機器人成本放 `robotics_capex_usd`，其折舊放 `robotics_da_usd`。不計內用機器人銷售收入。
+參與分配的 `cost_includes_robotics` 必須設為 false，表示單位成本尚未包含**這筆額外節省**。原本成本曲線下降可代表材料、製程等其他改善，不能把同一機器人效果疊加。自持機器人推導的是避免的人工等成本，機器人維運及折舊已在 `robot_fleet` 費用化；不得再從避免成本重複扣一次。舊式固定節省模式則須自行填入扣除維運後的節省，並另填其 capex／折舊。不計內用營收。
 
 ## 公司獲利與現金流
 

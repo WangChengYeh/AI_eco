@@ -4,7 +4,7 @@
     "as_of": "2026-11-19",
     "currency": "USD",
     "input_status": "illustrative",
-    "description": "目前同一份累積分析：保留所有既有業務，修正2027 Optimus生產1,000萬台、內用優先、餘量出租，以及太空算力2027年底大量量產時程。使用者未指定的量、價格、成本及後續年度均為示例假設。 累積加入理論001：資金缺口以新股換取資源，依協議價與接受度重算現金支出及每股稀釋。",
+    "description": "依理論001股權交換資源、理論002持續降低完整產出成本，統一遞推營運、資產生命週期、獲利、現金及每股價值；使用者未指定的數量、價格、成本、壽命與估值倍數為未校準模型假設。",
     "observed_sources_file": "reference_facts.json",
     "user_assumptions": {
       "optimus_production_2027": 10000000,
@@ -23,9 +23,15 @@
       "post_2028_orbital_new_it_mw_per_year": 3000,
       "stock_payment_tesla_reference_usd": 250,
       "stock_payment_spacex_reference_usd": 100,
-      "stock_payment_acceptance_ratio": 1
+      "stock_payment_acceptance_ratio": 1,
+      "optimus_service_life_years": 5,
+      "optimus_replace_retired": true,
+      "robotaxi_service_life_years": 6,
+      "orbital_service_life_years": 4,
+      "automation_eligible_cash_cost_ratio": 0.3
     },
-    "analysis_id": "tesla_spacex_current"
+    "analysis_id": "tesla_spacex",
+    "forecast_policy": "同一主預測持續修訂；base是程式識別碼，bear/bull僅為敏感度檢查，修訂版本由Git管理。"
   },
   "years": [
     2027,
@@ -111,7 +117,8 @@
           "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
           "robotics_eligible": true,
           "cost_includes_robotics": false,
-          "volume_unit": "vehicles"
+          "volume_unit": "vehicles",
+          "automation_eligible_cash_cost_ratio": 0.3
         },
         "semi": {
           "name": "Semi 對外銷售",
@@ -142,7 +149,8 @@
           "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
           "robotics_eligible": true,
           "cost_includes_robotics": false,
-          "volume_unit": "vehicles"
+          "volume_unit": "vehicles",
+          "automation_eligible_cash_cost_ratio": 0.3
         },
         "energy": {
           "name": "Megapack／Powerwall 等儲能",
@@ -211,16 +219,7 @@
             "growth": 0.35,
             "annual": {}
           },
-          "retirements": {
-            "value": 0,
-            "growth": 0,
-            "annual": {
-              "2032": 5000,
-              "2033": 10000,
-              "2034": 15000,
-              "2035": 20000
-            }
-          },
+          "retirements": 0,
           "fleet_capacity": {
             "value": 100000,
             "growth": 0.4,
@@ -265,8 +264,11 @@
             "annual": {}
           },
           "ev_sales_multiple": 5,
-          "notes": "新增車半年度貢獻，退休車同樣用年初／年底平均。車隊車製造成本進 capex，不進對外汽車營收。折舊另列、不從 capex 自動推導。",
-          "volume_unit": "paid vehicle-km"
+          "notes": "新增車全年均勻投入；6年服務及折舊壽命、到期等量替換均為模型假設。既有5,000輛以2027年初新投入處理；生產限制包含增長車和替換車；自有車成本進capex，不算對外汽車銷售。",
+          "volume_unit": "paid vehicle-km",
+          "service_life_years": 6,
+          "depreciation_life_years": 6,
+          "replace_retired": true
         },
         "optimus_external": {
           "name": "Optimus 對外銷售",
@@ -343,7 +345,10 @@
           "capex_usd": 100000000,
           "ev_sales_multiple": 5,
           "volume_unit": "average robots / robot-months",
-          "notes": "2027全年均勻生產，年平均可用500萬台。平均先內用100萬台，餘400萬台供出租，50%出租率即年平均付費200萬台。全部自持成本進capex，無內部銷售營收。內用節省上限為合格製造COGS的30%，不是可無限取代人力。 2028年後未另假設新生產；既有資產仍維運，未設定退役，須日後校準。"
+          "notes": "2027全年均勻生產1,000萬台，年平均500萬台，先內用、餘量出租。5年服務與折舊壽命、到期等量替換是模型補充假設，替換製造成本重新計入capex。內用不算營收；節省受可自動化現金成本限制，不能抵銷折舊。未另假設擴張性新生產。",
+          "service_life_years": 5,
+          "depreciation_life_years": 5,
+          "replace_retired": true
         }
       },
       "stock_payment": {
@@ -585,7 +590,7 @@
           "volume_unit": "billable MW-hour"
         },
         "orbital_compute": {
-          "name": "太空算力：2027年底量產情境",
+          "name": "太空算力",
           "kind": "orbital_compute",
           "start_year": 2027,
           "opening_it_mw": 0,
@@ -633,7 +638,9 @@
           "capex_usd": 0,
           "ev_sales_multiple": 4,
           "volume_unit": "billable MW-hour",
-          "notes": "量產時程是使用者假設，並非已驗證進度。額外假設2027製造1GW、10月起均勻部署至年底；2028新製造3GW、全年均勻部署。硬體成本包括晶片、衛星、發電、散熱與通訊設備，另列發射部署費；電力現金單價0不代表系統免費。新增產能未以全年年底容量計費。地面算力不自動減少。 2029年以後每年新增3GW及不退役為延伸示例，不是使用者已指定或工程壽命保證。"
+          "notes": "使用者假設2027年底大量量產。規模補充假設2027製造1GW、10月起部署，2028起每年製造及最多部署3GW。硬體20M美元/MW，部署5M美元/MW。4年服務及折舊壽命為模型假設；到期容量退出，新部署量同時負擔替換及擴張，不會無限累加。未部署庫存不產生算力或折舊，成本按批次追蹤。電價0不代表完整成本0。",
+          "service_life_years": 4,
+          "depreciation_life_years": 4
         },
         "grok_subscriptions": {
           "name": "Grok 消費者與企業訂閱",
