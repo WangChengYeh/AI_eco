@@ -373,7 +373,6 @@ def company_forecast(company, years):
         ev = sum(row["revenue_usd"] * row["ev_sales_multiple"] for row in rows.values()) - corporate_opex * p("corporate_ev_cost_multiple")
         equity = ev + closing_cash - closing_debt
         pe = p("pe_multiple")
-        valued = not funding_failed and equity > 0
         result = {
             "year": year, "company": company["name"], "revenue_usd": revenue,
             "cogs_usd": cogs, "gross_profit_usd": gross,
@@ -389,8 +388,13 @@ def company_forecast(company, years):
             "eps_usd": net / weighted, "year_end_share_earnings_usd": net / diluted,
             "pe_multiple": pe, "sotp_enterprise_value_usd": ev,
             "sotp_equity_value_usd": equity,
-            "price_pe_usd": net * pe / diluted if net > 0 and not funding_failed else None,
-            "price_sotp_usd": equity / diluted if valued else None,
+            # A financing gap is a risk/condition, not undefined valuation arithmetic.
+            # These prices use the specified debt and shares BEFORE unspecified financing.
+            "price_pe_usd": net * pe / diluted if net > 0 else None,
+            "price_sotp_usd": equity / diluted if equity > 0 else None,
+            "valuation_status": "conditional_unfunded" if funding_failed else "scenario",
+            "price_pe_unavailable_reason": "non_positive_net_income" if net <= 0 else None,
+            "price_sotp_unavailable_reason": "non_positive_equity_value" if equity <= 0 else None,
             "robotics_savings_usd": savings,
             "robotics_savings_requested_usd": requested_savings,
         }
@@ -451,8 +455,11 @@ def merger_forecast(config, summaries, years):
                          "net_income_usd": net, "shares": shares,
                          "target_exchange_ratio": ratio, "net_operating_synergy_usd": synergy,
                          "transaction_cost_usd": cost, "sotp_equity_value_usd": equity,
-                         "price_pe_usd": net * p("pe_multiple") / shares if net > 0 and funded else None,
-                         "price_sotp_usd": equity / shares if equity > 0 and funded else None,
+                         "price_pe_usd": net * p("pe_multiple") / shares if net > 0 else None,
+                         "price_sotp_usd": equity / shares if equity > 0 else None,
+                         "valuation_status": "scenario" if funded else "conditional_unfunded",
+                         "price_pe_unavailable_reason": "non_positive_net_income" if net <= 0 else None,
+                         "price_sotp_unavailable_reason": "non_positive_equity_value" if equity <= 0 else None,
                          "funding_failed": not funded})
     return combined
 
@@ -492,7 +499,7 @@ def forecast(config, scenario="base"):
     if resolved.get("metadata", {}).get("input_status") != "calibrated":
         warnings.append("示例假設，未校準公司財報；輸出為情境計算，不是公司指引。")
     if any(row["funding_failed"] for rows in summaries.values() for row in rows):
-        warnings.append("有資金缺口：股價欄停用，後續營運僅保留未融資的壓力試算。")
+        warnings.append("有未融資缺口：仍顯示融資前條件估值；補入借款、利息或增發稀釋後須重新計算。")
     if any(row["robotics_savings_requested_usd"] > row["robotics_savings_usd"] + 1e-6 for rows in summaries.values() for row in rows):
         warnings.append("機器人節省超過可改善成本上限，已按 robotics_max_cogs_share 截斷。")
     if any(row["drivers"].get("capacity_limited") for row in details):
@@ -518,7 +525,7 @@ def money(value, scale=1):
 
 
 def summary_markdown(results):
-    lines = ["# Tesla／SpaceX 年度情境計算", "", "金額：十億美元，股價：美元／股。空值表示不適用或存在資金缺口。", ""]
+    lines = ["# Tesla／SpaceX 年度情境計算", "", "金額：十億美元，股價：美元／股。淨利不正時 P/E 估值不適用；股權價值不正時 SOTP 不適用。資金缺口另列，不隱藏融資前條件估值。", ""]
     for result in results:
         lines += [f"## {result['scenario']}", "", *result["warnings"], "",
                   "| 公司 | 年度 | 營收 | 毛利 | 營業利益 | 淨利 | 經濟 FCF | P/E 股價 | SOTP 股價 |",

@@ -87,14 +87,38 @@ class FinancialIdentities(unittest.TestCase):
         rows = model.forecast(config)["companies"]["a"]
         self.assertEqual(rows[1]["delta_nwc_usd"], -2.5)
 
-    def test_funding_gap_suppresses_valuation_and_is_not_auto_financed(self):
+    def test_funding_gap_is_separate_from_pe_and_is_not_auto_financed(self):
         config = fixture((2027, 2028))
         config["companies"]["a"]["segments"]["product"]["capex_usd"] = 1000
         rows = model.forecast(config)["companies"]["a"]
         self.assertGreater(rows[0]["funding_gap_usd"], 0)
         self.assertIsNone(rows[0]["price_sotp_usd"])
-        self.assertIsNone(rows[1]["price_pe_usd"])
+        self.assertEqual(rows[0]["price_sotp_unavailable_reason"], "non_positive_equity_value")
+        self.assertGreater(rows[1]["price_pe_usd"], 0)
+        self.assertEqual(rows[1]["valuation_status"], "conditional_unfunded")
         self.assertEqual(rows[0]["debt_usd"], 20)
+
+    def test_positive_pe_and_sotp_remain_visible_with_funding_gap(self):
+        config = fixture()
+        config["companies"]["a"].update(opening_cash_usd=0)
+        config["companies"]["a"]["segments"]["product"]["capex_usd"] = 100
+        r = row(config)
+        self.assertGreater(r["funding_gap_usd"], 0)
+        self.assertAlmostEqual(r["price_pe_usd"], r["year_end_share_earnings_usd"] * r["pe_multiple"])
+        self.assertGreater(r["price_sotp_usd"], 0)
+        self.assertIsNone(r["price_pe_unavailable_reason"])
+        self.assertIsNone(r["price_sotp_unavailable_reason"])
+
+    def test_prior_gap_does_not_permanently_blank_future_prices(self):
+        config = fixture((2027, 2028))
+        config["companies"]["a"].update(opening_cash_usd=0)
+        config["companies"]["a"]["segments"]["product"]["capex_revenue_ratio"] = 0
+        config["companies"]["a"]["segments"]["product"]["capex_usd"] = {"value": 30, "annual": {"2028": 0}}
+        rows = model.forecast(config)["companies"]["a"]
+        self.assertGreater(rows[0]["funding_gap_usd"], 0)
+        self.assertGreater(rows[1]["cash_usd"], 0)
+        self.assertTrue(rows[1]["funding_failed"])
+        self.assertGreater(rows[1]["price_pe_usd"], 0)
 
     def test_loss_making_company_has_no_pe_price_or_tax_benefit(self):
         config = fixture()
@@ -103,6 +127,7 @@ class FinancialIdentities(unittest.TestCase):
         self.assertLess(r["net_income_usd"], 0)
         self.assertEqual(r["tax_usd"], 0)
         self.assertIsNone(r["price_pe_usd"])
+        self.assertEqual(r["price_pe_unavailable_reason"], "non_positive_net_income")
 
 
 class BusinessDrivers(unittest.TestCase):
@@ -203,6 +228,17 @@ class MergerAndValidation(unittest.TestCase):
         self.assertEqual(merged["revenue_usd"], 190)
         self.assertAlmostEqual(merged["net_income_usd"], 52.8)
         self.assertAlmostEqual(merged["sotp_equity_value_usd"], 522.8)
+
+    def test_merger_funding_gap_does_not_hide_conditional_pe(self):
+        config = fixture()
+        config["companies"]["a"].update(opening_cash_usd=0)
+        config["companies"]["a"]["segments"]["product"]["capex_usd"] = 1000
+        config["companies"]["b"] = copy.deepcopy(config["companies"]["a"])
+        config["merger"] = {"enabled": True, "acquirer": "a", "target": "b", "pe_multiple": 10}
+        r = model.forecast(config)["merger"][0]
+        self.assertTrue(r["funding_failed"])
+        self.assertGreater(r["price_pe_usd"], 0)
+        self.assertEqual(r["valuation_status"], "conditional_unfunded")
 
     def test_curves_absolute_override_and_cap(self):
         spec = {"value": 100, "growth": .1, "annual": {"2029": 140}, "cap": 135}
@@ -391,7 +427,8 @@ class OptimusOwnedFleet(unittest.TestCase):
         self.assertEqual(fleet["revenue_usd"], 48e9)
         self.assertAlmostEqual(result["companies"]["tesla"][0]["revenue_usd"], sum(s["revenue_usd"] for s in result["segments"] if s["company_id"] == "tesla"))
         self.assertGreater(result["companies"]["tesla"][0]["funding_gap_usd"], 0)
-        self.assertIsNone(result["companies"]["tesla"][0]["price_pe_usd"])
+        self.assertGreater(result["companies"]["tesla"][0]["price_pe_usd"], 0)
+        self.assertEqual(result["companies"]["tesla"][0]["valuation_status"], "conditional_unfunded")
 
 
 if __name__ == "__main__":
