@@ -9,7 +9,8 @@
     "user_assumptions": {
       "optimus_production_2027": 10000000,
       "orbital_mass_production": "2027年底",
-      "stock_resource_exchange": "有資金缺口時，用新發股票支付資源並計入稀釋"
+      "stock_resource_exchange": "有資金缺口時，用新發股票支付資源並計入稀釋",
+      "robotaxi_full_production": "2027年中達全速量產（模型以2027-07-01實作）"
     },
     "additional_assumptions": {
       "orbital_manufactured_2027_mw": 1000,
@@ -31,7 +32,9 @@
       "automation_eligible_cash_cost_ratio": 0.3
     },
     "analysis_id": "tesla_spacex",
-    "forecast_policy": "同一主預測持續修訂；base是程式識別碼，bear/bull僅為敏感度檢查，修訂版本由Git管理。"
+    "forecast_policy": "同一主預測持續修訂；base是程式識別碼，bear/bull僅為敏感度檢查，修訂版本由Git管理。",
+    "input_provenance_file": "input_provenance.json",
+    "workflow_sop": "../SOP.md"
   },
   "years": [
     2027,
@@ -214,24 +217,9 @@
           "name": "自有無人車隊載客服務",
           "kind": "robotaxi",
           "opening_fleet": 5000,
-          "additions": {
-            "value": 20000,
-            "growth": 0.35,
-            "annual": {}
-          },
           "retirements": 0,
-          "fleet_capacity": {
-            "value": 100000,
-            "growth": 0.4,
-            "annual": {}
-          },
           "vehicle_cost_usd": {
             "value": 25000,
-            "growth": -0.03,
-            "annual": {}
-          },
-          "depreciation_usd_per_vehicle_year": {
-            "value": 4000,
             "growth": -0.03,
             "annual": {}
           },
@@ -264,11 +252,21 @@
             "annual": {}
           },
           "ev_sales_multiple": 5,
-          "notes": "新增車全年均勻投入；6年服務及折舊壽命、到期等量替換均為模型假設。既有5,000輛以2027年初新投入處理；生產限制包含增長車和替換車；自有車成本進capex，不算對外汽車銷售。",
+          "notes": "使用者指定2027年中達全速，以7月1日開始穩定產速實作。暫以已揭露裝置年產能下限125,000台作產速錨點，非已證實的2027滿產速度或上限。2027初達全速20%、線性爬坡、全部自持、投運延遲1月、期初5,000車、6年壽命均為模型假設。產量含替換用途，不再額外自動增造退休車；已造未投運成本入資產，投運前無營收或折舊。",
           "volume_unit": "paid vehicle-km",
           "service_life_years": 6,
           "depreciation_life_years": 6,
-          "replace_retired": true
+          "replace_retired": false,
+          "production_ramp": {
+            "annual_capacity_units": {
+              "value": 125000,
+              "growth": 0
+            },
+            "full_rate_year": 2027,
+            "full_rate_month": 7,
+            "initial_rate_fraction": 0.2,
+            "deployment_delay_months": 1
+          }
         },
         "optimus_external": {
           "name": "Optimus 對外銷售",
@@ -795,21 +793,20 @@
     "base": {},
     "bear": {
       "companies.tesla.segments.passenger_vehicles.units.growth": 0.03,
-      "companies.tesla.segments.robotaxi.additions.growth": 0.15,
       "companies.tesla.pe_multiple": 25,
       "companies.spacex.segments.starlink_consumer.average_subscribers.growth": 0.08,
       "companies.spacex.segments.ground_compute.external_utilization": 0.5,
-      "companies.spacex.pe_multiple": 25
+      "companies.spacex.pe_multiple": 25,
+      "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.growth": 0.15
     },
     "bull": {
       "companies.tesla.segments.passenger_vehicles.units.growth": 0.14,
       "companies.tesla.passenger_production_capacity.growth": 0.18,
-      "companies.tesla.segments.robotaxi.additions.growth": 0.55,
-      "companies.tesla.segments.robotaxi.fleet_capacity.growth": 0.6,
       "companies.tesla.pe_multiple": 60,
       "companies.spacex.segments.starlink_consumer.average_subscribers.growth": 0.22,
       "companies.spacex.segments.ground_compute.external_utilization": 0.9,
-      "companies.spacex.pe_multiple": 55
+      "companies.spacex.pe_multiple": 55,
+      "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.growth": 0.55
     }
   }
 }

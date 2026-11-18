@@ -9,15 +9,38 @@ import json
 from pathlib import Path
 import re
 
-from forecast import forecast, summary_markdown
+from forecast import forecast, parameter, summary_markdown
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def assumptions(config):
+    base = config["years"][0]
+    robot = config["companies"]["tesla"]["segments"]["optimus_owned"]
+    taxi = config["companies"]["tesla"]["segments"]["robotaxi"]
+    orbit = config["companies"]["spacex"]["segments"]["orbital_compute"]
+    ramp = taxi["production_ramp"]
+    def val(spec, year=2027):
+        return parameter(spec, year, base)
+    return [
+        ["Optimus（使用者假設）", f"2027生產{val(robot['production_units']) / 10000:,.0f}萬台，內用優先、餘量出租"],
+        ["Robotaxi（使用者時程）", f"{ramp['full_rate_year']}年中達全速；以{ramp['full_rate_month']}月起穩定產速實作"],
+        ["Robotaxi（產速假設）", f"年化{val(ramp['annual_capacity_units']):,.0f}台，取已披露裝置產能下限作錨點，非2027產量指引"],
+        ["Robotaxi（爬坡／部署假設）", f"年初達全速{ramp['initial_rate_fraction']:.0%}，線性爬坡；全部自持、投運延遲{ramp['deployment_delay_months']}個月"],
+        ["太空算力（使用者時程）", "2027年底大量量產"],
+        ["太空算力（規模假設）", f"2027製造{val(orbit['manufactured_it_mw']) / 1000:,.2f}GW，{val(orbit['commissioning_start_month']):.0f}月起部署；2028製造{val(orbit['manufactured_it_mw'], 2028) / 1000:,.2f}GW"],
+        ["太空成本（模型假設）", f"硬體及配套{val(orbit['hardware_cost_usd_per_mw']) / 1e6:,.0f}M美元/MW；發射部署{val(orbit['deployment_cost_usd_per_mw']) / 1e6:,.0f}M美元/MW"],
+        ["股票交換資源（使用者假設）", "有資金缺口時用新股支付合格資源，保留完整成本並計入稀釋"],
+        ["股票支付條件（模型假設）", "；".join(f"{co['name']}接受度{val(co['stock_payment']['acceptance_ratio']):.0%}，協議價{val(co['stock_payment']['reference_price_usd']):,.0f}美元/股" for co in config['companies'].values())],
+        ["資產壽命（模型假設）", f"Optimus {robot['service_life_years']}年到期等量替換；Robotaxi {taxi['service_life_years']}年，年度產量含替換；太空設備{orbit['service_life_years']}年退役"],
+        ["可改善現金成本（模型假設）", f"合格製造業務現金成本的{config['companies']['tesla']['segments']['passenger_vehicles']['automation_eligible_cash_cost_ratio']:.0%}；不含折舊"],
+    ]
 
 
 def build():
     config = json.loads((ROOT / "calculator/configs/current.json").read_text(encoding="utf-8"))
     result = forecast(config)
-    data = [{"scenario": "base", "companies": result["companies"], "segments": [
+    data = [{"scenario": "base", "assumptions": assumptions(config), "companies": result["companies"], "segments": [
         {k: v for k, v in row.items() if k in {
             "year", "company_id", "segment", "segment_name", "revenue_usd",
             "operating_profit_usd", "capex_usd", "drivers"}}
@@ -28,6 +51,25 @@ def build():
     if not frame:
         raise ValueError("standalone page template has no data-srcdoc document")
     source = html.unescape(frame[1])
+    # Keep displayed assumptions tied to the same input that produced results.
+    source = re.sub(r'(<table class="table table-sm"><tbody(?: id="ts-assumptions")?>).*?(</tbody></table>)',
+                    lambda m: '<table class="table table-sm"><tbody id="ts-assumptions"></tbody></table>',
+                    source, count=1, flags=re.S)
+    marker = "const data=JSON.parse(el('ts-data').textContent);"
+    render = """
+el('ts-assumptions').replaceChildren(...data[0].assumptions.map(([label,value])=>{
+ const tr=document.createElement('tr');for(const text of [label,value]){const td=document.createElement('td');td.textContent=text;tr.appendChild(td);}return tr;
+}));"""
+    if "replaceChildren(...data[0].assumptions" not in source:
+        source = source.replace(marker, marker + render)
+    if 'id="ts-robotaxi-detail"' not in source:
+        source = source.replace('<div id="ts-current-detail" class="text-small" aria-live="polite"></div>',
+                                '<div id="ts-current-detail" class="text-small" aria-live="polite"></div>\n<div id="ts-robotaxi-detail" class="text-small" aria-live="polite"></div>')
+        source = source.replace("if(!r)return;", """if(!r)return;
+ const taxi=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='robotaxi');
+ el('ts-robotaxi-detail').textContent=taxi?(()=>{const d=taxi.drivers;return r.year+' Robotaxi：製造 '+fmt(d.manufactured_units)+' 輛／新投運 '+fmt(d.additions)+' 輛／平均服役 '+fmt(d.average_fleet)+' 輛／年底待投運 '+fmt(d.pending_deployment_units)+' 輛；營收 '+fmt(taxi.revenue_usd,1e9)+' 十億美元。';})():'';""")
+    if "四步驟 SOP" not in source:
+        source = source.replace('<h2>Tesla／SpaceX 主預測</h2>', '<h2>Tesla／SpaceX 主預測</h2>\n<div class="text-small"><a href="https://github.com/WangChengYeh/AI_eco/blob/main/SOP.md" target="_blank" rel="noopener">四步驟 SOP：理論 → 數據 → Forecast Python → HTML</a></div>')
     payload = json.dumps(data, ensure_ascii=False, allow_nan=False, separators=(",", ":")).replace("<", "\\u003c")
     source, count = re.subn(r'(<script type="application/json" id="ts-data">).*?(</script>)',
                            lambda m: m[1] + payload + m[2], source, flags=re.S)

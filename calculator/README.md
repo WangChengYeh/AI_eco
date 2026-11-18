@@ -8,6 +8,14 @@ Python 3.10 以上，僅使用標準函式庫，無需安裝套件。預設計�
 
 ## 快速開始
 
+標準流程統一為 [四步驟 SOP](../SOP.md)：理論 → 數據 → Forecast Python → HTML。查核資料後使用 `python calculator/run_pipeline.py`，而不是只修改網頁數字。`configs/input_provenance.json` 將本輪Robotaxi關鍵參數連到使用者假設、公司披露或模型補充假設；目前仍非全業務已校準。
+
+### Robotaxi 2027年中全速
+
+主預測改用 `production_ramp`：`full_rate_year=2027`、`full_rate_month=7` 保留使用者時程；年化產速先以已披露裝置產能的下限125,000台作錨點。年初20%產速、半年線性爬坡、全部自持、部署延遲1月均為模型假設，不是公司已確認產速或部署承諾。
+
+每月製造數量與投運月份分開。年底未投運車仍保留製造成本；未投運期間不計服務營收及折舊。月度製造量合計包含替換用途；啟用此模式不能另填 `additions` 或開啟自動額外替換，避免同一產能被用兩次。工廠產能限制使用製造量，營收使用實際平均服役車隊與付費里程。
+
 ### 網頁發佈
 
 根目錄 `index.html` 及 `docs/index.html` 是相同的完整網頁，包含本份主預測結果、樣式及公司／年度切換。GitHub Pages 設定：repo **Settings → Pages → Deploy from a branch → main → /(root) → Save**；若原已選 `/docs` 也可直接使用。啟用後以 Pages 設定顯示的網站網址為準。
@@ -182,7 +190,7 @@ python calculator/forecast.py --config calculator/configs/optimus_10m.json \
 
 新車／退役車視為平均年中變動。空駛仍耗電、維修及折舊。每車固定現金成本應含保險、清潔、支援、場站等；避免和業務 opex 重算。
 
-車輛購置以 capex、折舊費用及現金流加回連結。主預測採 6 年服務與折舊壽命、到期等量替換；既有 5,000 輛示例車視為 2027 年初新投入。`passenger_production_capacity` 檢查外部乘用車銷量＋車隊擴張新增＋替換車，避免超出總產能。
+車輛購置以 capex、折舊費用及現金流加回連結。主預測採 6 年服務與折舊壽命；年度總製造量同時提供擴張及替換，沒有額外自動加造退休替換車。既有 5,000 輛示例車視為 2027 年初新投入。`passenger_production_capacity` 檢查外部乘用車銷量＋自持車實際製造量，避免超出總產能；投運量不能代替製造量作檢查。
 
 `robotaxi`／`robot_fleet`／`orbital_compute` 填入 `service_life_years` 啟用投運批次帳；`depreciation_life_years` 決定直線折舊期間；服務期短於折舊期時，退役認列剩餘帳面損失。自持車與機器人可用 `replace_retired=true` 在到期時等量替換，支付當年製造成本；太空算力依當年製造與部署上限投入，沒有額外免費替換。此模式的 `retirements` 必須為 0，避免自動與手動重複退役。歷史示例若不填服務壽命，保留原簡化方法；不可拿它作已校準的長期資產帳。
 

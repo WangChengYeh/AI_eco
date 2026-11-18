@@ -1,0 +1,134 @@
+{
+  "checked_at": "2026-11-19",
+  "coverage": "本輪優先覆蓋Robotaxi關鍵參數，未覆蓋業務維持未校準，不代表全模型已完成實證驗證。",
+  "records": [
+    {
+      "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.value",
+      "value": 125000,
+      "unit": "vehicles/year",
+      "classification": "model_assumption",
+      "basis": "取公司披露>125,000裝置年產能的下限作待校準產速錨點；非滿產速度指引。",
+      "fact_ids": [
+        "tesla_cybercab_installed_capacity_2026q3"
+      ],
+      "checked_at": "2026-11-19",
+      "fact_value_rule": "lower_bound_anchor"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.growth",
+      "value": 0,
+      "unit": "fraction/year",
+      "classification": "model_assumption",
+      "basis": "尚未有本輪驗證的新增產線產速，先不額外推定擴產。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.production_ramp.full_rate_year",
+      "value": 2027,
+      "unit": "year",
+      "classification": "user_assumption",
+      "basis": "使用者指定2027年中達全速量產。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.production_ramp.full_rate_month",
+      "value": 7,
+      "unit": "month",
+      "classification": "user_assumption",
+      "basis": "將年中具體映射為7月1日開始穩定產速。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.production_ramp.initial_rate_fraction",
+      "value": 0.2,
+      "unit": "fraction",
+      "classification": "model_assumption",
+      "basis": "年初產速為所選全速20%，至年中線性爬坡；不是公司披露。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.production_ramp.deployment_delay_months",
+      "value": 1,
+      "unit": "months",
+      "classification": "model_assumption",
+      "basis": "製造至投運的等待期代理，尚需真實城市部署資料校準。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.opening_fleet",
+      "value": 5000,
+      "unit": "vehicles",
+      "classification": "model_assumption",
+      "basis": "期初5,000輛仍為舊模型示例，未查得可直接對應的2026年底車隊實績。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.service_life_years",
+      "value": 6,
+      "unit": "years",
+      "classification": "model_assumption",
+      "basis": "6年服役期是模型假設，應依里程及維修資料校準。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.vehicle_cost_usd",
+      "value": {
+        "value": 25000,
+        "growth": -0.03,
+        "annual": {}
+      },
+      "unit": "USD/vehicle",
+      "classification": "model_assumption",
+      "basis": "原模型製造成本及下降曲線未經本輪實證校準，維持原假設。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.km_per_vehicle_day",
+      "value": 350,
+      "unit": "km/vehicle-day",
+      "classification": "model_assumption",
+      "basis": "運行里程假設，非每車已付費里程。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.paid_km_share",
+      "value": 0.65,
+      "unit": "fraction",
+      "classification": "model_assumption",
+      "basis": "付費里程比例仍待校準，不能把空駛當營收。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.operating_days",
+      "value": 340,
+      "unit": "days/year",
+      "classification": "model_assumption",
+      "basis": "全年營運天數假設。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.robotaxi.fare_usd_per_paid_km",
+      "value": {
+        "value": 0.9,
+        "growth": -0.03,
+        "annual": {}
+      },
+      "unit": "USD/paid-km",
+      "classification": "model_assumption",
+      "basis": "實收每付費公里車資及下降曲線假設，尚需服務數據。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    }
+  ]
+}

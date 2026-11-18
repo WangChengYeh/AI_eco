@@ -112,7 +112,7 @@ KIND_FIELDS = {
     "robotaxi": {"opening_fleet", "additions", "retirements", "vehicle_cost_usd",
                  "depreciation_usd_per_vehicle_year", "km_per_vehicle_day", "operating_days",
                  "paid_km_share", "fare_usd_per_paid_km", "cash_cost_usd_per_total_km",
-                 "fixed_cash_usd_per_vehicle_year", "fleet_capacity"},
+                 "fixed_cash_usd_per_vehicle_year", "fleet_capacity", "production_ramp"},
     "robot_fleet": {"opening_fleet", "production_units", "retirements", "fleet_capacity",
                     "unit_manufacturing_cost_usd", "opening_net_book_value_usd",
                     "depreciation_usd_per_robot_year", "internal_demand_robots",
@@ -154,7 +154,7 @@ def asset_rollforward(state, year, new_assets, service_life, da_life,
         state["asset_vintages"] = ([{"units": opening_units, "cost": opening_unit_cost,
             "born": year, "life": service_life, "da_life": da_life}] if opening_units else [])
     vintages = state["asset_vintages"]
-    opening = sum(v["units"] for v in vintages if v["born"] < year and v["born"] + v["life"] >= year)
+    opening = sum(v["units"] for v in vintages if v["born"] <= year and v["born"] + v["life"] >= year)
     for units, cost, month in new_assets:
         if units:
             vintages.append({"units": units, "cost": cost, "born": year + (month - .5) / 12,
@@ -166,7 +166,7 @@ def asset_rollforward(state, year, new_assets, service_life, da_life,
             vintages.append({"units": v["units"], "cost": replacement_unit_cost,
                              "born": v["born"] + v["life"],
                              "life": service_life, "da_life": da_life})
-    average = depreciation = writeoff = book = closing = 0.0
+    average = depreciation = writeoff = book = closing = pending = 0.0
     for v in vintages:
         born, dead = v["born"], v["born"] + v["life"]
         value = v["units"] * v["cost"]
@@ -175,12 +175,37 @@ def asset_rollforward(state, year, new_assets, service_life, da_life,
         if year <= dead < year + 1:
             writeoff += value * max(1 - v["life"] / v["da_life"], 0)
         if dead >= year + 1:
-            closing += v["units"]
-            book += value * max(1 - (year + 1 - born) / v["da_life"], 0)
+            if born < year + 1:
+                closing += v["units"]
+            else:
+                pending += v["units"]
+            book += value * max(1 - max(year + 1 - born, 0) / v["da_life"], 0)
     state["asset_vintages"] = [v for v in vintages if v["born"] + v["life"] >= year + 1]
     return {"opening": opening, "closing": closing, "average": average,
             "retirements": sum(v["units"] for v in expired), "replacements": replacements,
-            "da": depreciation + writeoff, "writeoff": writeoff, "book": book}
+            "da": depreciation + writeoff, "writeoff": writeoff, "book": book, "pending": pending}
+
+
+def robotaxi_production(ramp, year, base_year):
+    """Gross manufactured vehicles by month; commissioning can occur next year."""
+    allowed = {"annual_capacity_units", "full_rate_year", "full_rate_month",
+               "initial_rate_fraction", "deployment_delay_months"}
+    if not isinstance(ramp, dict) or set(ramp) - allowed:
+        raise ModelError("invalid production_ramp fields")
+    capacity = parameter(ramp.get("annual_capacity_units", 0), year, base_year, "annual_capacity_units")
+    full_year = number(ramp["full_rate_year"], "full_rate_year")
+    full_month = number(ramp["full_rate_month"], "full_rate_month", 1, 12)
+    delay = number(ramp.get("deployment_delay_months", 0), "deployment_delay_months", 0, 12)
+    if not full_year.is_integer() or not full_month.is_integer() or not delay.is_integer():
+        raise ModelError("production ramp dates and delay must be integer years/months")
+    initial = number(ramp.get("initial_rate_fraction", 0), "initial_rate_fraction", 0, 1)
+    duration = (full_year - base_year) * 12 + full_month - 1
+    monthly = []
+    for month in range(1, 13):
+        elapsed = (year - base_year) * 12 + month - .5
+        fraction = initial + (1 - initial) * min(max(elapsed / duration, 0), 1) if duration > 0 else 1
+        monthly.append((capacity * fraction / 12, month + delay))
+    return monthly, capacity
 
 
 def segment_forecast(segment, year, base_year, state):
@@ -214,6 +239,12 @@ def segment_forecast(segment, year, base_year, state):
         elif kind == "robotaxi":
             opening = state.setdefault("fleet", number(segment.get("opening_fleet", 0), "opening_fleet", 0))
             adds, retirements = p("additions"), p("retirements")
+            production, factory_capacity = None, None
+            if "production_ramp" in segment:
+                if "additions" in segment or segment.get("replace_retired", False) or "service_life_years" not in segment:
+                    raise ModelError("production_ramp requires service_life_years, no additions, and replace_retired=false; gross production already funds replacement")
+                production, factory_capacity = robotaxi_production(segment["production_ramp"], year, base_year)
+                adds = sum(q for q, month in production)
             if retirements > opening:
                 raise ModelError("robotaxi retirements cannot exceed opening fleet")
             closing = opening + adds - retirements
@@ -231,6 +262,7 @@ def segment_forecast(segment, year, base_year, state):
                 if retirements:
                     raise ModelError("use automatic service-life retirements, not manual retirements, with vintage accounting")
                 lifecycle = asset_rollforward(state, year,
+                    [(q, p("vehicle_cost_usd"), month) for q, month in production] if production is not None else
                     [(adds / 12, p("vehicle_cost_usd"), month) for month in range(1, 13)],
                     p("service_life_years", 6, 1), p("depreciation_life_years", 6, 1e-9),
                     opening_units=opening, opening_unit_cost=p("vehicle_cost_usd"),
@@ -253,6 +285,12 @@ def segment_forecast(segment, year, base_year, state):
             if lifecycle:
                 inputs.update(replacement_units=lifecycle["replacements"],
                               closing_net_book_value_usd=lifecycle["book"], retirement_writeoff_usd=lifecycle["writeoff"])
+            if production is not None:
+                inputs.update(manufactured_units=adds, annual_factory_capacity_units=factory_capacity,
+                              production_months=[{"production_month": int(month - segment["production_ramp"].get("deployment_delay_months", 0)),
+                                                  "units": q} for q, month in production],
+                              pending_deployment_units=lifecycle["pending"],
+                              additions=closing - opening + retirements)
         elif kind == "robot_fleet":
             opening = state.setdefault("fleet", number(segment.get("opening_fleet", 0), "opening_fleet", 0))
             production, retirements = p("production_units"), p("retirements")
@@ -478,7 +516,8 @@ def company_forecast(company, years):
         if "passenger_production_capacity" in company:
             passenger_id, fleet_id = company["passenger_segment_id"], company["robotaxi_segment_id"]
             try:
-                used = rows[passenger_id]["drivers"].get("external_units", 0) + rows[fleet_id]["drivers"].get("additions", 0)
+                fleet_drivers = rows[fleet_id]["drivers"]
+                used = rows[passenger_id]["drivers"].get("external_units", 0) + fleet_drivers.get("manufactured_units", fleet_drivers.get("additions", 0))
             except KeyError as exc:
                 raise ModelError("production constraint references unknown segment") from exc
             if used > p("passenger_production_capacity") + 1e-6:

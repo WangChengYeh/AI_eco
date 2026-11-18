@@ -8,9 +8,11 @@
       "period": "2026-Q3",
       "value": 486532,
       "unit": "vehicles",
-      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026064366/exhibit991111111.htm",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/exhibit9914.htm",
       "status": "company_disclosed",
-      "mapping_note": "季度交付資料，不能直接當全年銷量或自有Robotaxi數量。"
+      "mapping_note": "季度交付資料，不能直接當全年銷量或自有Robotaxi數量。",
+      "id": "tesla_deliveries_2026q3",
+      "checked_at": "2026-11-19"
     },
     {
       "company": "Tesla",
@@ -18,9 +20,11 @@
       "period": "2026-Q3",
       "value": 13.7,
       "unit": "GWh",
-      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026064366/exhibit991111111.htm",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/exhibit9914.htm",
       "status": "company_disclosed",
-      "mapping_note": "儲能部署量，不等於年度產能，亦不提供每GWh售價。"
+      "mapping_note": "儲能部署量，不等於年度產能，亦不提供每GWh售價。",
+      "id": "tesla_storage_2026q3",
+      "checked_at": "2026-11-19"
     },
     {
       "company": "SpaceX",
@@ -30,7 +34,9 @@
       "unit": "USD",
       "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
       "status": "company_disclosed",
-      "mapping_note": "Connectivity合計，不能再把同筆消費者、企業與終端硬體收入加一次。"
+      "mapping_note": "Connectivity合計，不能再把同筆消費者、企業與終端硬體收入加一次。",
+      "id": "spacex_connectivity_2026q3",
+      "checked_at": "2026-11-19"
     },
     {
       "company": "SpaceX",
@@ -40,7 +46,22 @@
       "unit": "USD",
       "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
       "status": "company_disclosed",
-      "mapping_note": "前九個月合計，與Q3為重疊期間，不能相加。"
+      "mapping_note": "前九個月合計，與Q3為重疊期間，不能相加。",
+      "id": "spacex_connectivity_2026ytd",
+      "checked_at": "2026-11-19"
+    },
+    {
+      "id": "tesla_cybercab_installed_capacity_2026q3",
+      "company": "Tesla",
+      "metric": "cybercab_installed_annual_capacity",
+      "period": "2026-Q3",
+      "value": 125000,
+      "comparison": ">",
+      "unit": "vehicles/year",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/exhibit9914.htm",
+      "status": "company_disclosed",
+      "checked_at": "2026-11-19",
+      "mapping_note": "已裝置年產能超過125,000台；不是實際產速，亦不是2027最終產能。模型只取已知下限作待校準產速錨點。"
     }
   ]
 }
