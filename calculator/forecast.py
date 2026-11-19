@@ -217,11 +217,18 @@ def orbital_launch_capacity(network, year, base_year):
     Forecast dates and environmental envelopes are conditional planning inputs,
     not a statement that a site currently holds an operating license.
     """
-    allowed = {"payload_tonnes", "it_kw_per_tonne", "payload_efficiency", "ai_flight_share", "sites", "fleet_rate_start", "fleet_rate_end", "capacity_upgrade"}
+    allowed = {"payload_tonnes", "it_kw_per_tonne", "payload_efficiency", "ai_flight_share", "sites", "fleet_rate_start", "fleet_rate_end", "capacity_upgrade", "capacity_method"}
     if set(network) - allowed or not isinstance(network.get("sites"), list):
         raise ModelError("invalid launch_network fields/sites")
     def p(key, default=0, minimum=0, maximum=None):
         return parameter(network.get(key, default), year, base_year, key, minimum, maximum)
+    method = network.get("capacity_method", "site_limited")
+    if method not in {"site_limited", "pad_frequency"}:
+        raise ModelError("unknown launch capacity_method")
+    pad_only = method == "pad_frequency"
+    if pad_only and ({"fleet_rate_start", "fleet_rate_end"} & set(network) or
+                     any("annual_site_limit" in site for site in network["sites"])):
+        raise ModelError("pad_frequency cannot include site or fleet caps; regulatory references are informational")
     mw_per_flight = p("payload_tonnes") * p("it_kw_per_tonne") * p("payload_efficiency", 1, 0, 1) / 1000
     per_flight_monthly = [mw_per_flight] * 12
     if "capacity_upgrade" in network:
@@ -241,10 +248,10 @@ def orbital_launch_capacity(network, year, base_year):
     monthly_site_slots = [0] * 12
     site_details, ids = [], set()
     for site in network["sites"]:
-        if set(site) - {"id", "pads", "annual_site_limit", "limit_status", "notes"} or site["id"] in ids:
+        if set(site) - {"id", "pads", "annual_site_limit", "limit_status", "notes", "regulatory_reference"} or site["id"] in ids:
             raise ModelError("invalid/duplicate launch site")
         ids.add(site["id"])
-        limit = parameter(site["annual_site_limit"], year, base_year, "annual_site_limit")
+        limit = None if pad_only else parameter(site["annual_site_limit"], year, base_year, "annual_site_limit")
         pad_details, pad_ids = [], set()
         for pad in site["pads"]:
             if set(pad) - {"id", "online_year", "online_month", "flights_per_year", "flights_per_year_start", "flights_per_year_end", "planned_pads", "notes"}:
@@ -270,19 +277,34 @@ def orbital_launch_capacity(network, year, base_year):
         raw_monthly=[sum(p["raw_monthly_flights"][i] for p in pad_details) for i in range(12)]
         monthly, cumulative, previous = [], 0.0, 0
         for i, raw in enumerate(raw_monthly):
-            # Shared site envelope is a monthly-prorated planning rate; unused
-            # earlier capacity is not banked as extra later-month throughput.
-            cumulative+=min(raw,limit/12)
-            total=math.floor(cumulative+1e-9)
-            monthly.append(total-previous)
-            monthly_site_slots[i]+=total-previous
-            previous=total
+            # Technical mode preserves each site's fractional capacity until
+            # global summation; legacy mode retains the historical site envelope.
+            if pad_only:
+                # Keep fractional expected capacity until every pad is summed.
+                monthly.append(raw)
+                monthly_site_slots[i] += raw
+                previous += raw
+            else:
+                cumulative+=min(raw,limit/12)
+                total=math.floor(cumulative+1e-9)
+                monthly.append(total-previous)
+                monthly_site_slots[i]+=total-previous
+                previous=total
         site_details.append({"site":site["id"],"available_flights":previous,
             "raw_annual_flights":sum(raw_monthly),"raw_monthly_flights":raw_monthly,
             "monthly_available_flights":monthly,"annual_site_limit":limit,"pads":pad_details,
             "active_pad_months":sum(p["active_months"] for p in pad_details),
-            "limit_status":site.get("limit_status","model_assumption")})
-    infrastructure_slots = sum(x["available_flights"] for x in site_details)
+            "limit_status":site.get("limit_status","model_assumption"),
+            "regulatory_reference":site.get("regulatory_reference", "")})
+    if pad_only:
+        cumulative, previous, whole_slots = 0.0, 0, []
+        for raw in monthly_site_slots:
+            cumulative += raw
+            total = math.floor(cumulative + 1e-9)
+            whole_slots.append(total - previous)
+            previous = total
+        monthly_site_slots = whole_slots
+    infrastructure_slots = sum(monthly_site_slots)
     available = infrastructure_slots
     cumulative, allocated, monthly_mw = 0, 0, []
     for i, slots in enumerate(monthly_site_slots):
@@ -307,7 +329,8 @@ def orbital_launch_capacity(network, year, base_year):
             available, allocated = flights, ai
         fleet_drivers = {"fleet_rate_start": start, "fleet_rate_end": end}
     return {"infrastructure_site_slots": infrastructure_slots,
-            "site_detail_scope": "per-pad capacity after shared site limits; optional legacy fleet cap applied only when configured",
+            "capacity_method": method,
+            "site_detail_scope": ("technical pad frequency times active months; regulatory references do not cap output" if pad_only else "legacy shared site limits; optional fleet cap"),
             "raw_pad_capacity_flights":sum(x["raw_annual_flights"] for x in site_details),
             "monthly_available_starship_flights":monthly_site_slots,
             **fleet_drivers, "monthly_launch_capacity_mw": monthly_mw,

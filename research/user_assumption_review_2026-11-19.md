@@ -4,7 +4,7 @@
 
 範圍：現行主預測全部使用者假設，加上原始理論的重要強版本。查核包含支持、反向及限縮證據；沒有找到支持不等於已證偽。公司目標、Musk預測、第三方逐字稿及已發生實績分開。
 
-本表包含21項使用者輸入及25項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
+本表包含22項使用者輸入及25項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
 
 ## Optimus 2027全年100萬台
 
@@ -395,12 +395,12 @@
 
 ## 星艦塔與每年太空部署容量
 
-- 原命題：逐台按啟用月份及每台發射頻率相乘，再加總各場；保留場址共用額度，不另加全機隊率上限。
+- 原命題：逐架按啟用月份與每架發射頻率相乘後加總；不另套場址或全機隊上限，許可狀態僅獨立列示。
 - 判定：**工程與場址規劃有來源，吞吐與啟用仍是假設**
-- 支持／相關證據：較新Q3逐字稿為2027每週一發到兩發以上；8月Reuters記錄一年後每天至少一發，均屬整體頻率目標。Starbase環評Phase1擬100、Phase2擬456，不是現行已核准。
-- 限縮／相反證據：Musk整體頻率不是逐台承諾；將52→104等曲線套為每台能力是此輪模型假設。各場址額度是共用，不可再逐台相乘；啟用、周轉及未來擴容均未驗證。
-- Musk查核：已讀Q3第三方逐字稿與Reuters原始報導，未把轉述標為官方原片驗證；不把8月較早每日目標當較新2027指引。 2026-11-20重新搜尋Musk weekly/twice weekly與FAA場址頁，仍未取得每台相同頻率的官方承諾。
-- 計算處理：依使用者要求移除主預測fleet_rate_start/end。每台新增成對年化起終點、按月中點線性插值；啟用後才計次數。各場每月min(逐台能力合計,共用年化額度/12)，累計向下取整後各場加總，再分配90%AI。HTML列逐台、逐場及限制前後結果。
+- 支持／相關證據：FAA頁及Louisiana州政府公告可查場址規劃；Musk 2026Q3轉錄稱2027每週一發到兩發以上，仍是整體目標。這些支持擴張方向，未驗證每架相同的頻率曲線。
+- 限縮／相反證據：技術模型移除場址封頂不代表許可已擴張。每架52→104、104→365等頻率，2027–2031啟用日期與共用補給／人員可支援並行均為未校準模型假設；不把官方44／76／100／456當逐架頻率。Louisiana只算有啟用日期的首架，不把10架規劃當成已啟用。
+- Musk查核：已讀Q3第三方逐字稿與Reuters原始報導，未把轉述標為官方原片驗證；不把8月較早每日目標當較新2027指引。 2026-11-20重新搜尋Musk weekly/twice weekly與FAA場址頁，仍未取得每台相同頻率的官方承諾。 本輪再查官方SpaceX頻率、FAA與Louisiana；未取得逐架同頻率承諾，沿用既有技術路徑並明列假設。
+- 計算處理：capacity_method=pad_frequency；刪除current各場annual_site_limit。各月先加總所有已啟用架的插值頻率÷12，再按全球累計向下取整一次，將新增整數槽分配90%AI；不再有場址或全機隊封頂。許可資料獨立顯示、不參與min計算。製造、部署、退役、capex及稀釋同步重算。
 
 搜尋紀錄：
 
@@ -409,6 +409,9 @@
 - `Musk Starship 2027 once week twice week October 2026 launch pads`
 - `site:faa.gov Starship LC-39A 44 launches SLC-37 76 launches annually`
 - `site:opportunitylouisiana.gov spacex ten launch pads 2029`
+- `site.spacex.com Starship launch frequency per launch pad 2026 2027 weekly twice weekly`
+- `site.faa.gov Starbase 456 100 annual launches 2026`
+- `site.opportunitylouisiana.gov SpaceX 10 launch pads 2029`
 
 來源：
 
@@ -417,7 +420,7 @@
 - [FAA：Starbase現行25與擬議456次年發射](https://www.govinfo.gov/content/pkg/FR-2026-10-14/pdf/2026-20963.pdf)：2026-11-19讀取官方搜尋索引：現行25；Phase1擬100、Phase2擬456，尚非已核准。
 - [FAA LC39A最終ROD](https://www.faa.gov/sites/faa.gov/files/20260123-SSH-LC-39A-ROD-Final.pdf)：已讀原始PDF：環評方案44次／年；環評決定不能直接當營運許可。
 - [FAA SLC37工程與補充環評](https://www.faa.gov/space/stakeholder_engagement/spacex_starship_ccsfs)：已讀：基建已開發、76次為整個SLC37方案；仍須修改營運許可。
-- [Louisiana州政府SpaceX工程規劃](https://www.opportunitylouisiana.gov/spacex)：已讀：5區各2台共10發射台；2027開工、最快2029首飛，非10台已建成。
+- [Louisiana州政府SpaceX工程規劃](https://www.opportunitylouisiana.gov/news/spacex-launches-new-era-of-commercial-spaceflight-with-100-billion-louisiana-campus)：本輪官方搜尋索引可讀：規劃5區各2架、2027施工、首發最快2029；首架2029/7與其餘架啟用日期不是公司指引。
 - [SpaceX AI1官方頁](https://new.spacex.com/spacexai/starmind)：官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。
 
 ## 2027年中起每次星艦淨部署15MW

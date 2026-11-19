@@ -26,7 +26,7 @@ def assumptions(config):
     dates = '；'.join(f"{site['id']}:"+', '.join(f"{p['id']} {p['online_year']}/{p['online_month']}" for p in site['pads']) for site in network['sites'])
     first_pad = network['sites'][0]['pads'][0]
     ramp_text = '；'.join(f"{y}年{v(first_pad['flights_per_year_start'],y):g}→{v(first_pad['flights_per_year_end'],y):g}" for y in config['years'])
-    limits = '；'.join(site['id']+':'+ '/'.join(f"{v(site['annual_site_limit'],y):g}" for y in config['years']) for site in network['sites'])
+    permits = '；'.join(site['id']+': '+site.get('regulatory_reference','未列資訊') for site in network['sites'])
     rows = [
         ['FSD（增量服務成本）',f"每戶每月{v(fsd['monthly_cost_usd']):g}美元；保留分部費用、折舊與公司費用。美國費率錨點{v(fsd['monthly_price_usd']):g}美元；未來全球實收價格曲線仍是假設"],
         ['FSD（付費車隊）',f"2026年底{fsd['opening_subscribers']/10000:g}萬；新車加入率{v(fsd['new_vehicle_attach_rate']):.0%}、退訂率{v(fsd['annual_churn_rate']):.0%}；均勻加入，按全年平均計費（假設）" + ('；'+config['metadata']['user_assumptions']['fsd_opening_fleet_basis'] if config['metadata']['user_assumptions'].get('fsd_opening_fleet_basis') else '')],
@@ -37,9 +37,10 @@ def assumptions(config):
         ['Robotaxi（量產／投運）',f"{ramp['full_rate_year']}/{ramp['full_rate_month']}全速，基準年化{v(ramp['annual_capacity_units']):,.0f}台；年初{ramp['initial_rate_fraction']:.0%}、部署延遲{ramp['deployment_delay_months']}月；均為條件假設"],
         ['Robotaxi（獲利口徑）','未套入每車年淨利3萬美元；2019 Musk約3萬美元是年毛利展望，非淨利實績。車資、里程與成本待校準'],
         ['星艦（單次容量）',mw_text+f"；AI發射分配{v(network['ai_flight_share']):.0%}（假設）"],
-        ['星艦（每台年化頻率假設）',ramp_text+'；各台按啟用月份及月中頻率相乘、各場加總，再套場址共用額度；不再另加全機隊上限。這是每台模型假設，非Musk逐台指引'],
+        ['星艦（每台年化頻率假設）',ramp_text+'；每架按啟用月份及月中頻率相乘後加總，不另套場址或全機隊上限。每架曲線仍為模型假設，非Musk逐架指引'],
         ['發射場（模型啟用月份）',dates+'；日期與許可均含未驗證條件'],
-        ['場址額度（模型曲線）',limits+'；依序為2027–2031，後續擴容並非已獲准'],
+        ['發射容量算法','Σ每架啟用後每月年化頻率÷12；全部架累計後向下取整一次，不逐場截斷小數；90%分配AI，未依許可封頂'],
+        ['許可／環評（獨立資訊）',permits],
         ['衛星製造／投運',('供應充足、隨AI發射能力備貨（使用者假設）' if orbit.get('manufacture_to_launch_capacity') else '受明列年度製造量限制')+f"；2027從{v(orbit['commissioning_start_month']):g}月起投運，製造及部署成本照計"],
         ['太空成本（模型假設）',f"硬體{v(orbit['hardware_cost_usd_per_mw'])/1e6:g}M美元/MW、部署{v(orbit['deployment_cost_usd_per_mw'])/1e6:g}M美元/MW；不代表已驗證成本"],
         ['資產服務壽命',f"Optimus {robot['service_life_years']}年、Robotaxi {taxi['service_life_years']}年、太空設備{orbit['service_life_years']}年；製造投入及退役按批次計算"],
@@ -87,7 +88,7 @@ def payload(config,research,result):
     return [dict(scenario='base',evidence=evidence,assumptions=assumptions(config),companies=result['companies'],
         segments=[{k:v for k,v in row.items() if k in segment_keys} for row in result['segments']],
         opening_anchors=anchors,orbital_audit=orbital_audit(config,result),
-        model_notice='條件式預測：部分期初財務值採2026Q3／10月申報錨點，假設至2026年底淨變動為0；其餘營運、許可擴容、估值與股票支付條件仍待驗證。')]
+        model_notice='條件式預測：部分期初財務值採2026Q3／10月申報錨點，假設至2026年底淨變動為0；其餘營運、估值與股票支付仍待驗證。星艦為逐架技術容量情境，未依場址許可封頂，不代表已取得可執行任務額度。')]
 
 
 def render_document(config,research,result):

@@ -1815,11 +1815,11 @@ html>body{padding:0}</style>
 <div class="text-small">投入按新增與汰換容量乘單位模型預算計算，不是公司指引；JLL產業價格代理、土地／供電預備額及歷史資產年齡仍待校準。自用容量不創造對外營收。</div>
 </details>
 <details id="ts-orbit-audit"><summary>SpaceX：逐年發射塔、頻率與GW計算</summary>
-<div class="text-small">每台能力＝啟用後各月年化頻率÷12，加總各台及各場。場址額度為共用年化上限，按月分配；先前月份未使用額度不回補。按月切分為模型排程假設，非FAA月度要求。主預測不再有額外全機隊上限。AI槽不等於全部已用於投運。</div>
-<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>可用台數：年初→年底</th><th>單次MW：年初→年底</th><th>每台年化率：年初→年底</th><th>啟用台月數</th><th>台數×頻率合計（限制前）</th><th>共用場址額度限制後</th><th>AI分配槽</th><th>投運使用AI槽</th></tr></thead><tbody id="ts-orbit-flights"></tbody></table></div>
+<div class="text-small">每架能力＝啟用後各月年化頻率÷12，逐架加總；全部架的累計能力向下取整一次，形成每月新增規劃槽。主預測不另套場址或全機隊上限。許可／環評獨立列示、不參與容量封頂；此為技術容量情境，不代表已獲准或已發生發射。AI槽不等於全部投運。</div>
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>啟用架數：年初→年底</th><th>單次MW：年初→年底</th><th>每台年化率：年初→年底</th><th>啟用台月數</th><th>架數×頻率技術能力</th><th>取整後規劃發射槽</th><th>AI分配槽</th><th>投運使用AI槽</th></tr></thead><tbody id="ts-orbit-flights"></tbody></table></div>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>製造GW</th><th>新增投運GW</th><th>退役GW</th><th>年底在軌GW</th><th>全年平均GW</th><th>製造部署capex（十億美元）</th></tr></thead><tbody id="ts-orbit-capacity"></tbody></table></div>
-<details><summary>逐台乘法：啟用月份與每台頻率</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>場址／發射台</th><th>模型啟用</th><th>有效月數</th><th>年化頻率初→末</th><th>限制前能力：Σ每月頻率÷12</th></tr></thead><tbody id="ts-pad-audit"></tbody></table></div></details>
-<details><summary>逐場加總與共用額度</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>場址</th><th>台數×頻率合計</th><th>共用年化額度</th><th>按月限制後整數次數</th></tr></thead><tbody id="ts-site-audit"></tbody></table></div></details>
+<details><summary>逐台乘法：啟用月份與每台頻率</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>場址／發射台</th><th>模型啟用</th><th>有效月數</th><th>年化頻率初→末</th><th>每架能力：Σ每月頻率÷12</th></tr></thead><tbody id="ts-pad-audit"></tbody></table></div></details>
+<details><summary>逐場架數與技術能力加總</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>場址</th><th>有效架月數</th><th>各架頻率加總次數</th><th>許可／環評：僅資訊</th></tr></thead><tbody id="ts-site-audit"></tbody></table></div></details>
 <div class="text-small">2028閏年服務時數8,784；其餘年度8,760。按全年平均容量、對外份額、可用率及利用率計費。</div>
 </details>
 <details id="ts-optimus-audit"><summary>Tesla：逐年Optimus出租與租金</summary>
@@ -1891,7 +1891,7 @@ const pair=(a,b)=>a===b?fmt(a):fmt(a)+'→'+fmt(b);
 auditTable('ts-opening-anchors',data[0].opening_anchors.map(r=>[r.company,Math.round(r.shares).toLocaleString('en-US'),fmt(r.liquid_funds_usd,1e9),fmt(r.debt_usd,1e9)]));
 auditTable('ts-orbit-flights',data[0].orbital_audit.map(r=>[r.year,pair(r.pads_start,r.pads_end),pair(r.mw_start,r.mw_end),pair(r.pad_rate_start,r.pad_rate_end),r.active_pad_months,fmt(r.raw_pad_capacity),r.available_flights,r.ai_slots,r.used_ai_slots]));
 auditTable('ts-pad-audit',data[0].orbital_audit.flatMap(r=>r.site_details.flatMap(site=>site.pads.map(p=>[r.year,site.site+'/'+p.pad,p.online_year+'/'+p.online_month,p.active_months,pair(p.rate_start,p.rate_end),fmt(p.raw_annual_flights)]))));
-auditTable('ts-site-audit',data[0].orbital_audit.flatMap(r=>r.site_details.map(site=>[r.year,site.site,fmt(site.raw_annual_flights),site.annual_site_limit,site.available_flights])));
+auditTable('ts-site-audit',data[0].orbital_audit.flatMap(r=>r.site_details.map(site=>[r.year,site.site,site.active_pad_months,fmt(site.raw_annual_flights),site.regulatory_reference])));
 auditTable('ts-orbit-capacity',data[0].orbital_audit.map(r=>[r.year,...[r.manufactured_gw,r.new_gw,r.retired_gw,r.end_gw,r.average_gw].map(x=>x.toLocaleString('en-US',{maximumFractionDigits:6})),fmt(r.capex_usd,1e9)]));
 auditTable('ts-fsd-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='fsd').map(r=>[r.year,...['opening_subscribers','new_subscribers','closing_subscribers','average_subscribers'].map(k=>fmt(r.drivers[k],10000)),fmt(r.drivers.monthly_price_usd),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 auditTable('ts-ground-annual',data[0].segments.filter(r=>r.company_id==='spacex'&&r.segment==='ground_compute').map(r=>[r.year,...['opening_it_mw','commissioned_new_it_mw','year_end_it_mw','average_it_mw','replacement_hardware_mw'].map(k=>fmt(r.drivers[k],1000)),fmt(r.capex_usd,1e9),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
@@ -1953,7 +1953,7 @@ function selection(){
  const r=rows.find(r=>r.year===Number(year.value));
  if(!r)return;
  const orbitRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='orbital_compute');
- el('ts-launch-detail').textContent=orbitRow?(()=>{const d=orbitRow.drivers;return r.year+' 星艦部署：可用發射槽 '+fmt(d.available_starship_flights)+' 次／AI分配 '+fmt(d.allocated_ai_flights)+' 次／單次 '+(d.mw_per_ai_flight_start===d.mw_per_ai_flight?fmt(d.mw_per_ai_flight):fmt(d.mw_per_ai_flight_start)+'→'+fmt(d.mw_per_ai_flight))+' MW；新增投運 '+fmt(d.commissioned_new_it_mw/1000)+' GW／地面未部署庫存 '+fmt(d.closing_inventory_mw/1000)+' GW。含未確認許可與啟用假設。';})():'';
+ el('ts-launch-detail').textContent=orbitRow?(()=>{const d=orbitRow.drivers;return r.year+' 星艦部署：技術規劃發射槽 '+fmt(d.available_starship_flights)+' 次／AI分配 '+fmt(d.allocated_ai_flights)+' 次／單次 '+(d.mw_per_ai_flight_start===d.mw_per_ai_flight?fmt(d.mw_per_ai_flight):fmt(d.mw_per_ai_flight_start)+'→'+fmt(d.mw_per_ai_flight))+' MW；新增投運 '+fmt(d.commissioned_new_it_mw/1000)+' GW／地面未部署庫存 '+fmt(d.closing_inventory_mw/1000)+' GW。未依許可封頂；啟用及周轉仍是假設。';})():'';
  const fsdRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='fsd');
  el('ts-fsd-detail').textContent=fsdRow?(()=>{const d=fsdRow.drivers;return r.year+' FSD：年初付費 '+fmt(d.opening_subscribers/10000)+' 萬／新增 '+fmt(d.new_subscribers/10000)+' 萬／年底付費 '+fmt(d.closing_subscribers/10000)+' 萬／全年平均 '+fmt(d.average_subscribers/10000)+' 萬；月費 '+fmt(d.monthly_price_usd)+' 美元（模型假設）。';})():'';
  const taxi=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='robotaxi');

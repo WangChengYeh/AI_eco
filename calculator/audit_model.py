@@ -84,11 +84,21 @@ def reconcile(result):
                 if d['available_starship_flights']>d['infrastructure_site_slots']:raise ValueError('fleet exceeds site slots')
                 eq(d['raw_pad_capacity_flights'],sum(site['raw_annual_flights'] for site in d['launch_sites']),'sum of pad capacities')
                 if 'fleet_rate_start' not in spec['launch_network']:
-                    eq(d['available_starship_flights'],sum(site['available_flights'] for site in d['launch_sites']),'site launch sum without fleet cap')
+                    site_sum=sum(site['available_flights'] for site in d['launch_sites'])
+                    if spec['launch_network'].get('capacity_method')=='pad_frequency':
+                        site_sum=math.floor(site_sum+1e-9)
+                        cumulative,previous=0.0,0
+                        for i,actual in enumerate(d['monthly_available_starship_flights']):
+                            cumulative+=sum(site['raw_monthly_flights'][i] for site in d['launch_sites'])
+                            total=math.floor(cumulative+1e-9)
+                            eq(actual,total-previous,'global pad sum integerized once per cumulative month')
+                            previous=total
+                    eq(d['available_starship_flights'],site_sum,'pad/site launch sum without fleet cap')
                     eq(d['allocated_ai_flights'],math.floor(d['available_starship_flights']*parameter(spec['launch_network'].get('ai_flight_share',1),year,base)+1e-9),'global AI allocation')
                 for site in d['launch_sites']:
                     eq(site['raw_annual_flights'],sum(pad['raw_annual_flights'] for pad in site['pads']),'per-pad site sum')
-                    eq(site['available_flights'],math.floor(sum(min(q,site['annual_site_limit']/12) for q in site['raw_monthly_flights'])+1e-9),'monthly shared site envelope')
+                    expected=(sum(site['raw_monthly_flights']) if site['annual_site_limit'] is None else math.floor(sum(min(q,site['annual_site_limit']/12) for q in site['raw_monthly_flights'])+1e-9))
+                    eq(site['available_flights'],expected,'site capacity matches selected calculation method')
                     eq(site['available_flights'],sum(site['monthly_available_flights']),'site monthly count')
                     for pad in site['pads']:
                         expected=sum((pad['rate_start']+(pad['rate_end']-pad['rate_start'])*(m-.5)/12)/12 for m in range(1,13) if (year,m)>=(pad['online_year'],pad['online_month']))

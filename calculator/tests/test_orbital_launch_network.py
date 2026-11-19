@@ -51,12 +51,12 @@ class LaunchNetwork(unittest.TestCase):
             for used,cap in zip(d['deployed_monthly_mw'],d['monthly_launch_capacity_mw']):
                 self.assertLessEqual(used,cap+1e-8)
         self.assertEqual(rows[0]['drivers']['deployed_monthly_mw'][:9],[0]*9)
-        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],7455)
+        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],13635)
 
     def test_uncommissioned_inventory_does_not_retire_as_operating_assets(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
         rows=[s for s in m.forecast(c)['segments'] if s['segment']=='orbital_compute']
-        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],480)
+        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],975)
 
     def test_invalid_ai_share_is_rejected(self):
         n=self.network();n['ai_flight_share']=1.1
@@ -103,8 +103,8 @@ class LaunchNetwork(unittest.TestCase):
             self.assertAlmostEqual(d['closing_inventory_mw'],0)
             expected=d['manufactured_it_mw']*spec['hardware_cost_usd_per_mw']+d['deployment_attempted_mw']*spec['deployment_cost_usd_per_mw']
             self.assertAlmostEqual(row['capex_usd'],expected,delta=.1)
-        self.assertEqual(rows[-1]['drivers']['commissioned_new_it_mw'],65280)
-        self.assertEqual(rows[-1]['drivers']['year_end_it_mw'],126435)
+        self.assertEqual(rows[-1]['drivers']['commissioned_new_it_mw'],177390)
+        self.assertEqual(rows[-1]['drivers']['year_end_it_mw'],316920)
 
     def test_no_ai_slots_means_no_unnecessary_matched_manufacture(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
@@ -162,11 +162,65 @@ class LaunchNetwork(unittest.TestCase):
         p['flights_per_year_start']=52
         with self.assertRaisesRegex(m.ModelError,'paired start/end'):m.orbital_launch_capacity(n,2027,2027)
 
-    def test_primary_uses_pad_sum_and_preserves_shared_site_limits(self):
+    def test_primary_uses_frequency_times_pads_without_site_caps(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
         n=c['companies']['spacex']['segments']['orbital_compute']['launch_network']
         self.assertNotIn('fleet_rate_start',n)
         d=m.orbital_launch_capacity(n,2027,2027)
-        self.assertEqual(d['available_starship_flights'],126)
-        self.assertEqual([s['available_flights'] for s in d['launch_sites']],[82,44,0,0])
+        self.assertEqual(d['available_starship_flights'],201)
+        self.assertEqual([s['available_flights'] for s in d['launch_sites']],[123.5,78,0,0])
         self.assertAlmostEqual(d['raw_pad_capacity_flights'],201.5)
+        self.assertTrue(all('annual_site_limit' not in site for site in n['sites']))
+
+    def test_pad_frequency_doubles_with_two_identical_pads(self):
+        n=self.network();n['capacity_method']='pad_frequency'
+        n['sites'][0].pop('annual_site_limit')
+        n['sites'][0]['pads'][0]['flights_per_year']=52
+        one=m.orbital_launch_capacity(n,2027,2027)
+        n['sites'][0]['pads'].append(dict(id='b',online_year=2027,online_month=1,flights_per_year=52))
+        two=m.orbital_launch_capacity(n,2027,2027)
+        self.assertEqual(one['available_starship_flights'],52)
+        self.assertEqual(two['available_starship_flights'],104)
+        n['sites'][0]['pads'].append(dict(id='c',online_year=2027,online_month=7,flights_per_year=52))
+        self.assertEqual(m.orbital_launch_capacity(n,2027,2027)['available_starship_flights'],130)
+
+    def test_pad_sum_does_not_discard_fractional_capacity_at_each_site(self):
+        n=self.network();n['capacity_method']='pad_frequency';n['sites'][0].pop('annual_site_limit')
+        n['sites'][0]['pads'][0]['flights_per_year']=1.5
+        n['sites'].append(copy.deepcopy(n['sites'][0]));n['sites'][1]['id']='second'
+        d=m.orbital_launch_capacity(n,2027,2027)
+        self.assertEqual(d['available_starship_flights'],3)
+        self.assertEqual(sum(d['monthly_available_starship_flights']),3)
+
+    def test_pad_frequency_rejects_hidden_numeric_caps(self):
+        n=self.network();n['capacity_method']='pad_frequency'
+        with self.assertRaisesRegex(m.ModelError,'cannot include site or fleet caps'):
+            m.orbital_launch_capacity(n,2027,2027)
+        n['sites'][0].pop('annual_site_limit');n.update(fleet_rate_start=1,fleet_rate_end=2)
+        with self.assertRaisesRegex(m.ModelError,'cannot include site or fleet caps'):
+            m.orbital_launch_capacity(n,2027,2027)
+
+    def test_regulatory_reference_does_not_change_technical_capacity(self):
+        n=self.network();n['capacity_method']='pad_frequency';n['sites'][0].pop('annual_site_limit')
+        before=m.orbital_launch_capacity(n,2027,2027)
+        n['sites'][0]['regulatory_reference']='25 annually, informational only'
+        after=m.orbital_launch_capacity(n,2027,2027)
+        self.assertEqual(before['available_starship_flights'],after['available_starship_flights'])
+        self.assertEqual(before['monthly_launch_capacity_mw'],after['monthly_launch_capacity_mw'])
+
+    def test_removing_site_caps_changes_orbit_funding_but_preserves_other_businesses(self):
+        c=json.loads((ROOT/'configs/current.json').read_text())
+        before=copy.deepcopy(c)
+        n=before['companies']['spacex']['segments']['orbital_compute']['launch_network']
+        n.pop('capacity_method')
+        limits={'starbase':[100,456,456,456,456],'lc39a':[44,44,365,730,1460],
+                'slc37':[0,76,365,730,1460],'louisiana':[0,0,365,730,1460]}
+        for site in n['sites']:
+            site['annual_site_limit']={'value':limits[site['id']][0],
+                'annual':dict(zip(map(str,c['years']),limits[site['id']]))}
+        old,new=m.forecast(before),m.forecast(c)
+        self.assertEqual(old['companies']['tesla'],new['companies']['tesla'])
+        for a,b in zip(old['segments'],new['segments']):
+            if b['segment']=='orbital_compute':self.assertGreater(b['capex_usd'],a['capex_usd'])
+            else:self.assertEqual(a,b)
+        self.assertGreater(new['companies']['spacex'][-1]['resource_shares_issued'],old['companies']['spacex'][-1]['resource_shares_issued'])

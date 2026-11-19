@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-20",
-  "coverage": "21項使用者輸入及25項命題；新增Optimus在2029年產達1,000萬台後，2030起租金每年下降10%的價格路徑。",
+  "coverage": "22項使用者輸入及25項命題；星艦容量改純逐架頻率乘啟用時間加總，移除場址／全機隊封頂，許可獨立列示。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -161,9 +161,9 @@
     },
     "louisiana": {
       "title": "Louisiana州政府SpaceX工程規劃",
-      "url": "https://www.opportunitylouisiana.gov/spacex",
+      "url": "https://www.opportunitylouisiana.gov/news/spacex-launches-new-era-of-commercial-spaceflight-with-100-billion-louisiana-campus",
       "access": "primary_text_read",
-      "access_note": "已讀：5區各2台共10發射台；2027開工、最快2029首飛，非10台已建成。"
+      "access_note": "本輪官方搜尋索引可讀：規劃5區各2架、2027施工、首發最快2029；首架2029/7與其餘架啟用日期不是公司指引。"
     },
     "musk_cadence_q3": {
       "title": "2026-10-20 SpaceX電話會議第三方逐字稿",
@@ -674,22 +674,26 @@
     {
       "id": "orbital_launch_network",
       "title": "星艦塔與每年太空部署容量",
-      "claim": "逐台按啟用月份及每台發射頻率相乘，再加總各場；保留場址共用額度，不另加全機隊率上限。",
+      "claim": "逐架按啟用月份與每架發射頻率相乘後加總；不另套場址或全機隊上限，許可狀態僅獨立列示。",
       "user_values": {
-        "orbital_launch_aggregation": "逐台按啟用月份與每台發射頻率相乘、各場加總；保留場址共用額度，不另加全機隊頻率上限。"
+        "orbital_launch_aggregation": "逐架按啟用月份與每架發射頻率相乘後加總；不另套場址或全機隊上限，許可狀態僅獨立列示。",
+        "orbital_launch_capacity_method": "pad_frequency"
       },
       "verdict": "partial_support",
       "verdict_label": "工程與場址規劃有來源，吞吐與啟用仍是假設",
-      "finding": "較新Q3逐字稿為2027每週一發到兩發以上；8月Reuters記錄一年後每天至少一發，均屬整體頻率目標。Starbase環評Phase1擬100、Phase2擬456，不是現行已核准。",
-      "limits": "Musk整體頻率不是逐台承諾；將52→104等曲線套為每台能力是此輪模型假設。各場址額度是共用，不可再逐台相乘；啟用、周轉及未來擴容均未驗證。",
-      "musk_search": "已讀Q3第三方逐字稿與Reuters原始報導，未把轉述標為官方原片驗證；不把8月較早每日目標當較新2027指引。 2026-11-20重新搜尋Musk weekly/twice weekly與FAA場址頁，仍未取得每台相同頻率的官方承諾。",
-      "forecast_action": "依使用者要求移除主預測fleet_rate_start/end。每台新增成對年化起終點、按月中點線性插值；啟用後才計次數。各場每月min(逐台能力合計,共用年化額度/12)，累計向下取整後各場加總，再分配90%AI。HTML列逐台、逐場及限制前後結果。",
+      "finding": "FAA頁及Louisiana州政府公告可查場址規劃；Musk 2026Q3轉錄稱2027每週一發到兩發以上，仍是整體目標。這些支持擴張方向，未驗證每架相同的頻率曲線。",
+      "limits": "技術模型移除場址封頂不代表許可已擴張。每架52→104、104→365等頻率，2027–2031啟用日期與共用補給／人員可支援並行均為未校準模型假設；不把官方44／76／100／456當逐架頻率。Louisiana只算有啟用日期的首架，不把10架規劃當成已啟用。",
+      "musk_search": "已讀Q3第三方逐字稿與Reuters原始報導，未把轉述標為官方原片驗證；不把8月較早每日目標當較新2027指引。 2026-11-20重新搜尋Musk weekly/twice weekly與FAA場址頁，仍未取得每台相同頻率的官方承諾。 本輪再查官方SpaceX頻率、FAA與Louisiana；未取得逐架同頻率承諾，沿用既有技術路徑並明列假設。",
+      "forecast_action": "capacity_method=pad_frequency；刪除current各場annual_site_limit。各月先加總所有已啟用架的插值頻率÷12，再按全球累計向下取整一次，將新增整數槽分配90%AI；不再有場址或全機隊封頂。許可資料獨立顯示、不參與min計算。製造、部署、退役、capex及稀釋同步重算。",
       "search_queries": [
         "Musk SpaceX Q3 2026 Starship weekly twice weekly daily launch cadence",
         "Elon Musk Starship once a day August 4 2026",
         "Musk Starship 2027 once week twice week October 2026 launch pads",
         "site:faa.gov Starship LC-39A 44 launches SLC-37 76 launches annually",
-        "site:opportunitylouisiana.gov spacex ten launch pads 2029"
+        "site:opportunitylouisiana.gov spacex ten launch pads 2029",
+        "site.spacex.com Starship launch frequency per launch pad 2026 2027 weekly twice weekly",
+        "site.faa.gov Starbase 456 100 annual launches 2026",
+        "site.opportunitylouisiana.gov SpaceX 10 launch pads 2029"
       ],
       "source_ids": [
         "musk_cadence_q3",

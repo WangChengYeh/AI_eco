@@ -1,6 +1,6 @@
 {
   "checked_at": "2026-11-20",
-  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。 Optimus租金曲線及2030／2031年租與使用者指令綁定。",
+  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。 Optimus租金曲線及2030／2031年租與使用者指令綁定。 發射容量改純逐架頻率加總，許可僅資訊。",
   "records": [
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.value",
@@ -259,17 +259,7 @@
         "sites": [
           {
             "id": "starbase",
-            "annual_site_limit": {
-              "value": 100,
-              "annual": {
-                "2027": 100,
-                "2028": 456,
-                "2029": 456,
-                "2030": 456,
-                "2031": 456
-              }
-            },
-            "limit_status": "conditional_future_approval:100_phase1_then456_phase2; current_authorized25",
+            "limit_status": "informational_only_not_applied_to_technical_capacity",
             "pads": [
               {
                 "id": "pad2",
@@ -322,21 +312,12 @@
                 }
               }
             ],
-            "notes": "2027假設取得Phase1年100次，2028起假設取得Phase2年456次；現行25僅列已知基準，並非此擴容已獲准。"
+            "notes": "依各發射架啟用日期與頻率估計技術能力，加總後不另套場址上限；啟用日期仍為模型假設。",
+            "regulatory_reference": "FAA現行基準25次／年；擬議Phase1 100、Phase2 456，非已核准多年額度。僅資訊，不參與技術容量計算。"
           },
           {
             "id": "lc39a",
-            "annual_site_limit": {
-              "value": 44,
-              "annual": {
-                "2027": 44,
-                "2028": 44,
-                "2029": 365,
-                "2030": 730,
-                "2031": 1460
-              }
-            },
-            "limit_status": "44_environmental_envelope; 2029plus_unverified_expanded_approval_assumption",
+            "limit_status": "informational_only_not_applied_to_technical_capacity",
             "pads": [
               {
                 "id": "lc39a",
@@ -364,21 +345,12 @@
                 }
               }
             ],
-            "notes": "2029起擴容365/730/1460次是模型假設，非官方已披露額度。"
+            "notes": "依各發射架啟用日期與頻率估計技術能力，加總後不另套場址上限；啟用日期仍為模型假設。",
+            "regulatory_reference": "官方環評方案44次／年；不代表完整營運許可已取得。僅資訊，不參與技術容量計算。"
           },
           {
             "id": "slc37",
-            "annual_site_limit": {
-              "value": 0,
-              "annual": {
-                "2027": 0,
-                "2028": 76,
-                "2029": 365,
-                "2030": 730,
-                "2031": 1460
-              }
-            },
-            "limit_status": "76_environmental_proposal; 2029plus_unverified_expanded_approval_assumption",
+            "limit_status": "informational_only_not_applied_to_technical_capacity",
             "pads": [
               {
                 "id": "37a",
@@ -431,21 +403,12 @@
                 }
               }
             ],
-            "notes": "2028啟用且取得許可為條件，2029起擴容365/730/1460次純模型延伸；兩台共用。"
+            "notes": "依各發射架啟用日期與頻率估計技術能力，加總後不另套場址上限；啟用日期仍為模型假設。",
+            "regulatory_reference": "官方方案76次／年，仍有FAA補充程序與許可條件。僅資訊，不參與技術容量計算。"
           },
           {
             "id": "louisiana",
-            "annual_site_limit": {
-              "value": 0,
-              "annual": {
-                "2027": 0,
-                "2028": 0,
-                "2029": 365,
-                "2030": 730,
-                "2031": 1460
-              }
-            },
-            "limit_status": "unverified_future_approval_and_first_pad_assumed_2029",
+            "limit_status": "informational_only_not_applied_to_technical_capacity",
             "pads": [
               {
                 "id": "first_pad",
@@ -474,18 +437,20 @@
                 }
               }
             ],
-            "notes": "僅首台2029/7啟用，365/730/1460為模型年化容量，非核准額度；其餘9台仍不計容量。"
+            "notes": "依各發射架啟用日期與頻率估計技術能力，加總後不另套場址上限；僅首架2029/7啟用，其餘9架未指定啟用日期，暫不計入。",
+            "regulatory_reference": "州政府規劃5區各2台、首發最快2029；未核對年度營運額度。僅資訊，不參與技術容量計算。"
           }
         ],
         "capacity_upgrade": {
           "year": 2027,
           "month": 7,
           "net_it_mw_per_flight": 15
-        }
+        },
+        "capacity_method": "pad_frequency"
       },
       "unit": "sites, flights/year, tonnes, kW/tonne, fractions",
       "classification": "model_assumption",
-      "basis": "使用者要求逐台頻率×啟用時間、各場加總；不加額外全機隊上限。每台頻率2027年化52→104、2028年化104→365、2029以後倍增為未驗證模型路徑，非Musk逐台承諾；場址共用額度與工程日期仍為條件假設。AI任務90%，每次2027年7月起淨15MW。",
+      "basis": "依使用者本輪要求改為每架頻率×啟用時間後加總；不另套場址或全機隊上限。保留每架原有頻率曲線、日期及90%AI分配。官方許可／環評只列資訊，不能拿來驗證技術產能。",
       "fact_ids": [],
       "checked_at": "2026-11-20"
     },
@@ -680,6 +645,16 @@
       "basis": "取消舊固定12B曲線，由新增MW及兩類資產汰換計完整模型投入，避免重複計費。",
       "fact_ids": [],
       "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.orbital_compute.launch_network.capacity_method",
+      "value": "pad_frequency",
+      "unit": "method",
+      "classification": "user_assumption",
+      "basis": "使用者明確要求估算發射頻率乘發射架，移除額外場址封頂。",
+      "fact_ids": [],
+      "research_claim_id": "orbital_launch_network",
+      "checked_at": "2026-11-20"
     }
   ],
   "user_bindings": [
@@ -741,6 +716,10 @@
       "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd.annual.2031",
       "user_key": "optimus_annual_rent_usd_2031",
       "multiplier": 12
+    },
+    {
+      "input_path": "companies.spacex.segments.orbital_compute.launch_network.capacity_method",
+      "user_key": "orbital_launch_capacity_method"
     }
   ]
 }

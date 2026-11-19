@@ -277,6 +277,30 @@
       "status": "company_disclosed_conditional_commitment",
       "mapping_note": "2026-10-26公告；預計年底前交割、2027上半年交貨，不視為已實收現金或已交付算力。本次未建模其租賃負債與付款時間表。",
       "checked_at": "2026-11-20"
+    },
+    {
+      "id": "starship_regulatory_reference_2026_11_20",
+      "company": "SpaceX",
+      "metric": "regulatory planning envelopes; not model capacity inputs",
+      "period": "2026-11-20 check",
+      "value": {
+        "starbase_current": 25,
+        "starbase_proposed_phases": [
+          100,
+          456
+        ],
+        "lc39a_environmental_envelope": 44,
+        "slc37_proposal": 76
+      },
+      "unit": "launches/site/year",
+      "source": "https://www.faa.gov/space/stakeholder_engagement/spacex_starship",
+      "additional_sources": [
+        "https://www.faa.gov/space/stakeholder_engagement/spacex_starship_ksc",
+        "https://www.faa.gov/space/stakeholder_engagement/spacex_starship_ccsfs"
+      ],
+      "status": "mixed_current_baseline_and_proposed_envelopes",
+      "checked_at": "2026-11-20",
+      "mapping_note": "資訊用途，不映射為主預測場址或逐架上限。Starbase擬議Phase1/2與佛州環評方案不保證已取得營運許可；各場條件須分別閱讀。"
     }
   ]
 }
