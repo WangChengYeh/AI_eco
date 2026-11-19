@@ -49,13 +49,30 @@ class LaunchNetwork(unittest.TestCase):
             for used,cap in zip(d['deployed_monthly_mw'],d['monthly_launch_capacity_mw']):
                 self.assertLessEqual(used,cap+1e-8)
         self.assertEqual(rows[0]['drivers']['deployed_monthly_mw'][:9],[0]*9)
-        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],414)
+        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],780)
 
     def test_uncommissioned_inventory_does_not_retire_as_operating_assets(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
         rows=[s for s in m.forecast(c)['segments'] if s['segment']=='orbital_compute']
-        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],54)
+        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],78)
 
     def test_invalid_ai_share_is_rejected(self):
         n=self.network();n['ai_flight_share']=1.1
+        with self.assertRaises(m.ModelError):m.orbital_launch_capacity(n,2027,2027)
+
+    def test_more_pads_do_not_multiply_the_fleet_wide_target(self):
+        n=self.network();n.update(fleet_rate_start=12,fleet_rate_end=24)
+        one=m.orbital_launch_capacity(n,2027,2027)
+        n['sites'].append(copy.deepcopy(n['sites'][0]));n['sites'][1]['id']='another_site'
+        two=m.orbital_launch_capacity(n,2027,2027)
+        self.assertEqual(one['available_starship_flights'],18)
+        self.assertEqual(two['available_starship_flights'],18)
+        self.assertEqual(two['infrastructure_site_slots'],48)
+
+    def test_fleet_target_cannot_override_site_limit(self):
+        n=self.network();n.update(fleet_rate_start=365,fleet_rate_end=365)
+        self.assertEqual(m.orbital_launch_capacity(n,2027,2027)['available_starship_flights'],24)
+
+    def test_unpaired_fleet_ramp_is_rejected(self):
+        n=self.network();n['fleet_rate_start']=52
         with self.assertRaises(m.ModelError):m.orbital_launch_capacity(n,2027,2027)

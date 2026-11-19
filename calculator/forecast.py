@@ -216,7 +216,7 @@ def orbital_launch_capacity(network, year, base_year):
     Forecast dates and environmental envelopes are conditional planning inputs,
     not a statement that a site currently holds an operating license.
     """
-    allowed = {"payload_tonnes", "it_kw_per_tonne", "payload_efficiency", "ai_flight_share", "sites"}
+    allowed = {"payload_tonnes", "it_kw_per_tonne", "payload_efficiency", "ai_flight_share", "sites", "fleet_rate_start", "fleet_rate_end"}
     if set(network) - allowed or not isinstance(network.get("sites"), list):
         raise ModelError("invalid launch_network fields/sites")
     def p(key, default=0, minimum=0, maximum=None):
@@ -224,6 +224,7 @@ def orbital_launch_capacity(network, year, base_year):
     mw_per_flight = p("payload_tonnes") * p("it_kw_per_tonne") * p("payload_efficiency", 1, 0, 1) / 1000
     ai_share = p("ai_flight_share", 1, 0, 1)
     monthly_mw = [0.0] * 12
+    monthly_site_slots = [0] * 12
     site_details, ids = [], set()
     for site in network["sites"]:
         if set(site) - {"id", "pads", "annual_site_limit", "limit_status", "notes"} or site["id"] in ids:
@@ -247,14 +248,36 @@ def orbital_launch_capacity(network, year, base_year):
             cumulative += min(rate, limit) / 12
             flights = math.floor(cumulative + 1e-9)
             ai_flights = math.floor(flights * ai_share + 1e-9)
+            monthly_site_slots[month - 1] += flights - total
             monthly_mw[month - 1] += (ai_flights - ai) * mw_per_flight
             total, ai = flights, ai_flights
         site_details.append({"site": site["id"], "available_flights": total,
                              "ai_flights": ai, "active_pad_months": active_pad_months,
                              "limit_status": site.get("limit_status", "model_assumption")})
-    return {"monthly_launch_capacity_mw": monthly_mw, "mw_per_ai_flight": mw_per_flight,
-            "available_starship_flights": sum(x["available_flights"] for x in site_details),
-            "allocated_ai_flights": sum(x["ai_flights"] for x in site_details),
+    infrastructure_slots = sum(x["available_flights"] for x in site_details)
+    available = infrastructure_slots
+    allocated = sum(x["ai_flights"] for x in site_details)
+    fleet_drivers = {}
+    if "fleet_rate_start" in network or "fleet_rate_end" in network:
+        if not {"fleet_rate_start", "fleet_rate_end"} <= set(network):
+            raise ModelError("fleet ramp requires both start and end annualized rates")
+        start, end = p("fleet_rate_start"), p("fleet_rate_end")
+        cumulative, available, allocated = 0.0, 0, 0
+        monthly_mw = []
+        for i, site_slots in enumerate(monthly_site_slots):
+            # This is one fleet-wide ramp, never one target per pad.
+            rate = start + (end - start) * (i + .5) / 12
+            cumulative += min(site_slots, rate / 12)
+            flights = math.floor(cumulative + 1e-9)
+            ai = math.floor(flights * ai_share + 1e-9)
+            monthly_mw.append((ai - allocated) * mw_per_flight)
+            available, allocated = flights, ai
+        fleet_drivers = {"fleet_rate_start": start, "fleet_rate_end": end}
+    return {"infrastructure_site_slots": infrastructure_slots,
+            "site_detail_scope": "potential slots before fleet-wide ramp",
+            **fleet_drivers, "monthly_launch_capacity_mw": monthly_mw, "mw_per_ai_flight": mw_per_flight,
+            "available_starship_flights": available,
+            "allocated_ai_flights": allocated,
             "annual_launch_capacity_mw": sum(monthly_mw), "launch_sites": site_details}
 
 

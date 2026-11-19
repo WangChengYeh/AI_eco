@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "metadata": {
-    "as_of": "2026-11-19",
+    "as_of": "2026-11-20",
     "currency": "USD",
     "input_status": "illustrative",
     "description": "依理論001股權交換資源、理論002持續降低完整產出成本，統一遞推營運、資產生命週期、獲利、現金及每股價值；使用者未指定的數量、價格、成本、壽命與估值倍數為未校準模型假設。",
@@ -627,12 +627,6 @@
               "2027": 1000
             }
           },
-          "deployment_limit_mw": {
-            "value": 3000,
-            "annual": {
-              "2027": 1000
-            }
-          },
           "commissioning_yield": 1,
           "commissioning_start_month": {
             "value": 1,
@@ -663,7 +657,7 @@
           "capex_usd": 0,
           "ev_sales_multiple": 4,
           "volume_unit": "billable MW-hour",
-          "notes": "使用者假設2027年底大量量產。規模補充假設2027製造1GW、10月起部署，2028起每年製造及最多部署3GW。硬體20M美元/MW，部署5M美元/MW。4年服務及折舊壽命為模型假設；到期容量退出，新部署量同時負擔替換及擴張，不會無限累加。未部署庫存不產生算力或折舊，成本按批次追蹤。電價0不代表完整成本0。 發射限制：按月取庫存、製造、部署上限及分配AI的整數發射容量最小值。未部署硬體保留庫存及已支付capex，不產生營收或在軌折舊。新建場啟用及許可為條件假設；不將塔數視為保證發射量。",
+          "notes": "2027製造1GW、2028起每年製造3GW為模型假設；依逐月庫存、實際製造與星艦發射網路決定投運，取消固定3GW部署上限。Musk指引是機隊整體頻率，不逐塔相乘。2027依較新每週1到2發說法錨定；2028朝機隊每日一發為推估，2029起每年倍增是延伸假設。新增場址、許可擴容及單塔周轉為條件式假設；未部署硬體留庫存不產生營收。",
           "service_life_years": 4,
           "depreciation_life_years": 4,
           "launch_network": {
@@ -674,74 +668,184 @@
             "sites": [
               {
                 "id": "starbase",
-                "annual_site_limit": 25,
-                "limit_status": "current_authorized_25_held_constant; proposed_456_not_applied",
+                "annual_site_limit": {
+                  "value": 100,
+                  "annual": {
+                    "2027": 100,
+                    "2028": 456,
+                    "2029": 456,
+                    "2030": 456,
+                    "2031": 456
+                  }
+                },
+                "limit_status": "conditional_future_approval:100_phase1_then456_phase2; current_authorized25",
                 "pads": [
                   {
                     "id": "pad2",
                     "online_year": 2026,
                     "online_month": 1,
-                    "flights_per_year": 52
+                    "flights_per_year": {
+                      "value": 104,
+                      "annual": {
+                        "2027": 104,
+                        "2028": 365,
+                        "2029": 730,
+                        "2030": 1460,
+                        "2031": 2920
+                      }
+                    }
                   },
                   {
                     "id": "pad1_rebuild",
                     "online_year": 2027,
                     "online_month": 7,
-                    "flights_per_year": 52
+                    "flights_per_year": {
+                      "value": 104,
+                      "annual": {
+                        "2027": 104,
+                        "2028": 365,
+                        "2029": 730,
+                        "2030": 1460,
+                        "2031": 2920
+                      }
+                    }
                   }
                 ],
-                "notes": "25為整個場址年上限，兩塔共用；Pad1復用2027年7月為模型日期。"
+                "notes": "2027假設取得Phase1年100次，2028起假設取得Phase2年456次；現行25僅列已知基準，並非此擴容已獲准。"
               },
               {
                 "id": "lc39a",
-                "annual_site_limit": 44,
-                "limit_status": "environmental_envelope; future_license_assumed",
+                "annual_site_limit": {
+                  "value": 44,
+                  "annual": {
+                    "2027": 44,
+                    "2028": 44,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "limit_status": "44_environmental_envelope; 2029plus_unverified_expanded_approval_assumption",
                 "pads": [
                   {
                     "id": "lc39a",
                     "online_year": 2027,
                     "online_month": 1,
-                    "flights_per_year": 52
+                    "flights_per_year": {
+                      "value": 104,
+                      "annual": {
+                        "2027": 104,
+                        "2028": 365,
+                        "2029": 730,
+                        "2030": 1460,
+                        "2031": 2920
+                      }
+                    }
                   }
                 ],
-                "notes": "2027年1月啟用為模型月份，環評44不等於已確認營運許可。"
+                "notes": "2029起擴容365/730/1460次是模型假設，非官方已披露額度。"
               },
               {
                 "id": "slc37",
-                "annual_site_limit": 76,
-                "limit_status": "environmental_proposal; supplemental_review_and_license_pending",
+                "annual_site_limit": {
+                  "value": 0,
+                  "annual": {
+                    "2027": 0,
+                    "2028": 76,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "limit_status": "76_environmental_proposal; 2029plus_unverified_expanded_approval_assumption",
                 "pads": [
                   {
                     "id": "37a",
                     "online_year": 2028,
                     "online_month": 1,
-                    "flights_per_year": 52
+                    "flights_per_year": {
+                      "value": 104,
+                      "annual": {
+                        "2027": 104,
+                        "2028": 365,
+                        "2029": 730,
+                        "2030": 1460,
+                        "2031": 2920
+                      }
+                    }
                   },
                   {
                     "id": "37b",
                     "online_year": 2029,
                     "online_month": 7,
-                    "flights_per_year": 52
+                    "flights_per_year": {
+                      "value": 104,
+                      "annual": {
+                        "2027": 104,
+                        "2028": 365,
+                        "2029": 730,
+                        "2030": 1460,
+                        "2031": 2920
+                      }
+                    }
                   }
                 ],
-                "notes": "兩台共用76次上限；37A於2028年1月、37B於2029年7月均為條件式模型日期。"
+                "notes": "2028啟用且取得許可為條件，2029起擴容365/730/1460次純模型延伸；兩台共用。"
               },
               {
                 "id": "louisiana",
-                "annual_site_limit": 52,
-                "limit_status": "unverified_model_limit; approval_assumed_from_activation",
+                "annual_site_limit": {
+                  "value": 0,
+                  "annual": {
+                    "2027": 0,
+                    "2028": 0,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "limit_status": "unverified_future_approval_and_first_pad_assumed_2029",
                 "pads": [
                   {
                     "id": "first_pad",
                     "online_year": 2029,
                     "online_month": 7,
-                    "flights_per_year": 52,
+                    "flights_per_year": {
+                      "value": 104,
+                      "annual": {
+                        "2027": 104,
+                        "2028": 365,
+                        "2029": 730,
+                        "2030": 1460,
+                        "2031": 2920
+                      }
+                    },
                     "planned_pads": 10
                   }
                 ],
-                "notes": "官方最早2029首飛目標，模型只假設2029年7月首台啟用；其餘9台無確認進度，不貢獻容量。52次不是核准額度。"
+                "notes": "僅首台2029/7啟用，365/730/1460為模型年化容量，非核准額度；其餘9台仍不計容量。"
               }
-            ]
+            ],
+            "fleet_rate_start": {
+              "value": 52,
+              "annual": {
+                "2027": 52,
+                "2028": 104,
+                "2029": 365,
+                "2030": 730,
+                "2031": 1460
+              }
+            },
+            "fleet_rate_end": {
+              "value": 104,
+              "annual": {
+                "2027": 104,
+                "2028": 365,
+                "2029": 730,
+                "2030": 1460,
+                "2031": 2920
+              }
+            }
           }
         },
         "grok_subscriptions": {

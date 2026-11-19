@@ -1,6 +1,6 @@
 # 使用者假設網路與 Musk 訊息查核
 
-查核日：2026-11-19
+查核日：2026-11-20
 
 範圍：現行主預測全部使用者假設，加上原始理論的重要強版本。查核包含支持、反向及限縮證據；沒有找到支持不等於已證偽。公司目標、Musk預測、第三方逐字稿及已發生實績分開。
 
@@ -393,19 +393,20 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 
 - 原命題：把星艦建塔工程與啟用節奏納入太空算力預測。
 - 判定：**工程與場址規劃有來源，吞吐與啟用仍是假設**
-- 支持／相關證據：Starbase現行25次；LC39A環評44次，SLC37方案76次共用；Louisiana規劃10發射台且最早2029首飛。
-- 限縮／相反證據：不能把建塔等同可用台數、環評額度等同營運許可、456擬議年發射等同已核准。AI功率密度口徑、貨艙裝載、軌道運力、芯片供應及實際任務比例仍待核實。
-- Musk查核：沿用本輪Musk／SpaceX主管工程進度搜尋；未找到逐塔已確認的年度AI發射計畫。
-- 計算處理：逐月計算啟用台數與共用場址上限；先分配整數AI發射，再限制實際部署；保持製造／在軌容量／庫存分開，保留完整硬體支出。
+- 支持／相關證據：較新Q3逐字稿為2027每週一發到兩發以上；8月Reuters記錄一年後每天至少一發，均屬整體頻率目標。Starbase環評Phase1擬100、Phase2擬456，不是現行已核准。
+- 限縮／相反證據：2028年底機隊每日一發、2029以後倍增、各場址許可擴容與單台周轉均為模型假設。沒有證據支持逐塔直接套用Musk整體目標；萬次年發射長期願景不套到2028。
+- Musk查核：已讀Q3第三方逐字稿與Reuters原始報導，未把轉述標為官方原片驗證；不把8月較早每日目標當較新2027指引。
+- 計算處理：機隊年化率依年度起終點按月線性爬坡；單台周轉、啟用月份、全場許可擴容另限制，再分配AI任務；取消固定3GW部署上限，保持製造與庫存約束。
 
 搜尋紀錄：
 
-- `SpaceX Starship launch tower construction November 2026 LC39A SLC37 Pad1 Louisiana`
-- `site.faa.gov Starbase 456 2026 25 launches November 30`
-- `site.faa.gov Starship LC39A 44 launches January 2026 record decision`
+- `Musk SpaceX Q3 2026 Starship weekly twice weekly daily launch cadence`
+- `Elon Musk Starship once a day August 4 2026`
 
 來源：
 
+- [2026-10-20 SpaceX電話會議第三方逐字稿](https://stockanalysis.com/stocks/spcx/transcripts/723936-q3-2026/)：2026-11-20重讀第三方逐字稿：Musk預期2027上半年某時每週一發、下半年每週兩發或更多；沒有逐塔限定。未直接核對原片。
+- [Reuters記錄2026-08-04 Musk每日一發說法](https://www.investing.com/news/world-news/spacex-plans-next-starship-launch-as-soon-as-this-month-catching-it-on-land-4836320?ampMode=1)：2026-11-20重讀Reuters：Musk說約一年後每天至少一發；不是每個場址每日一發，也未取代較近期爬坡說法。
 - [FAA：Starbase現行25與擬議456次年發射](https://www.govinfo.gov/content/pkg/FR-2026-10-14/pdf/2026-20963.pdf)：2026-11-19讀取官方搜尋索引：現行25；Phase1擬100、Phase2擬456，尚非已核准。
 - [FAA LC39A最終ROD](https://www.faa.gov/sites/faa.gov/files/20260123-SSH-LC-39A-ROD-Final.pdf)：已讀原始PDF：環評方案44次／年；環評決定不能直接當營運許可。
 - [FAA SLC37工程與補充環評](https://www.faa.gov/space/stakeholder_engagement/spacex_starship_ccsfs)：已讀：基建已開發、76次為整個SLC37方案；仍須修改營運許可。
