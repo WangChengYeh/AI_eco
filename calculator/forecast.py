@@ -108,7 +108,8 @@ COMMON_SEGMENT_FIELDS = {
 }
 KIND_FIELDS = {
     "unit": {"units", "capacity_units", "price_usd", "unit_cost_usd"},
-    "subscription": {"average_subscribers", "monthly_price_usd", "monthly_cost_usd"},
+    "subscription": {"average_subscribers", "monthly_price_usd", "monthly_cost_usd",
+                     "opening_subscribers", "additions_source_segment_id", "new_vehicle_attach_rate", "annual_churn_rate"},
     "robotaxi": {"opening_fleet", "additions", "retirements", "vehicle_cost_usd",
                  "depreciation_usd_per_vehicle_year", "km_per_vehicle_day", "operating_days",
                  "paid_km_share", "fare_usd_per_paid_km", "cash_cost_usd_per_total_km",
@@ -235,8 +236,20 @@ def segment_forecast(segment, year, base_year, state):
                       "capacity_limited": volume < desired, "price_usd": price, "unit_cost_usd": cost}
         elif kind == "subscription":
             subscribers, price, cost = p("average_subscribers"), p("monthly_price_usd"), p("monthly_cost_usd")
+            subscriber_drivers = {}
+            if "additions_source_segment_id" in segment:
+                if "average_subscribers" in segment:
+                    raise ModelError("linked subscriptions cannot also set average_subscribers")
+                opening = state.get("subscribers", p("opening_subscribers"))
+                additions = number(state.get("new_units"), "subscription source units", 0) * p("new_vehicle_attach_rate", 1, 0, 1)
+                cancellations = opening * p("annual_churn_rate", 0, 0, 1)
+                closing = opening + additions - cancellations
+                subscribers = (opening + closing) / 2
+                state["subscribers"] = closing
+                subscriber_drivers = {"opening_subscribers": opening, "new_subscribers": additions,
+                                      "cancellations": cancellations, "closing_subscribers": closing}
             revenue, cogs = subscribers * price * 12, subscribers * cost * 12
-            inputs = {"average_subscribers": subscribers, "monthly_price_usd": price, "monthly_cost_usd": cost}
+            inputs = {"average_subscribers": subscribers, "monthly_price_usd": price, "monthly_cost_usd": cost, **subscriber_drivers}
         elif kind == "robotaxi":
             opening = state.setdefault("fleet", number(segment.get("opening_fleet", 0), "opening_fleet", 0))
             adds, retirements = p("additions"), p("retirements")
@@ -523,7 +536,15 @@ def company_forecast(company, years):
         def p(key, default=0, minimum=0, maximum=None):
             return parameter(company.get(key, default), year, base, key, minimum, maximum)
         rows = {}
-        for key, segment in company["segments"].items():
+        # Vehicle-linked subscriptions use actual modeled external sales, including
+        # capacity limits, and update after unit businesses regardless of config order.
+        ordered = sorted(company["segments"].items(), key=lambda item: "additions_source_segment_id" in item[1])
+        for key, segment in ordered:
+            if "additions_source_segment_id" in segment:
+                source = segment["additions_source_segment_id"]
+                if segment["kind"] != "subscription" or source not in rows or company["segments"][source]["kind"] != "unit":
+                    raise ModelError("linked subscriptions require a unit-segment sales source")
+                states.setdefault(key, {})["new_units"] = rows[source]["drivers"].get("external_units", 0)
             try:
                 rows[key] = segment_forecast(segment, year, base, states.setdefault(key, {}))
             except ModelError as exc:

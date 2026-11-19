@@ -213,14 +213,32 @@
       "checked_at": "2026-11-19"
     },
     {
-      "input_path": "metadata.user_assumptions.fsd_eligible_fleet_end2026",
+      "input_path": "companies.tesla.segments.fsd.opening_subscribers",
       "value": 5000000,
-      "unit": "eligible vehicles",
+      "unit": "paid accounts",
       "classification": "user_assumption",
-      "basis": "使用者指定2026可訂閱車隊500萬；作年底基數討論，不直接映射付費戶數。付費率尚未指定。",
+      "basis": "使用者更正為2026年底500萬付費訂閱，非可訂閱車隊。",
       "fact_ids": [],
       "checked_at": "2026-11-19",
-      "research_claim_id": "fsd_eligible_fleet"
+      "research_claim_id": "fsd_paid_fleet"
+    },
+    {
+      "input_path": "companies.tesla.segments.fsd.new_vehicle_attach_rate",
+      "value": 1,
+      "unit": "fraction",
+      "classification": "model_assumption",
+      "basis": "將新車加上去實作為新車全部訂閱，延伸假設；官方北美新車附加率並非全球100%續付率。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.fsd.annual_churn_rate",
+      "value": 0,
+      "unit": "fraction/year",
+      "classification": "model_assumption",
+      "basis": "未指定退訂率，暫以0延伸；非已驗證留存率。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
     }
   ]
 }

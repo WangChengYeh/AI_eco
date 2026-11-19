@@ -26,7 +26,7 @@ def assumptions(config):
         return parameter(spec, year, base)
     return [
         ["FSD（增量服務成本）", f"每戶每月{val(fsd['monthly_cost_usd']):,.0f}美元（近零假設）；保留研發／營運費用、折舊及共同費用；月費以美國官方99美元為錨點"],
-        ["FSD（車隊與付費戶）", f"2026年底可訂閱500萬輛為使用者基數，非付費戶；2027平均付費{val(fsd['average_subscribers']) / 10000:,.0f}萬戶仍為待校準假設"],
+        ["FSD（車隊與付費戶）", f"2026年底付費{fsd['opening_subscribers'] / 10000:,.0f}萬；每年加對外新車×{val(fsd['new_vehicle_attach_rate']):.0%}；退訂率{val(fsd['annual_churn_rate']):.0%}；全年均勻加入，按平均訂閱計營收（假設）"],
         ["Optimus（使用者全年產量假設）", "；".join(f"{y}年{val(robot['production_units'], y) / 10000:,.0f}萬台" for y in (2027, 2028, 2029)) + "；內用優先、餘量出租，非公司年度指引"],
         ["Optimus（延伸與內用假設）", f"2030–2031各年{val(robot['production_units'], 2030) / 10000:,.0f}萬台；平均內用需求{val(robot['internal_demand_robots']) / 10000:,.0f}萬台"],
         ["Optimus（使用者租賃條件）", f"可租餘量付費出租率{val(robot['rental_utilization']):.0%}；每台每年{val(robot['monthly_rent_usd']) * 12:,.0f}美元" + (f"；付費需求上限{val(robot['rental_demand_robots']) / 10000:,.0f}萬台" if 'rental_demand_robots' in robot else "；無額外出租需求上限")],
@@ -83,6 +83,11 @@ el('ts-assumptions').replaceChildren(...data[0].assumptions.map(([label,value])=
         source = source.replace("if(!r)return;", """if(!r)return;
  const taxi=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='robotaxi');
  el('ts-robotaxi-detail').textContent=taxi?(()=>{const d=taxi.drivers;return r.year+' Robotaxi：製造 '+fmt(d.manufactured_units)+' 輛／新投運 '+fmt(d.additions)+' 輛／平均服役 '+fmt(d.average_fleet)+' 輛／年底待投運 '+fmt(d.pending_deployment_units)+' 輛；營收 '+fmt(taxi.revenue_usd,1e9)+' 十億美元。';})():'';""")
+    if 'id="ts-fsd-detail"' not in source:
+        source = source.replace('<div id="ts-current-detail"', '<div id="ts-fsd-detail" class="text-small" aria-live="polite"></div><div id="ts-current-detail"')
+        source = source.replace("if(!r)return;", """if(!r)return;
+ const fsdRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='fsd');
+ el('ts-fsd-detail').textContent=fsdRow?(()=>{const d=fsdRow.drivers;return r.year+' FSD：年初付費 '+fmt(d.opening_subscribers/10000)+' 萬／新增 '+fmt(d.new_subscribers/10000)+' 萬／年底付費 '+fmt(d.closing_subscribers/10000)+' 萬／全年平均 '+fmt(d.average_subscribers/10000)+' 萬；月費 '+fmt(d.monthly_price_usd)+' 美元（模型假設）。';})():'';""")
     if "四步驟 SOP" not in source:
         source = source.replace('<h2>Tesla／SpaceX 主預測</h2>', '<h2>Tesla／SpaceX 主預測</h2>\n<div class="text-small"><a href="https://github.com/WangChengYeh/AI_eco/blob/main/SOP.md" target="_blank" rel="noopener">四步驟 SOP：理論 → 數據 → Forecast Python → HTML</a></div>')
     if 'id="ts-evidence"' not in source:

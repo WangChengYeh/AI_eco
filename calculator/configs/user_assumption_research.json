@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-19",
-  "coverage": "全部12項主預測使用者輸入與19項查核命題；FSD每戶增量成本0及2026可訂閱車隊500萬均為使用者假設，未升格公司實績。",
+  "coverage": "全部12項主預測使用者輸入與19項查核命題；2026年底FSD500萬付費訂閱是使用者假設，不是公司實績。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -566,26 +566,25 @@
       "searched_at": "2026-11-19"
     },
     {
-      "id": "fsd_eligible_fleet",
-      "title": "2026年底FSD可訂閱車隊500萬",
-      "claim": "2026年底可訂閱車隊以500萬輛作討論基數。",
+      "id": "fsd_paid_fleet",
+      "title": "2026年底FSD付費訂閱500萬",
+      "claim": "2026年底以500萬付費訂閱起算，2027再加新增車輛。",
       "user_values": {
-        "fsd_eligible_fleet_end2026": 5000000
+        "fsd_paid_subscribers_end2026": 5000000
       },
       "verdict": "not_established",
       "verdict_label": "模型假設，未獲官方實績證實",
-      "finding": "官方資格要求硬體、所在地及未買斷；Q3披露累計車隊及混合買斷／月租的Active FSD，不能直接取得500萬可訂閱車數。",
-      "limits": "500萬是使用者指定基數，非已確認車隊，也非付費訂閱戶數；未選定付費率。",
-      "musk_search": "已搜尋Musk FSD marginal cost zero、FSD subscriptions 5 million 2026；未找到對應官方實績支持。",
-      "forecast_action": "記錄500萬年底可訂閱基數；不把它當500萬付費戶。保留既有2027平均付費200萬假設並明示待校準，未強制套用先前示例40%付費率。",
+      "finding": "官方Q3 Active FSD為174萬且包含買斷與月租；官方披露北美新車FSD附加率超過75%，不能證明全球500萬月租或所有新車全年持續付費。",
+      "limits": "使用者已明確改為付費車數500萬；仍非公司已披露實績。2027銷量200萬、新車100%訂閱、零退訂與均勻加入均為模型假設。",
+      "musk_search": "重新搜尋Musk／Tesla Q3 2026 FSD 75%與付費用戶口徑；未找到2026年底500萬月租官方指引。",
+      "forecast_action": "以500萬付費訂閱作2027年初基數，每年連動對外乘用車銷量，按100%新車加入、0退訂遞推；營收按全年平均，不按年底訂閱乘12。移除舊平均200萬及20%獨立成長曲線。",
       "search_queries": [
-        "Musk FSD subscription marginal cost zero Tesla software cost 2026",
-        "site.tesla.com FSD subscriptions 5 million 2026"
+        "site.assets-ir.tesla.com \"Q3-2026\" \"Active FSD\" \"1.74\"",
+        "Musk Tesla Q3 2026 FSD 75% deliveries subscriptions 50%"
       ],
       "source_ids": [
-        "fsd_support",
         "tesla_q3",
-        "tesla_sec"
+        "fsd_support"
       ],
       "searched_at": "2026-11-19"
     }

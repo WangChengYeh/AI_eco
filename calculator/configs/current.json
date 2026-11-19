@@ -18,7 +18,7 @@
       "optimus_rental_utilization": 1,
       "optimus_annual_rent_usd": 30000,
       "fsd_incremental_monthly_cost_usd": 0,
-      "fsd_eligible_fleet_end2026": 5000000
+      "fsd_paid_subscribers_end2026": 5000000
     },
     "additional_assumptions": {
       "orbital_manufactured_2027_mw": 1000,
@@ -195,11 +195,6 @@
         "fsd": {
           "name": "FSD 外部平均訂閱（排除自有 Robotaxi）",
           "kind": "subscription",
-          "average_subscribers": {
-            "value": 2000000.0,
-            "growth": 0.2,
-            "annual": {}
-          },
           "monthly_price_usd": {
             "value": 99,
             "growth": -0.02,
@@ -218,8 +213,12 @@
           "capex_revenue_ratio": 0.02,
           "da_revenue_ratio": 0.01,
           "ev_sales_multiple": 7,
-          "notes": "全年平均外部付費用戶，不是年底或可訂閱車數。依使用者設定，每增加一戶的服務現金成本近零（以0實作），非公司已驗證全成本為零；保留分部營業費用、折舊、資本支出及公司共同費用。99美元為美國官方當前月費錨點，全球實收均價與未來-2%年變動仍是假設。2026年底可訂閱車隊500萬為使用者假設，不能直接當付費戶數；2027平均付費200萬及20%年增仍待校準。",
-          "volume_unit": "average paid accounts"
+          "notes": "2026年底付費訂閱500萬為使用者假設。每年以對外乘用車實際模型銷量新增訂閱；全部新車加入、無退訂為模型延伸假設，非公司指引。均勻加入，平均付費=(年初+年底)/2；排除自有Robotaxi，不再另外套用訂閱20%成長。每戶服務現金成本0為近零假設；保留營業費用、折舊及公司費用。99美元為美國當前月費錨點，未來-2%年變動及全球均價仍是假設。",
+          "volume_unit": "average paid accounts",
+          "opening_subscribers": 5000000,
+          "additions_source_segment_id": "passenger_vehicles",
+          "new_vehicle_attach_rate": 1,
+          "annual_churn_rate": 0
         },
         "robotaxi": {
           "name": "自有無人車隊載客服務",

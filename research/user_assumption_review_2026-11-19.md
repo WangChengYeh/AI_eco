@@ -370,25 +370,24 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 - [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 - [Tesla 2026Q3 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)：原始申報已讀；含營運限制、資金需求及潛在交易委員會。
 
-## 2026年底FSD可訂閱車隊500萬
+## 2026年底FSD付費訂閱500萬
 
-- 原命題：2026年底可訂閱車隊以500萬輛作討論基數。
+- 原命題：2026年底以500萬付費訂閱起算，2027再加新增車輛。
 - 判定：**模型假設，未獲官方實績證實**
-- 支持／相關證據：官方資格要求硬體、所在地及未買斷；Q3披露累計車隊及混合買斷／月租的Active FSD，不能直接取得500萬可訂閱車數。
-- 限縮／相反證據：500萬是使用者指定基數，非已確認車隊，也非付費訂閱戶數；未選定付費率。
-- Musk查核：已搜尋Musk FSD marginal cost zero、FSD subscriptions 5 million 2026；未找到對應官方實績支持。
-- 計算處理：記錄500萬年底可訂閱基數；不把它當500萬付費戶。保留既有2027平均付費200萬假設並明示待校準，未強制套用先前示例40%付費率。
+- 支持／相關證據：官方Q3 Active FSD為174萬且包含買斷與月租；官方披露北美新車FSD附加率超過75%，不能證明全球500萬月租或所有新車全年持續付費。
+- 限縮／相反證據：使用者已明確改為付費車數500萬；仍非公司已披露實績。2027銷量200萬、新車100%訂閱、零退訂與均勻加入均為模型假設。
+- Musk查核：重新搜尋Musk／Tesla Q3 2026 FSD 75%與付費用戶口徑；未找到2026年底500萬月租官方指引。
+- 計算處理：以500萬付費訂閱作2027年初基數，每年連動對外乘用車銷量，按100%新車加入、0退訂遞推；營收按全年平均，不按年底訂閱乘12。移除舊平均200萬及20%獨立成長曲線。
 
 搜尋紀錄：
 
-- `Musk FSD subscription marginal cost zero Tesla software cost 2026`
-- `site.tesla.com FSD subscriptions 5 million 2026`
+- `site.assets-ir.tesla.com "Q3-2026" "Active FSD" "1.74"`
+- `Musk Tesla Q3 2026 FSD 75% deliveries subscriptions 50%`
 
 來源：
 
-- [Tesla官方FSD訂閱費率與資格](https://www.tesla.com/support/full-self-driving-subscriptions)：2026-11-19讀取：美國月費99美元，FSD電腦3.0以上且未買斷可訂閱；市場與資格有限制。未披露每戶現金成本或全球可訂閱車隊500萬。
 - [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
-- [Tesla 2026Q3 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)：原始申報已讀；含營運限制、資金需求及潛在交易委員會。
+- [Tesla官方FSD訂閱費率與資格](https://www.tesla.com/support/full-self-driving-subscriptions)：2026-11-19讀取：美國月費99美元，FSD電腦3.0以上且未買斷可訂閱；市場與資格有限制。未披露每戶現金成本或全球可訂閱車隊500萬。
 
 ## 更新規則
 
