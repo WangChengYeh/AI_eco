@@ -131,7 +131,7 @@ KIND_FIELDS["orbital_compute"] = (KIND_FIELDS["compute"] - {
     "opening_it_mw", "opening_inventory_mw", "opening_net_book_value_usd",
     "manufactured_it_mw", "deployment_limit_mw", "commissioning_yield",
     "commissioning_start_month", "hardware_cost_usd_per_mw",
-    "deployment_cost_usd_per_mw", "asset_life_years",
+    "deployment_cost_usd_per_mw", "asset_life_years", "launch_network",
 }
 for _kind in ("robot_fleet", "robotaxi", "orbital_compute"):
     KIND_FIELDS[_kind] |= {"service_life_years", "depreciation_life_years"}
@@ -208,6 +208,54 @@ def robotaxi_production(ramp, year, base_year):
         fraction = initial + (1 - initial) * min(max(elapsed / duration, 0), 1) if duration > 0 else 1
         monthly.append((capacity * fraction / 12, month + delay))
     return monthly, capacity
+
+
+def orbital_launch_capacity(network, year, base_year):
+    """Whole flights, phased pads, shared site caps, and competing missions.
+
+    Forecast dates and environmental envelopes are conditional planning inputs,
+    not a statement that a site currently holds an operating license.
+    """
+    allowed = {"payload_tonnes", "it_kw_per_tonne", "payload_efficiency", "ai_flight_share", "sites"}
+    if set(network) - allowed or not isinstance(network.get("sites"), list):
+        raise ModelError("invalid launch_network fields/sites")
+    def p(key, default=0, minimum=0, maximum=None):
+        return parameter(network.get(key, default), year, base_year, key, minimum, maximum)
+    mw_per_flight = p("payload_tonnes") * p("it_kw_per_tonne") * p("payload_efficiency", 1, 0, 1) / 1000
+    ai_share = p("ai_flight_share", 1, 0, 1)
+    monthly_mw = [0.0] * 12
+    site_details, ids = [], set()
+    for site in network["sites"]:
+        if set(site) - {"id", "pads", "annual_site_limit", "limit_status", "notes"} or site["id"] in ids:
+            raise ModelError("invalid/duplicate launch site")
+        ids.add(site["id"])
+        limit = parameter(site["annual_site_limit"], year, base_year, "annual_site_limit")
+        total, ai, cumulative = 0, 0, 0.0
+        active_pad_months = 0
+        for month in range(1, 13):
+            rate = 0.0
+            for pad in site["pads"]:
+                if set(pad) - {"id", "online_year", "online_month", "flights_per_year", "planned_pads", "notes"}:
+                    raise ModelError("unknown launch pad field")
+                online_year = number(pad["online_year"], "online_year", base_year - 100)
+                online_month = number(pad["online_month"], "online_month", 1, 12)
+                if not online_year.is_integer() or not online_month.is_integer():
+                    raise ModelError("launch pad activation must use integer year/month")
+                if (year, month) >= (online_year, online_month):
+                    active_pad_months += 1
+                    rate += parameter(pad["flights_per_year"], year, base_year, "flights_per_year")
+            cumulative += min(rate, limit) / 12
+            flights = math.floor(cumulative + 1e-9)
+            ai_flights = math.floor(flights * ai_share + 1e-9)
+            monthly_mw[month - 1] += (ai_flights - ai) * mw_per_flight
+            total, ai = flights, ai_flights
+        site_details.append({"site": site["id"], "available_flights": total,
+                             "ai_flights": ai, "active_pad_months": active_pad_months,
+                             "limit_status": site.get("limit_status", "model_assumption")})
+    return {"monthly_launch_capacity_mw": monthly_mw, "mw_per_ai_flight": mw_per_flight,
+            "available_starship_flights": sum(x["available_flights"] for x in site_details),
+            "allocated_ai_flights": sum(x["ai_flights"] for x in site_details),
+            "annual_launch_capacity_mw": sum(monthly_mw), "launch_sites": site_details}
 
 
 def segment_forecast(segment, year, base_year, state):
@@ -383,10 +431,31 @@ def segment_forecast(segment, year, base_year, state):
                 inventory = state.setdefault("inventory_mw", p("opening_inventory_mw"))
                 produced = p("manufactured_it_mw")
                 deployment = min(inventory + produced, p("deployment_limit_mw", inventory + produced))
+                launch_drivers = {}
+                deployed_monthly = None
                 commissioned = deployment * p("commissioning_yield", 1, 0, 1)
                 month = p("commissioning_start_month", 10, 1, 12)
                 if not month.is_integer():
                     raise ModelError("commissioning_start_month must be an integer from 1 to 12")
+                if "launch_network" in segment:
+                    launch_drivers = orbital_launch_capacity(segment["launch_network"], year, base_year)
+                    if "service_life_years" not in segment:
+                        raise ModelError("launch_network requires vintage asset accounting")
+                    # Manufacture across the configured months; do not carry a
+                    # missed launch slot forward or deploy inventory before it exists.
+                    available_inventory = inventory
+                    remaining_limit = p("deployment_limit_mw", inventory + produced)
+                    deployed_monthly = []
+                    for m in range(1, 13):
+                        available_inventory += produced / (13 - month) if m >= month else 0
+                        deployed = (min(available_inventory, remaining_limit,
+                                        launch_drivers["monthly_launch_capacity_mw"][m - 1]) if m >= month else 0)
+                        deployed_monthly.append(deployed)
+                        available_inventory -= deployed
+                        remaining_limit -= deployed
+                    deployment = sum(deployed_monthly)
+                    commissioned = deployment * p("commissioning_yield", 1, 0, 1)
+                    launch_drivers["deployed_monthly_mw"] = deployed_monthly
                 closing = opening + commissioned
                 # New capacity ramps linearly from zero across the remaining months.
                 # October start -> 3/12 of a year x 1/2 average of new end-year MW.
@@ -415,6 +484,7 @@ def segment_forecast(segment, year, base_year, state):
                     per_mw = deployed_hardware_cost / deployment + launch if deployment else 0
                     writeoff = (deployment - commissioned) * per_mw
                     lifecycle = asset_rollforward(state, year,
+                        [(q * p("commissioning_yield", 1, 0, 1), per_mw, m) for m, q in enumerate(deployed_monthly, 1)] if deployed_monthly is not None else
                         [(commissioned / (13 - int(month)), per_mw, m) for m in range(int(month), 13)],
                         p("service_life_years", 4, 1), p("depreciation_life_years", p("asset_life_years", 4), 1e-9),
                         opening_units=opening,
@@ -429,7 +499,7 @@ def segment_forecast(segment, year, base_year, state):
                                    "year_end_it_mw": closing, "closing_inventory_mw": state["inventory_mw"],
                                    "retired_it_mw": retired_mw,
                                    "commissioning_start_month": month, "deployment_writeoff_usd": writeoff,
-                                   "closing_net_book_value_usd": state["orbital_book"]}
+                                   "closing_net_book_value_usd": state["orbital_book"], **launch_drivers}
             else:
                 mw = p("average_it_mw")
             external, internal = p("external_share", 1, 0, 1), p("internal_share", 0, 0, 1)

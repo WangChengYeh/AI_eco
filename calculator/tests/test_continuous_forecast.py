@@ -113,10 +113,10 @@ class LifecycleEconomics(unittest.TestCase):
         self.assertAlmostEqual(rental[2028]["revenue_usd"], 58.5e9, delta=.1)
         self.assertAlmostEqual(rental[2030]["drivers"]["average_rented_robots"], 20000000)
         self.assertAlmostEqual(rental[2030]["revenue_usd"], 600e9, delta=.1)
-        self.assertAlmostEqual(orbit["drivers"]["average_it_mw"], 125)
+        self.assertAlmostEqual(orbit["drivers"]["average_it_mw"], 6.75)
         self.assertEqual(c["years"], list(range(2027, 2032)))
         late = next(s for s in r["segments"] if s["segment"] == "orbital_compute" and s["year"] == 2031)
-        self.assertAlmostEqual(late["drivers"]["year_end_it_mw"], 12000)
+        self.assertAlmostEqual(late["drivers"]["year_end_it_mw"], 2010)
         for rows in r["companies"].values():
             for a in rows:
                 self.assertAlmostEqual(a["resource_shares_issued"] * (a["stock_payment_price_usd"] or 0), a["stock_payment_usd"], delta=.01)

@@ -34,6 +34,8 @@ def assumptions(config):
         ["Robotaxi（使用者時程）", f"{ramp['full_rate_year']}年中達全速；以{ramp['full_rate_month']}月起穩定產速實作"],
         ["Robotaxi（產速假設）", f"年化{val(ramp['annual_capacity_units']):,.0f}台，取已披露裝置產能下限作錨點，非2027產量指引"],
         ["Robotaxi（爬坡／部署假設）", f"年初達全速{ramp['initial_rate_fraction']:.0%}，線性爬坡；全部自持、投運延遲{ramp['deployment_delay_months']}個月"],
+        ["星艦部署（模型條件）", "100噸×75kW/噸×80%＝6MW/次；每台年52次、AI占50%；共用場址上限25/44/76，後兩者啟用與許可仍待確認"],
+        ["新發射場（模型月份）", "Pad1改建2027/7；LC39A 2027/1；37A 2028/1；37B 2029/7；Louisiana僅首台2029/7，其餘9台未計容量"],
         ["太空算力（使用者時程）", "2027年底大量量產"],
         ["太空算力（規模假設）", f"2027製造{val(orbit['manufactured_it_mw']) / 1000:,.2f}GW，{val(orbit['commissioning_start_month']):.0f}月起部署；2028製造{val(orbit['manufactured_it_mw'], 2028) / 1000:,.2f}GW"],
         ["太空成本（模型假設）", f"硬體及配套{val(orbit['hardware_cost_usd_per_mw']) / 1e6:,.0f}M美元/MW；發射部署{val(orbit['deployment_cost_usd_per_mw']) / 1e6:,.0f}M美元/MW"],
@@ -88,6 +90,11 @@ el('ts-assumptions').replaceChildren(...data[0].assumptions.map(([label,value])=
         source = source.replace("if(!r)return;", """if(!r)return;
  const fsdRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='fsd');
  el('ts-fsd-detail').textContent=fsdRow?(()=>{const d=fsdRow.drivers;return r.year+' FSD：年初付費 '+fmt(d.opening_subscribers/10000)+' 萬／新增 '+fmt(d.new_subscribers/10000)+' 萬／年底付費 '+fmt(d.closing_subscribers/10000)+' 萬／全年平均 '+fmt(d.average_subscribers/10000)+' 萬；月費 '+fmt(d.monthly_price_usd)+' 美元（模型假設）。';})():'';""")
+    if 'id="ts-launch-detail"' not in source:
+        source = source.replace('<div id="ts-current-detail"', '<div id="ts-launch-detail" class="text-small" aria-live="polite"></div><div id="ts-current-detail"')
+        source = source.replace("if(!r)return;", """if(!r)return;
+ const orbitRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='orbital_compute');
+ el('ts-launch-detail').textContent=orbitRow?(()=>{const d=orbitRow.drivers;return r.year+' 星艦部署：可用發射槽 '+fmt(d.available_starship_flights)+' 次／AI分配 '+fmt(d.allocated_ai_flights)+' 次／單次 '+fmt(d.mw_per_ai_flight)+' MW；新增投運 '+fmt(d.commissioned_new_it_mw/1000)+' GW／地面未部署庫存 '+fmt(d.closing_inventory_mw/1000)+' GW。含未確認許可與啟用假設。';})():'';""")
     if "四步驟 SOP" not in source:
         source = source.replace('<h2>Tesla／SpaceX 主預測</h2>', '<h2>Tesla／SpaceX 主預測</h2>\n<div class="text-small"><a href="https://github.com/WangChengYeh/AI_eco/blob/main/SOP.md" target="_blank" rel="noopener">四步驟 SOP：理論 → 數據 → Forecast Python → HTML</a></div>')
     if 'id="ts-evidence"' not in source:

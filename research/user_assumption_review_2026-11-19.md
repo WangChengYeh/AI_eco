@@ -75,7 +75,7 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 - 支持／相關證據：SpaceX官方索引有late2027快速製造部署目標；Musk談過2027起發射。
 - 限縮／相反證據：11月Baron第三方逐字稿轉述為2027先少量、2028顯著放量、2029更大規模；與2027即大量的口徑有差異。2027製造1GW、部署1GW均未被證實；年化產速不等於全年累計。
 - Musk查核：已找Musk六月訪談及十一月訪談線索；後者第三方稿與原片入口已記錄，未冒稱直接驗證錄影。
-- 計算處理：保留使用者時程，將官方目標、近期Musk轉述及模型GW數值分開展示。
+- 計算處理：保留2027年底製造時程與GW製造規模假設，實際投運另受逐月發射網路、庫存及部署上限限制，不把製造能力直接當在軌容量。
 
 搜尋紀錄：
 
@@ -388,6 +388,29 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 
 - [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 - [Tesla官方FSD訂閱費率與資格](https://www.tesla.com/support/full-self-driving-subscriptions)：2026-11-19讀取：美國月費99美元，FSD電腦3.0以上且未買斷可訂閱；市場與資格有限制。未披露每戶現金成本或全球可訂閱車隊500萬。
+
+## 星艦塔與每年太空部署容量
+
+- 原命題：把星艦建塔工程與啟用節奏納入太空算力預測。
+- 判定：**工程與場址規劃有來源，吞吐與啟用仍是假設**
+- 支持／相關證據：Starbase現行25次；LC39A環評44次，SLC37方案76次共用；Louisiana規劃10發射台且最早2029首飛。
+- 限縮／相反證據：不能把建塔等同可用台數、環評額度等同營運許可、456擬議年發射等同已核准。AI功率密度口徑、貨艙裝載、軌道運力、芯片供應及實際任務比例仍待核實。
+- Musk查核：沿用本輪Musk／SpaceX主管工程進度搜尋；未找到逐塔已確認的年度AI發射計畫。
+- 計算處理：逐月計算啟用台數與共用場址上限；先分配整數AI發射，再限制實際部署；保持製造／在軌容量／庫存分開，保留完整硬體支出。
+
+搜尋紀錄：
+
+- `SpaceX Starship launch tower construction November 2026 LC39A SLC37 Pad1 Louisiana`
+- `site.faa.gov Starbase 456 2026 25 launches November 30`
+- `site.faa.gov Starship LC39A 44 launches January 2026 record decision`
+
+來源：
+
+- [FAA：Starbase現行25與擬議456次年發射](https://www.govinfo.gov/content/pkg/FR-2026-10-14/pdf/2026-20963.pdf)：2026-11-19讀取官方搜尋索引：現行25；Phase1擬100、Phase2擬456，尚非已核准。
+- [FAA LC39A最終ROD](https://www.faa.gov/sites/faa.gov/files/20260123-SSH-LC-39A-ROD-Final.pdf)：已讀原始PDF：環評方案44次／年；環評決定不能直接當營運許可。
+- [FAA SLC37工程與補充環評](https://www.faa.gov/space/stakeholder_engagement/spacex_starship_ccsfs)：已讀：基建已開發、76次為整個SLC37方案；仍須修改營運許可。
+- [Louisiana州政府SpaceX工程規劃](https://www.opportunitylouisiana.gov/spacex)：已讀：5區各2台共10發射台；2027開工、最快2029首飛，非10台已建成。
+- [SpaceX AI1官方頁](https://new.spacex.com/spacexai/starmind)：官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。
 
 ## 更新規則
 
