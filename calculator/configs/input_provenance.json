@@ -168,6 +168,26 @@
       ],
       "research_claim_id": "optimus_2029_volume",
       "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.optimus_owned.rental_utilization",
+      "value": 1,
+      "unit": "fraction",
+      "classification": "user_assumption",
+      "basis": "使用者指定剩餘可租餘量100%付費出租；取消原模型出租需求上限，未有實際合約支持。",
+      "fact_ids": [],
+      "research_claim_id": "optimus_paid_utilization",
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd",
+      "value": 2500,
+      "unit": "USD/robot-month",
+      "classification": "user_assumption",
+      "basis": "使用者每台3萬美元本輪明列按每年解讀，除以12換算月租2,500美元，未有公司官方租金指引。",
+      "fact_ids": [],
+      "research_claim_id": "optimus_annual_rent",
+      "checked_at": "2026-11-19"
     }
   ]
 }

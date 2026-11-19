@@ -25,7 +25,8 @@ def assumptions(config):
         return parameter(spec, year, base)
     return [
         ["Optimus（使用者全年產量假設）", "；".join(f"{y}年{val(robot['production_units'], y) / 10000:,.0f}萬台" for y in (2027, 2028, 2029)) + "；內用優先、餘量出租，非公司年度指引"],
-        ["Optimus（延伸與需求假設）", f"2030–2031各年{val(robot['production_units'], 2030) / 10000:,.0f}萬台；平均內用需求{val(robot['internal_demand_robots']) / 10000:,.0f}萬台；出租率{val(robot['rental_utilization']):.0%}、付費需求上限{val(robot['rental_demand_robots']) / 10000:,.0f}萬台"],
+        ["Optimus（延伸與內用假設）", f"2030–2031各年{val(robot['production_units'], 2030) / 10000:,.0f}萬台；平均內用需求{val(robot['internal_demand_robots']) / 10000:,.0f}萬台"],
+        ["Optimus（使用者租賃條件）", f"可租餘量付費出租率{val(robot['rental_utilization']):.0%}；每台每年{val(robot['monthly_rent_usd']) * 12:,.0f}美元" + (f"；付費需求上限{val(robot['rental_demand_robots']) / 10000:,.0f}萬台" if 'rental_demand_robots' in robot else "；無額外出租需求上限")],
         ["Robotaxi（使用者時程）", f"{ramp['full_rate_year']}年中達全速；以{ramp['full_rate_month']}月起穩定產速實作"],
         ["Robotaxi（產速假設）", f"年化{val(ramp['annual_capacity_units']):,.0f}台，取已披露裝置產能下限作錨點，非2027產量指引"],
         ["Robotaxi（爬坡／部署假設）", f"年初達全速{ramp['initial_rate_fraction']:.0%}，線性爬坡；全部自持、投運延遲{ramp['deployment_delay_months']}個月"],

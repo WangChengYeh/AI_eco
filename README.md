@@ -10,7 +10,7 @@
 
 依 [SOP](SOP.md) 持續更新同一份分析。完成理論與數據查核後，執行 `python calculator/run_pipeline.py` 驗證映射、測試、重算並產生HTML；Robotaxi 2027年中全速的時間假設與產速數值分開管理，見 [輸入來源對應](calculator/configs/input_provenance.json)。
 
-每項使用者假設都必須做網路搜尋，包含Musk本人訊息、原片及公司申報，並記錄支持與限縮證據。[本輪查核](research/user_assumption_review_2026-11-19.md)覆蓋現行全部8項使用者輸入及6項理論／交易強版本；部分只有方向或長期產能支持，未把研究覆蓋率當成預測已校準。
+每項使用者假設都必須做網路搜尋，包含Musk本人訊息、原片及公司申報，並記錄支持與限縮證據。[本輪查核](research/user_assumption_review_2026-11-19.md)覆蓋現行全部10項使用者輸入及6項理論／交易強版本；部分只有方向或長期產能支持，未把研究覆蓋率當成預測已校準。
 
 ## 核心理論
 

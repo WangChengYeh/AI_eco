@@ -398,7 +398,12 @@ class StockResourceExchange(unittest.TestCase):
                 self.assertAlmostEqual(r["funding_gap_usd"], 0)
                 self.assertEqual(r["cash_equity_raised_usd"], 0)
                 self.assertEqual(r["capex_usd"], r["cash_capex_usd"] + r["stock_paid_capex_usd"])
-        self.assertTrue(any(r["resource_shares_issued"] > 0 for r in result["companies"]["tesla"]))
+        for rows in result["companies"].values():
+            for r in rows:
+                if r["funding_gap_before_stock_usd"] == 0:
+                    self.assertEqual(r["resource_shares_issued"], 0)
+                else:
+                    self.assertGreater(r["resource_shares_issued"], 0)
         self.assertGreater(result["companies"]["spacex"][1]["resource_shares_issued"], 0)
 
 

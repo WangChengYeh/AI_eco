@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-19",
-  "coverage": "全部8項主預測使用者輸入及6項理論／交易命題；2027–2029產量路徑為積極假設，未變成已驗證年度指引。",
+  "coverage": "全部10項主預測使用者輸入及6項理論／交易命題；100%出租與每台年租3萬美元為使用者條件，未獲官方租賃指引支持。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -186,7 +186,7 @@
       "finding": "11月6日Baron訪談逐字稿及報導均記載Musk傾向出租。",
       "limits": "未公布月租、簽約數及出租率；傾向出租不證明任何指定的全年平均付費台數。",
       "musk_search": "已定位主辦方原片及第三方逐字稿；租賃段落原片尚未直接核對，不把轉述冒充已觀看。",
-      "forecast_action": "保留商業模式假設；月租2,000美元、50%出租率與全年可租時間仍未校準。",
+      "forecast_action": "保留內用優先、剩餘出租；本輪出租率改100%、租金按每台每年3萬美元，均另列查核項目，未當公司指引。",
       "search_queries": [
         "Musk Optimus ten million 2027 internal rental robots",
         "site.baroncapitalgroup.com 2026 Elon Musk interview Optimus rent November 6"
@@ -449,6 +449,54 @@
         "tesla_q1",
         "tesla_q3",
         "call_report"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "optimus_paid_utilization",
+      "title": "Optimus剩餘100%付費出租",
+      "claim": "Optimus剩餘100%付費出租。",
+      "user_values": {
+        "optimus_rental_utilization": 1
+      },
+      "verdict": "not_supported_as_stated",
+      "verdict_label": "使用者條件，未獲租賃實績支持",
+      "finding": "Musk有傾向出租的發言轉述，支持租賃商業模式方向。",
+      "limits": "未找到100%利用率、等量客戶合約或全部機器人均能持續產生租金的公司披露。此假設等同所有內用後可租餘量都有付費需求。",
+      "musk_search": "已搜尋Musk租賃報價與利用率訊息；找到出租方向及製造成本說法，未找到本項費率或100%付費利用率的原始指引。",
+      "forecast_action": "依使用者本輪參數重算。內用優先，餘量全部付費出租；租金按實際全年平均付費台數乘年租金，不把年底數量乘全年。",
+      "search_queries": [
+        "Tesla Optimus rental annual price $30000 2026 Musk",
+        "Musk Optimus rent robots rental price utilization 100 percent November 2026"
+      ],
+      "source_ids": [
+        "baron_host",
+        "baron_transcript",
+        "rental_report"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "optimus_annual_rent",
+      "title": "Optimus每台年租3萬美元",
+      "claim": "Optimus每台年租3萬美元。",
+      "user_values": {
+        "optimus_annual_rent_usd": 30000
+      },
+      "verdict": "not_supported_as_stated",
+      "verdict_label": "使用者條件，未獲租賃實績支持",
+      "finding": "Musk有傾向出租的發言轉述，支持租賃商業模式方向。",
+      "limits": "使用者指定每台3萬美元，本輪按每年解讀；未找到Tesla對外公布此年租金。Musk所談約3萬降至2萬是製造成本，不能當作租金證據。",
+      "musk_search": "已搜尋Musk租賃報價與利用率訊息；找到出租方向及製造成本說法，未找到本項費率或100%付費利用率的原始指引。",
+      "forecast_action": "依使用者本輪參數重算。內用優先，餘量全部付費出租；租金按實際全年平均付費台數乘年租金，不把年底數量乘全年。",
+      "search_queries": [
+        "Tesla Optimus rental annual price $30000 2026 Musk",
+        "Musk Optimus rent robots rental price utilization 100 percent November 2026"
+      ],
+      "source_ids": [
+        "baron_host",
+        "baron_transcript",
+        "rental_report"
       ],
       "searched_at": "2026-11-19"
     }
