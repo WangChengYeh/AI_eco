@@ -18,7 +18,8 @@
       "optimus_rental_utilization": 1,
       "optimus_annual_rent_usd": 30000,
       "fsd_incremental_monthly_cost_usd": 0,
-      "fsd_paid_subscribers_end2026": 5000000
+      "fsd_paid_subscribers_end2026": 5000000,
+      "orbital_mw_per_launch_from_mid2027": 15
     },
     "additional_assumptions": {
       "orbital_manufactured_2027_mw": 1000,
@@ -845,6 +846,11 @@
                 "2030": 1460,
                 "2031": 2920
               }
+            },
+            "capacity_upgrade": {
+              "year": 2027,
+              "month": 7,
+              "net_it_mw_per_flight": 15
             }
           }
         },

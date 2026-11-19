@@ -216,12 +216,26 @@ def orbital_launch_capacity(network, year, base_year):
     Forecast dates and environmental envelopes are conditional planning inputs,
     not a statement that a site currently holds an operating license.
     """
-    allowed = {"payload_tonnes", "it_kw_per_tonne", "payload_efficiency", "ai_flight_share", "sites", "fleet_rate_start", "fleet_rate_end"}
+    allowed = {"payload_tonnes", "it_kw_per_tonne", "payload_efficiency", "ai_flight_share", "sites", "fleet_rate_start", "fleet_rate_end", "capacity_upgrade"}
     if set(network) - allowed or not isinstance(network.get("sites"), list):
         raise ModelError("invalid launch_network fields/sites")
     def p(key, default=0, minimum=0, maximum=None):
         return parameter(network.get(key, default), year, base_year, key, minimum, maximum)
     mw_per_flight = p("payload_tonnes") * p("it_kw_per_tonne") * p("payload_efficiency", 1, 0, 1) / 1000
+    per_flight_monthly = [mw_per_flight] * 12
+    if "capacity_upgrade" in network:
+        upgrade = network["capacity_upgrade"]
+        if set(upgrade) != {"year", "month", "net_it_mw_per_flight"}:
+            raise ModelError("capacity_upgrade requires year, month, net_it_mw_per_flight")
+        uy = number(upgrade["year"], "upgrade year")
+        um = number(upgrade["month"], "upgrade month", 1, 12)
+        if not uy.is_integer() or not um.is_integer():
+            raise ModelError("capacity upgrade requires integer year/month")
+        net_mw = number(upgrade["net_it_mw_per_flight"], "net_it_mw_per_flight", 0)
+        # An explicit net-MW target already includes payload/packing effects;
+        # never apply payload_efficiency a second time.
+        per_flight_monthly = [net_mw if (year, month) >= (uy, um) else mw_per_flight
+                              for month in range(1, 13)]
     ai_share = p("ai_flight_share", 1, 0, 1)
     monthly_mw = [0.0] * 12
     monthly_site_slots = [0] * 12
@@ -249,7 +263,7 @@ def orbital_launch_capacity(network, year, base_year):
             flights = math.floor(cumulative + 1e-9)
             ai_flights = math.floor(flights * ai_share + 1e-9)
             monthly_site_slots[month - 1] += flights - total
-            monthly_mw[month - 1] += (ai_flights - ai) * mw_per_flight
+            monthly_mw[month - 1] += (ai_flights - ai) * per_flight_monthly[month - 1]
             total, ai = flights, ai_flights
         site_details.append({"site": site["id"], "available_flights": total,
                              "ai_flights": ai, "active_pad_months": active_pad_months,
@@ -270,12 +284,15 @@ def orbital_launch_capacity(network, year, base_year):
             cumulative += min(site_slots, rate / 12)
             flights = math.floor(cumulative + 1e-9)
             ai = math.floor(flights * ai_share + 1e-9)
-            monthly_mw.append((ai - allocated) * mw_per_flight)
+            monthly_mw.append((ai - allocated) * per_flight_monthly[i])
             available, allocated = flights, ai
         fleet_drivers = {"fleet_rate_start": start, "fleet_rate_end": end}
     return {"infrastructure_site_slots": infrastructure_slots,
             "site_detail_scope": "potential slots before fleet-wide ramp",
-            **fleet_drivers, "monthly_launch_capacity_mw": monthly_mw, "mw_per_ai_flight": mw_per_flight,
+            **fleet_drivers, "monthly_launch_capacity_mw": monthly_mw,
+            "mw_per_ai_flight": per_flight_monthly[-1],
+            "mw_per_ai_flight_start": per_flight_monthly[0],
+            "monthly_mw_per_ai_flight": per_flight_monthly,
             "available_starship_flights": available,
             "allocated_ai_flights": allocated,
             "annual_launch_capacity_mw": sum(monthly_mw), "launch_sites": site_details}

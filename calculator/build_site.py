@@ -34,7 +34,7 @@ def assumptions(config):
         ["Robotaxi（使用者時程）", f"{ramp['full_rate_year']}年中達全速；以{ramp['full_rate_month']}月起穩定產速實作"],
         ["Robotaxi（產速假設）", f"年化{val(ramp['annual_capacity_units']):,.0f}台，取已披露裝置產能下限作錨點，非2027產量指引"],
         ["Robotaxi（爬坡／部署假設）", f"年初達全速{ramp['initial_rate_fraction']:.0%}，線性爬坡；全部自持、投運延遲{ramp['deployment_delay_months']}個月"],
-        ["星艦部署（模型條件）", "6MW/次、AI占50%；機隊年化2027由52→104、2028由104→365，再按模型每年倍增；單塔與場址擴容另限，均含待驗證條件"],
+        ["星艦部署（模型條件）", "2027上半年6MW/次、7月起淨部署15MW/次（使用者假設，不再打80%折扣）；AI占50%；機隊與場址爬坡另限"],
         ["許可擴容（模型條件）", "Starbase假設2027達100、2028達456；佛州及Louisiana後續擴容為模型延伸，並非已獲准。取消固定3GW部署上限，仍受製造與庫存限制"],
         ["新發射場（模型月份）", "Pad1改建2027/7；LC39A 2027/1；37A 2028/1；37B 2029/7；Louisiana僅首台2029/7，其餘9台未計容量"],
         ["太空算力（使用者時程）", "2027年底大量量產"],
@@ -95,7 +95,8 @@ el('ts-assumptions').replaceChildren(...data[0].assumptions.map(([label,value])=
         source = source.replace('<div id="ts-current-detail"', '<div id="ts-launch-detail" class="text-small" aria-live="polite"></div><div id="ts-current-detail"')
         source = source.replace("if(!r)return;", """if(!r)return;
  const orbitRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='orbital_compute');
- el('ts-launch-detail').textContent=orbitRow?(()=>{const d=orbitRow.drivers;return r.year+' 星艦部署：可用發射槽 '+fmt(d.available_starship_flights)+' 次／AI分配 '+fmt(d.allocated_ai_flights)+' 次／單次 '+fmt(d.mw_per_ai_flight)+' MW；新增投運 '+fmt(d.commissioned_new_it_mw/1000)+' GW／地面未部署庫存 '+fmt(d.closing_inventory_mw/1000)+' GW。含未確認許可與啟用假設。';})():'';""")
+ el('ts-launch-detail').textContent=orbitRow?(()=>{const d=orbitRow.drivers;return r.year+' 星艦部署：可用發射槽 '+fmt(d.available_starship_flights)+' 次／AI分配 '+fmt(d.allocated_ai_flights)+' 次／單次 '+(d.mw_per_ai_flight_start===d.mw_per_ai_flight?fmt(d.mw_per_ai_flight):fmt(d.mw_per_ai_flight_start)+'→'+fmt(d.mw_per_ai_flight))+' MW；新增投運 '+fmt(d.commissioned_new_it_mw/1000)+' GW／地面未部署庫存 '+fmt(d.closing_inventory_mw/1000)+' GW。含未確認許可與啟用假設。';})():'';""")
+    source = source.replace("fmt(d.mw_per_ai_flight)+' MW；新增投運 '", "(d.mw_per_ai_flight_start===d.mw_per_ai_flight?fmt(d.mw_per_ai_flight):fmt(d.mw_per_ai_flight_start)+'→'+fmt(d.mw_per_ai_flight))+' MW；新增投運 '")
     if "四步驟 SOP" not in source:
         source = source.replace('<h2>Tesla／SpaceX 主預測</h2>', '<h2>Tesla／SpaceX 主預測</h2>\n<div class="text-small"><a href="https://github.com/WangChengYeh/AI_eco/blob/main/SOP.md" target="_blank" rel="noopener">四步驟 SOP：理論 → 數據 → Forecast Python → HTML</a></div>')
     if 'id="ts-evidence"' not in source:

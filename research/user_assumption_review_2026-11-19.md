@@ -413,6 +413,25 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 - [Louisiana州政府SpaceX工程規劃](https://www.opportunitylouisiana.gov/spacex)：已讀：5區各2台共10發射台；2027開工、最快2029首飛，非10台已建成。
 - [SpaceX AI1官方頁](https://new.spacex.com/spacexai/starmind)：官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。
 
+## 2027年中起每次星艦淨部署15MW
+
+- 原命題：2027年7月起每次AI專用星艦部署15MW IT容量。
+- 判定：**使用者性能與月份假設，未獲實績證實**
+- 支持／相關證據：SpaceX申報有未來200噸載重目標；AI1官方索引75kW/噸可作200噸×75kW/噸＝15MW理想換算，但不是已驗證淨部署量。Musk有2027年V4方向報導，未找到2027年7月15MW已確認承諾。
+- 限縮／相反證據：15MW淨值亦可能需要更高有效運力或更佳功率重量比；200噸打80%折扣只得12MW。硬體功率口徑、貨艙、目標軌道與實際載荷均待確認。
+- Musk查核：已搜尋Musk Starship 2027 200 tons V4 payload AI satellites 15 MW；未找到年中15MW的直接官方驗證。
+- 計算處理：主預測2027上半年6MW/次、7月起15MW/次，之後維持15；此為淨部署覆寫，不再乘80%。逐月與發射次數相乘，保留製造、庫存、投運月份、折舊與退役限制。
+
+搜尋紀錄：
+
+- `Musk Starship 2027 200 tons V4 payload AI satellites 15 MW`
+- `site.sec.gov/Archives/edgar/data/1181412 "200 metric tons" "V4"`
+
+來源：
+
+- [SpaceX申報：V3預期100噸、未來可能200噸](https://www.sec.gov/Archives/edgar/data/1181412/000162828026039276/spaceexplorationtechnologi.htm)：2026-11-20官方搜尋索引列V3預期100噸、未來可能自V4達200噸；未證實2027年7月達成15MW淨部署。
+- [SpaceX AI1官方頁](https://new.spacex.com/spacexai/starmind)：官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。
+
 ## 更新規則
 
 新增或修改任何使用者假設，必須同步重新搜尋並更新查核記錄，才能通過run_pipeline。不能把多年後的年化產能寫成當年產量、把Musk目標當已發生實績、把媒體轉述標為已直接看過原片，或把供應商投資當成股票抵付採購帳款。

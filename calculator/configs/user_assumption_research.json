@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-20",
-  "coverage": "12項使用者輸入及20項命題；星艦頻率改按Musk目標錨點與模型延伸爬坡，非已實現發射量。",
+  "coverage": "13項使用者輸入及21項命題；新增2027年7月起每次淨部署15MW假設，非已確認性能與時程。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -176,6 +176,12 @@
       "url": "https://www.investing.com/news/world-news/spacex-plans-next-starship-launch-as-soon-as-this-month-catching-it-on-land-4836320?ampMode=1",
       "access": "secondary_report_read",
       "access_note": "2026-11-20重讀Reuters：Musk說約一年後每天至少一發；不是每個場址每日一發，也未取代較近期爬坡說法。"
+    },
+    "starship_payload": {
+      "title": "SpaceX申報：V3預期100噸、未來可能200噸",
+      "url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026039276/spaceexplorationtechnologi.htm",
+      "access": "primary_indexed_only",
+      "access_note": "2026-11-20官方搜尋索引列V3預期100噸、未來可能自V4達200噸；未證實2027年7月達成15MW淨部署。"
     }
   },
   "claims": [
@@ -646,6 +652,29 @@
         "faa_lc39a",
         "faa_slc37",
         "louisiana",
+        "ai1"
+      ],
+      "searched_at": "2026-11-20"
+    },
+    {
+      "id": "orbital_15mw_mid2027",
+      "title": "2027年中起每次星艦淨部署15MW",
+      "claim": "2027年7月起每次AI專用星艦部署15MW IT容量。",
+      "user_values": {
+        "orbital_mw_per_launch_from_mid2027": 15
+      },
+      "verdict": "not_established",
+      "verdict_label": "使用者性能與月份假設，未獲實績證實",
+      "finding": "SpaceX申報有未來200噸載重目標；AI1官方索引75kW/噸可作200噸×75kW/噸＝15MW理想換算，但不是已驗證淨部署量。Musk有2027年V4方向報導，未找到2027年7月15MW已確認承諾。",
+      "limits": "15MW淨值亦可能需要更高有效運力或更佳功率重量比；200噸打80%折扣只得12MW。硬體功率口徑、貨艙、目標軌道與實際載荷均待確認。",
+      "musk_search": "已搜尋Musk Starship 2027 200 tons V4 payload AI satellites 15 MW；未找到年中15MW的直接官方驗證。",
+      "forecast_action": "主預測2027上半年6MW/次、7月起15MW/次，之後維持15；此為淨部署覆寫，不再乘80%。逐月與發射次數相乘，保留製造、庫存、投運月份、折舊與退役限制。",
+      "search_queries": [
+        "Musk Starship 2027 200 tons V4 payload AI satellites 15 MW",
+        "site.sec.gov/Archives/edgar/data/1181412 \"200 metric tons\" \"V4\""
+      ],
+      "source_ids": [
+        "starship_payload",
         "ai1"
       ],
       "searched_at": "2026-11-20"

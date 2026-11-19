@@ -427,13 +427,32 @@
             "2030": 1460,
             "2031": 2920
           }
+        },
+        "capacity_upgrade": {
+          "year": 2027,
+          "month": 7,
+          "net_it_mw_per_flight": 15
         }
       },
       "unit": "sites, flights/year, tonnes, kW/tonne, fractions",
       "classification": "model_assumption",
-      "basis": "Musk目標做成機隊整體年度起終點爬坡，另受單台周轉與共用場址限制；2027年化52→104、2028年化104→365；2029以後倍增及許可擴容均為未驗證模型延伸，詳見research/starship_launch_capacity_2026-11-20.md。",
+      "basis": "Musk目標做成機隊整體年度起終點爬坡，另受單台周轉與共用場址限制；2027年化52→104、2028年化104→365；2029以後倍增及許可擴容均為未驗證模型延伸，詳見research/starship_launch_capacity_2026-11-20.md。 2026-11-20使用者另指定2027年7月起淨部署15MW/次，見capacity_upgrade子項查核。",
       "fact_ids": [],
       "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.orbital_compute.launch_network.capacity_upgrade",
+      "value": {
+        "year": 2027,
+        "month": 7,
+        "net_it_mw_per_flight": 15
+      },
+      "unit": "net IT MW/AI flight, effective year/month",
+      "classification": "user_assumption",
+      "basis": "使用者指定2027年中起15MW/次；年中映射為7月，視為淨部署容量，不再乘80%裝載折減。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20",
+      "research_claim_id": "orbital_15mw_mid2027"
     }
   ]
 }

@@ -49,12 +49,12 @@ class LaunchNetwork(unittest.TestCase):
             for used,cap in zip(d['deployed_monthly_mw'],d['monthly_launch_capacity_mw']):
                 self.assertLessEqual(used,cap+1e-8)
         self.assertEqual(rows[0]['drivers']['deployed_monthly_mw'][:9],[0]*9)
-        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],780)
+        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],1950)
 
     def test_uncommissioned_inventory_does_not_retire_as_operating_assets(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
         rows=[s for s in m.forecast(c)['segments'] if s['segment']=='orbital_compute']
-        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],78)
+        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],195)
 
     def test_invalid_ai_share_is_rejected(self):
         n=self.network();n['ai_flight_share']=1.1
@@ -75,4 +75,18 @@ class LaunchNetwork(unittest.TestCase):
 
     def test_unpaired_fleet_ramp_is_rejected(self):
         n=self.network();n['fleet_rate_start']=52
+        with self.assertRaises(m.ModelError):m.orbital_launch_capacity(n,2027,2027)
+
+    def test_net_15mw_applies_from_july_without_another_efficiency_discount(self):
+        n=self.network()
+        n['capacity_upgrade']={'year':2027,'month':7,'net_it_mw_per_flight':15}
+        d=m.orbital_launch_capacity(n,2027,2027)
+        self.assertEqual(d['monthly_mw_per_ai_flight'],[6]*6+[15]*6)
+        self.assertEqual(d['monthly_launch_capacity_mw'],[6]*6+[15]*6)
+        self.assertEqual(d['annual_launch_capacity_mw'],126)
+        self.assertEqual(m.orbital_launch_capacity(n,2028,2027)['annual_launch_capacity_mw'],180)
+
+    def test_invalid_capacity_upgrade_month_is_rejected(self):
+        n=self.network()
+        n['capacity_upgrade']={'year':2027,'month':13,'net_it_mw_per_flight':15}
         with self.assertRaises(m.ModelError):m.orbital_launch_capacity(n,2027,2027)
