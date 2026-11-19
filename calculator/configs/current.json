@@ -7,12 +7,14 @@
     "description": "依理論001股權交換資源、理論002持續降低完整產出成本，統一遞推營運、資產生命週期、獲利、現金及每股價值；使用者未指定的數量、價格、成本、壽命與估值倍數為未校準模型假設。",
     "observed_sources_file": "reference_facts.json",
     "user_assumptions": {
-      "optimus_production_2027": 10000000,
+      "optimus_production_2027": 1000000,
       "orbital_mass_production": "2027年底",
       "stock_resource_exchange": "有資金缺口時，用新發股票支付資源並計入稀釋",
       "robotaxi_full_production": "2027年中達全速量產（模型以2027-07-01實作）",
       "optimus_internal_priority": "Optimus優先內部使用",
-      "optimus_surplus_rental": "內部用不完的Optimus出租"
+      "optimus_surplus_rental": "內部用不完的Optimus出租",
+      "optimus_production_2028": 5000000,
+      "optimus_production_2029": 10000000
     },
     "additional_assumptions": {
       "orbital_manufactured_2027_mw": 1000,
@@ -31,7 +33,8 @@
       "optimus_replace_retired": true,
       "robotaxi_service_life_years": 6,
       "orbital_service_life_years": 4,
-      "automation_eligible_cash_cost_ratio": 0.3
+      "automation_eligible_cash_cost_ratio": 0.3,
+      "optimus_production_2030_2031": 10000000
     },
     "analysis_id": "tesla_spacex",
     "forecast_policy": "同一主預測持續修訂；base是程式識別碼，bear/bull僅為敏感度檢查，修訂版本由Git管理。",
@@ -324,13 +327,14 @@
           "kind": "robot_fleet",
           "opening_fleet": 0,
           "production_units": {
-            "value": 0,
+            "value": 10000000,
             "annual": {
-              "2027": 10000000
+              "2027": 1000000,
+              "2028": 5000000,
+              "2029": 10000000
             }
           },
           "retirements": 0,
-          "fleet_capacity": 10000000,
           "unit_manufacturing_cost_usd": 20000,
           "opening_net_book_value_usd": 0,
           "depreciation_usd_per_robot_year": 4000,
@@ -344,10 +348,30 @@
           "capex_usd": 100000000,
           "ev_sales_multiple": 5,
           "volume_unit": "average robots / robot-months",
-          "notes": "2027全年均勻生產1,000萬台，年平均500萬台，先內用、餘量出租。5年服務與折舊壽命、到期等量替換是模型補充假設，替換製造成本重新計入capex。內用不算營收；節省受可自動化現金成本限制，不能抵銷折舊。未另假設擴張性新生產。",
+          "notes": "使用者本輪全年產量路徑：2027為100萬、2028為500萬、2029為1,000萬台；積極推估，並非公司年度指引。各季分配是爬坡模型假設，不以年底產速乘全年。2030–2031延伸為每年1,000萬、均勻生產，尚未額外假設擴產。內用優先，平均內用需求100萬台；剩餘按50%出租率及平均付費需求上限1,000萬台計算。移除原先累積車隊1,000萬台限制，避免混淆年度製造與持有總量。5年壽命及到期付費替換仍保留。",
           "service_life_years": 5,
           "depreciation_life_years": 5,
-          "replace_retired": true
+          "replace_retired": true,
+          "production_quarter_units": {
+            "2027": [
+              40000,
+              120000,
+              280000,
+              560000
+            ],
+            "2028": [
+              600000,
+              1000000,
+              1500000,
+              1900000
+            ],
+            "2029": [
+              2250000,
+              2500000,
+              2600000,
+              2650000
+            ]
+          }
         }
       },
       "stock_payment": {

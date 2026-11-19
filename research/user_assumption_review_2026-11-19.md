@@ -4,21 +4,22 @@
 
 範圍：現行主預測全部使用者假設，加上原始理論的重要強版本。查核包含支持、反向及限縮證據；沒有找到支持不等於已證偽。公司目標、Musk預測、第三方逐字稿及已發生實績分開。
 
-本輪未以未驗證的新聞數字自動覆寫營運輸入。2027 Optimus產量、太空GW規模、Robotaxi滿產月份與股票普遍接受度仍保留為待驗證假設；2027–2031輸出不因此升格為實證預測。
+Optimus已按使用者最新全年產量路徑修訂為2027年100萬、2028年500萬、2029年1,000萬台。這是積極爬坡假設，未找到這三個年度數字的公司原始指引；2030–2031維持年產1,000萬為延伸假設。太空GW規模、Robotaxi滿產月份與股票普遍接受度仍待驗證，輸出不因此升格為實證預測。
 
-## Optimus 2027實際產量
+## Optimus 2027全年100萬台
 
-- 原命題：2027年生產1,000萬台Optimus。
-- 判定：**尚未支持當年產量**
-- 支持／相關證據：Tesla Q1原始文件支持德州第二代產線的長期年產能設計1,000萬台。
-- 限縮／相反證據：長期年產能不是2027全年產量。Q3仍列德州建廠及Fremont初期爬坡；未查得2027實際生產1,000萬台的原始指引。
+- 原命題：2027全年生產100萬台Optimus。
+- 判定：**積極估算，未獲年度指引支持**
+- 支持／相關證據：Fremont設計年產能100萬台，加上德州長期1,000萬台目標，提供規模方向依據。
+- 限縮／相反證據：產線設計不是2027全年產量；Musk對Fremont達目標產速仍給至少一年以上的爬坡說法，2027達100萬台需Fremont與德州順利接力。
 - Musk查核：已搜尋Musk本人X及財報發言；報導提到2027開產或年底外部交付，未確認2027產量1,000萬台。
-- 計算處理：保留原使用者數值，明確標示未獲證據支持；不得改標已校準。
+- 計算處理：原2027產量1,000萬台改為使用者本輪100萬台；列為積極假設，按季爬坡，不標成公司指引。
 
 搜尋紀錄：
 
-- `site.x.com/elonmusk "Optimus" "10 million" "2027"`
-- `Musk Optimus 2027 10 million robots November 2026 X`
+- `Musk Optimus "2027" "1 million" "2028" "5 million"`
+- `Musk Optimus "2029" "10 million" production`
+- `Tesla Optimus Texas 10 million long term capacity 2027 2028 2029 Musk`
 
 來源：
 
@@ -51,7 +52,7 @@
 - 原命題：內部用不完的Optimus出租。
 - 判定：**出租方向有支持**
 - 支持／相關證據：11月6日Baron訪談逐字稿及報導均記載Musk傾向出租。
-- 限縮／相反證據：未公布月租、簽約數及出租率；傾向出租不證明2027全年可出租200萬平均台數。
+- 限縮／相反證據：未公布月租、簽約數及出租率；傾向出租不證明任何指定的全年平均付費台數。
 - Musk查核：已定位主辦方原片及第三方逐字稿；租賃段落原片尚未直接核對，不把轉述冒充已觀看。
 - 計算處理：保留商業模式假設；月租2,000美元、50%出租率與全年可租時間仍未校準。
 
@@ -245,6 +246,48 @@
 
 - [Investor.gov：資產配置與分散](https://www.investor.gov/additional-resources/general-resources/publications-research/info-sheets/beginners-guide-asset)：官方教育資料已定位：長期投資仍須管理集中及資產風險。
 - [Tesla 2026Q3 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)：原始申報已讀；含營運限制、資金需求及潛在交易委員會。
+
+## Optimus 2028全年500萬台
+
+- 原命題：2028全年生產5,000,000台Optimus。
+- 判定：**積極估算，未獲年度指引支持**
+- 支持／相關證據：公司揭露Fremont100萬台及德州長期1,000萬台設計年產能，支持未來大規模生產方向。
+- 限縮／相反證據：全年產量相較2027增加5倍，必須德州產線、供應鏈、良率與可工作品質同步成熟；未找到這個年度數字的公司原始指引。
+- Musk查核：已檢索Musk涉及年度、產量及長期目標的訊息，未找到可確認本年度數字的原始承諾；保留目標與實績差別。
+- 計算處理：採用使用者本輪年度產量路徑；各季分配為補充假設，內用、出租、資本投入、折舊與股票稀釋重新遞推。
+
+搜尋紀錄：
+
+- `Musk Optimus "2027" "1 million" "2028" "5 million"`
+- `Musk Optimus "2029" "10 million" production`
+- `Tesla Optimus Texas 10 million long term capacity 2027 2028 2029 Musk`
+
+來源：
+
+- [Tesla 2026Q1 Update：長期Optimus產能](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf)：原始PDF已讀：第6頁列德州產線長期年產能設計1,000萬台。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。
+- [Tesla 2026Q3 Musk發言轉述](https://www.shacknews.com/article/151108/tesla-optimus-robot-delay-end-of-2027)：2026-10-21電話會議發言轉述：預計2027年底向外部公司交付；不是原始電話會議字幕。
+
+## Optimus 2029全年1,000萬台
+
+- 原命題：2029全年生產10,000,000台Optimus。
+- 判定：**積極估算，未獲年度指引支持**
+- 支持／相關證據：公司揭露Fremont100萬台及德州長期1,000萬台設計年產能，支持未來大規模生產方向。
+- 限縮／相反證據：全年平均每月約83.3萬台，已接近德州長期設計年產能；必須很早就達高產速，不能只在年底達千萬台年化。未找到2029全年這個數字的公司原始指引。
+- Musk查核：已檢索Musk涉及年度、產量及長期目標的訊息，未找到可確認本年度數字的原始承諾；保留目標與實績差別。
+- 計算處理：採用使用者本輪年度產量路徑；各季分配為補充假設，內用、出租、資本投入、折舊與股票稀釋重新遞推。
+
+搜尋紀錄：
+
+- `Musk Optimus "2027" "1 million" "2028" "5 million"`
+- `Musk Optimus "2029" "10 million" production`
+- `Tesla Optimus Texas 10 million long term capacity 2027 2028 2029 Musk`
+
+來源：
+
+- [Tesla 2026Q1 Update：長期Optimus產能](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf)：原始PDF已讀：第6頁列德州產線長期年產能設計1,000萬台。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。
+- [Tesla 2026Q3 Musk發言轉述](https://www.shacknews.com/article/151108/tesla-optimus-robot-delay-end-of-2027)：2026-10-21電話會議發言轉述：預計2027年底向外部公司交付；不是原始電話會議字幕。
 
 ## 更新規則
 

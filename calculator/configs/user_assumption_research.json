@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-19",
-  "coverage": "現行主預測全部6項使用者輸入，另查6項理論強版本／交易與投資命題；模型補充參數未全部獲實證校準。",
+  "coverage": "全部8項主預測使用者輸入及6項理論／交易命題；2027–2029產量路徑為積極假設，未變成已驗證年度指引。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -127,20 +127,21 @@
   "claims": [
     {
       "id": "optimus_2027_volume",
-      "title": "Optimus 2027實際產量",
-      "claim": "2027年生產1,000萬台Optimus。",
+      "title": "Optimus 2027全年100萬台",
+      "claim": "2027全年生產100萬台Optimus。",
       "user_values": {
-        "optimus_production_2027": 10000000
+        "optimus_production_2027": 1000000
       },
       "verdict": "not_supported_as_stated",
-      "verdict_label": "尚未支持當年產量",
-      "finding": "Tesla Q1原始文件支持德州第二代產線的長期年產能設計1,000萬台。",
-      "limits": "長期年產能不是2027全年產量。Q3仍列德州建廠及Fremont初期爬坡；未查得2027實際生產1,000萬台的原始指引。",
+      "verdict_label": "積極估算，未獲年度指引支持",
+      "finding": "Fremont設計年產能100萬台，加上德州長期1,000萬台目標，提供規模方向依據。",
+      "limits": "產線設計不是2027全年產量；Musk對Fremont達目標產速仍給至少一年以上的爬坡說法，2027達100萬台需Fremont與德州順利接力。",
       "musk_search": "已搜尋Musk本人X及財報發言；報導提到2027開產或年底外部交付，未確認2027產量1,000萬台。",
-      "forecast_action": "保留原使用者數值，明確標示未獲證據支持；不得改標已校準。",
+      "forecast_action": "原2027產量1,000萬台改為使用者本輪100萬台；列為積極假設，按季爬坡，不標成公司指引。",
       "search_queries": [
-        "site.x.com/elonmusk \"Optimus\" \"10 million\" \"2027\"",
-        "Musk Optimus 2027 10 million robots November 2026 X"
+        "Musk Optimus \"2027\" \"1 million\" \"2028\" \"5 million\"",
+        "Musk Optimus \"2029\" \"10 million\" production",
+        "Tesla Optimus Texas 10 million long term capacity 2027 2028 2029 Musk"
       ],
       "source_ids": [
         "tesla_q1",
@@ -183,7 +184,7 @@
       "verdict": "partial_support",
       "verdict_label": "出租方向有支持",
       "finding": "11月6日Baron訪談逐字稿及報導均記載Musk傾向出租。",
-      "limits": "未公布月租、簽約數及出租率；傾向出租不證明2027全年可出租200萬平均台數。",
+      "limits": "未公布月租、簽約數及出租率；傾向出租不證明任何指定的全年平均付費台數。",
       "musk_search": "已定位主辦方原片及第三方逐字稿；租賃段落原片尚未直接核對，不把轉述冒充已觀看。",
       "forecast_action": "保留商業模式假設；月租2,000美元、50%出租率與全年可租時間仍未校準。",
       "search_queries": [
@@ -398,6 +399,56 @@
       "source_ids": [
         "investor",
         "tesla_sec"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "optimus_2028_volume",
+      "title": "Optimus 2028全年500萬台",
+      "claim": "2028全年生產5,000,000台Optimus。",
+      "user_values": {
+        "optimus_production_2028": 5000000
+      },
+      "verdict": "not_supported_as_stated",
+      "verdict_label": "積極估算，未獲年度指引支持",
+      "finding": "公司揭露Fremont100萬台及德州長期1,000萬台設計年產能，支持未來大規模生產方向。",
+      "limits": "全年產量相較2027增加5倍，必須德州產線、供應鏈、良率與可工作品質同步成熟；未找到這個年度數字的公司原始指引。",
+      "musk_search": "已檢索Musk涉及年度、產量及長期目標的訊息，未找到可確認本年度數字的原始承諾；保留目標與實績差別。",
+      "forecast_action": "採用使用者本輪年度產量路徑；各季分配為補充假設，內用、出租、資本投入、折舊與股票稀釋重新遞推。",
+      "search_queries": [
+        "Musk Optimus \"2027\" \"1 million\" \"2028\" \"5 million\"",
+        "Musk Optimus \"2029\" \"10 million\" production",
+        "Tesla Optimus Texas 10 million long term capacity 2027 2028 2029 Musk"
+      ],
+      "source_ids": [
+        "tesla_q1",
+        "tesla_q3",
+        "call_report"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "optimus_2029_volume",
+      "title": "Optimus 2029全年1,000萬台",
+      "claim": "2029全年生產10,000,000台Optimus。",
+      "user_values": {
+        "optimus_production_2029": 10000000
+      },
+      "verdict": "not_supported_as_stated",
+      "verdict_label": "積極估算，未獲年度指引支持",
+      "finding": "公司揭露Fremont100萬台及德州長期1,000萬台設計年產能，支持未來大規模生產方向。",
+      "limits": "全年平均每月約83.3萬台，已接近德州長期設計年產能；必須很早就達高產速，不能只在年底達千萬台年化。未找到2029全年這個數字的公司原始指引。",
+      "musk_search": "已檢索Musk涉及年度、產量及長期目標的訊息，未找到可確認本年度數字的原始承諾；保留目標與實績差別。",
+      "forecast_action": "採用使用者本輪年度產量路徑；各季分配為補充假設，內用、出租、資本投入、折舊與股票稀釋重新遞推。",
+      "search_queries": [
+        "Musk Optimus \"2027\" \"1 million\" \"2028\" \"5 million\"",
+        "Musk Optimus \"2029\" \"10 million\" production",
+        "Tesla Optimus Texas 10 million long term capacity 2027 2028 2029 Musk"
+      ],
+      "source_ids": [
+        "tesla_q1",
+        "tesla_q3",
+        "call_report"
       ],
       "searched_at": "2026-11-19"
     }

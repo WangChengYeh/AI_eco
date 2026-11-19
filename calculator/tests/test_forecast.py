@@ -398,7 +398,7 @@ class StockResourceExchange(unittest.TestCase):
                 self.assertAlmostEqual(r["funding_gap_usd"], 0)
                 self.assertEqual(r["cash_equity_raised_usd"], 0)
                 self.assertEqual(r["capex_usd"], r["cash_capex_usd"] + r["stock_paid_capex_usd"])
-        self.assertGreater(result["companies"]["tesla"][0]["resource_shares_issued"], 0)
+        self.assertTrue(any(r["resource_shares_issued"] > 0 for r in result["companies"]["tesla"]))
         self.assertGreater(result["companies"]["spacex"][1]["resource_shares_issued"], 0)
 
 
@@ -459,8 +459,8 @@ class OrbitalRamp(unittest.TestCase):
         result = model.forecast(config, "base")
         robots = [s for s in result["segments"] if s["segment"] == "optimus_owned"]
         orbital = [s for s in result["segments"] if s["segment"] == "orbital_compute"]
-        self.assertEqual(robots[0]["drivers"]["production_units"], 10000000)
-        self.assertEqual(robots[1]["drivers"]["production_units"], 0)
+        self.assertEqual(robots[0]["drivers"]["production_units"], 1000000)
+        self.assertEqual(robots[1]["drivers"]["production_units"], 5000000)
         self.assertEqual(orbital[0]["drivers"]["average_it_mw"], 125)
         self.assertEqual(orbital[1]["drivers"]["average_it_mw"], 2500)
         self.assertEqual(orbital[1]["drivers"]["year_end_it_mw"], 4000)

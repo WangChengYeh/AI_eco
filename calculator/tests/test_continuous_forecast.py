@@ -52,6 +52,20 @@ class LifecycleEconomics(unittest.TestCase):
         self.assertAlmostEqual(r[2]["drivers"]["retirement_writeoff_usd"], 6000)
         self.assertAlmostEqual(sum(x["da_usd"] for x in r), 12000)
 
+    def test_backloaded_robot_production_reduces_average_available_fleet(self):
+        s = self.robots(False)
+        s["production_quarter_units"] = {"2027": [0, 0, 0, 120]}
+        r = self.run_segment(s, (2027,))[0]
+        self.assertAlmostEqual(r["drivers"]["average_fleet"], 15)
+        self.assertAlmostEqual(r["drivers"]["closing_fleet"], 120)
+        self.assertAlmostEqual(r["capex_usd"], 12000)
+
+    def test_quarterly_and_annual_production_must_reconcile(self):
+        s = self.robots(False)
+        s["production_quarter_units"] = {"2027": [10, 10, 10, 10]}
+        with self.assertRaisesRegex(m.ModelError, "sum to annual"):
+            self.run_segment(s, (2027,))
+
     def test_late_orbital_capacity_expires_on_its_actual_vintage(self):
         s = dict(kind="orbital_compute", manufactured_it_mw={"value": 0, "annual": {"2027": 1000}},
                  commissioning_start_month=10, hardware_cost_usd_per_mw=20e6,
@@ -89,7 +103,11 @@ class LifecycleEconomics(unittest.TestCase):
         r = m.forecast(c)
         robots = next(s for s in r["segments"] if s["segment"] == "optimus_owned" and s["year"] == 2027)
         orbit = next(s for s in r["segments"] if s["segment"] == "orbital_compute" and s["year"] == 2027)
-        self.assertEqual(robots["drivers"]["production_units"], 10000000)
+        self.assertEqual(robots["drivers"]["production_units"], 1000000)
+        self.assertAlmostEqual(robots["drivers"]["average_fleet"], 285000)
+        self.assertEqual(robots["revenue_usd"], 0)
+        production = [s["drivers"]["production_units"] for s in r["segments"] if s["segment"] == "optimus_owned"]
+        self.assertEqual(production, [1000000, 5000000, 10000000, 10000000, 10000000])
         self.assertAlmostEqual(orbit["drivers"]["average_it_mw"], 125)
         self.assertEqual(c["years"], list(range(2027, 2032)))
         late = next(s for s in r["segments"] if s["segment"] == "orbital_compute" and s["year"] == 2031)

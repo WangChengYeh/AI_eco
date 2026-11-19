@@ -117,7 +117,8 @@ KIND_FIELDS = {
                     "unit_manufacturing_cost_usd", "opening_net_book_value_usd",
                     "depreciation_usd_per_robot_year", "internal_demand_robots",
                     "internal_avoided_cost_usd_per_robot_year", "rental_utilization",
-                    "rental_demand_robots", "monthly_rent_usd", "cash_cost_usd_per_robot_year"},
+                    "rental_demand_robots", "monthly_rent_usd", "cash_cost_usd_per_robot_year",
+                    "production_quarter_units"},
     "compute": {"average_it_mw", "external_share", "internal_share", "external_utilization",
                 "internal_utilization", "availability", "price_usd_per_billable_mw_hour",
                 "electricity_usd_per_kwh", "pue", "idle_power_fraction",
@@ -294,6 +295,20 @@ def segment_forecast(segment, year, base_year, state):
         elif kind == "robot_fleet":
             opening = state.setdefault("fleet", number(segment.get("opening_fleet", 0), "opening_fleet", 0))
             production, retirements = p("production_units"), p("retirements")
+            quarter_profiles = segment.get("production_quarter_units", {})
+            if not isinstance(quarter_profiles, dict):
+                raise ModelError("production_quarter_units must be a year-keyed object")
+            monthly_production = [production / 12] * 12
+            if str(year) in quarter_profiles:
+                profile = quarter_profiles[str(year)]
+                if not isinstance(profile, list) or len(profile) != 4:
+                    raise ModelError("production_quarter_units requires four quarterly quantities")
+                quarters = [number(q, "production_quarter_units", 0) for q in profile]
+                if not math.isclose(sum(quarters), production, rel_tol=1e-10, abs_tol=1e-6):
+                    raise ModelError("quarterly production must sum to annual production_units")
+                if "service_life_years" not in segment:
+                    raise ModelError("quarterly production requires vintage accounting")
+                monthly_production = [q / 3 for q in quarters for _ in range(3)]
             cost = p("unit_manufacturing_cost_usd")
             if retirements > opening:
                 raise ModelError("robot retirements cannot exceed opening fleet")
@@ -318,7 +333,7 @@ def segment_forecast(segment, year, base_year, state):
                 if retirements:
                     raise ModelError("use automatic service-life retirements, not manual retirements, with vintage accounting")
                 lifecycle = asset_rollforward(state, year,
-                    [(production / 12, cost, month) for month in range(1, 13)],
+                    [(q, cost, month) for month, q in enumerate(monthly_production, 1)],
                     p("service_life_years", 5, 1), p("depreciation_life_years", 5, 1e-9),
                     opening_units=opening, opening_unit_cost=opening_book / opening if opening else cost,
                     replace=segment.get("replace_retired", False), replacement_unit_cost=cost)
@@ -337,6 +352,7 @@ def segment_forecast(segment, year, base_year, state):
             cogs = average * p("cash_cost_usd_per_robot_year") + extra_da
             inputs = {"opening_fleet": opening, "production_units": production,
                       "replacement_units": replacements, "total_manufactured_units": production + replacements,
+                      "production_quarter_units": [sum(monthly_production[i:i+3]) for i in range(0, 12, 3)],
                       "retirements": retirements, "closing_fleet": closing,
                       "average_fleet": average, "average_internal_robots": internal,
                       "average_rentable_robots": rentable, "average_rented_robots": rented,
