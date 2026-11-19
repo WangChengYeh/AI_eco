@@ -463,6 +463,117 @@
       "fact_ids": [],
       "checked_at": "2026-11-20",
       "research_claim_id": "orbital_manufacturing_unconstrained"
+    },
+    {
+      "input_path": "companies.tesla.opening_shares",
+      "value": 3952757946,
+      "unit": "shares",
+      "classification": "model_assumption",
+      "basis": "以2026-10-15申報數據作2027期初錨點；假設該日至2026年底淨變動為0，並非已公布2026年底實際值。流通普通股合計，SpaceX含A與B類；不是自由流通股或加權平均EPS股數。",
+      "fact_ids": [
+        "tesla_shares_anchor_2026"
+      ],
+      "fact_value_rule": "exact_anchor",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.tesla.opening_cash_usd",
+      "value": 45447000000,
+      "unit": "USD",
+      "classification": "model_assumption",
+      "basis": "以2026-09-30申報數據作2027期初錨點；假設該日至2026年底淨變動為0，並非已公布2026年底實際值。非受限現金與短期投資合計，模型視為可動用流動資金；不是純現金科目。",
+      "fact_ids": [
+        "tesla_cash_anchor_2026"
+      ],
+      "fact_value_rule": "exact_anchor",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.tesla.opening_debt_usd",
+      "value": 9523000000,
+      "unit": "USD",
+      "classification": "model_assumption",
+      "basis": "以2026-09-30申報數據作2027期初錨點；假設該日至2026年底淨變動為0，並非已公布2026年底實際值。流動加非流動債務及融資租賃帳面值，不是總負債。",
+      "fact_ids": [
+        "tesla_debt_anchor_2026"
+      ],
+      "fact_value_rule": "exact_anchor",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.opening_shares",
+      "value": 13581063709,
+      "unit": "shares",
+      "classification": "model_assumption",
+      "basis": "以2026-10-15申報數據作2027期初錨點；假設該日至2026年底淨變動為0，並非已公布2026年底實際值。流通普通股合計，SpaceX含A與B類；不是自由流通股或加權平均EPS股數。",
+      "fact_ids": [
+        "spacex_shares_anchor_2026"
+      ],
+      "fact_value_rule": "exact_anchor",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.opening_cash_usd",
+      "value": 89855000000,
+      "unit": "USD",
+      "classification": "model_assumption",
+      "basis": "以2026-09-30申報數據作2027期初錨點；假設該日至2026年底淨變動為0，並非已公布2026年底實際值。非受限現金與短期投資合計，模型視為可動用流動資金；不是純現金科目。",
+      "fact_ids": [
+        "spacex_cash_anchor_2026"
+      ],
+      "fact_value_rule": "exact_anchor",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.opening_debt_usd",
+      "value": 38844000000,
+      "unit": "USD",
+      "classification": "model_assumption",
+      "basis": "以2026-09-30申報數據作2027期初錨點；假設該日至2026年底淨變動為0，並非已公布2026年底實際值。流動加非流動債務及融資租賃帳面值，不是總負債。",
+      "fact_ids": [
+        "spacex_debt_anchor_2026"
+      ],
+      "fact_value_rule": "exact_anchor",
+      "checked_at": "2026-11-20"
+    }
+  ],
+  "user_bindings": [
+    {
+      "user_key": "optimus_production_2027",
+      "input_path": "companies.tesla.segments.optimus_owned.production_units.annual.2027"
+    },
+    {
+      "user_key": "optimus_production_2028",
+      "input_path": "companies.tesla.segments.optimus_owned.production_units.annual.2028"
+    },
+    {
+      "user_key": "optimus_production_2029",
+      "input_path": "companies.tesla.segments.optimus_owned.production_units.annual.2029"
+    },
+    {
+      "user_key": "optimus_rental_utilization",
+      "input_path": "companies.tesla.segments.optimus_owned.rental_utilization"
+    },
+    {
+      "user_key": "optimus_annual_rent_usd",
+      "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd",
+      "multiplier": 12
+    },
+    {
+      "user_key": "fsd_incremental_monthly_cost_usd",
+      "input_path": "companies.tesla.segments.fsd.monthly_cost_usd.value"
+    },
+    {
+      "user_key": "fsd_paid_subscribers_end2026",
+      "input_path": "companies.tesla.segments.fsd.opening_subscribers"
+    },
+    {
+      "user_key": "orbital_mw_per_launch_from_mid2027",
+      "input_path": "companies.spacex.segments.orbital_compute.launch_network.capacity_upgrade.net_it_mw_per_flight"
+    },
+    {
+      "user_key": "orbital_manufacturing_unconstrained",
+      "input_path": "companies.spacex.segments.orbital_compute.manufacture_to_launch_capacity"
     }
   ]
 }

@@ -1,6 +1,8 @@
 # AI 經濟學簡報
 
-## 最新版：v3
+## 簡報歷史快照：v3
+
+此目錄保留2026-11-14簡報，**未包含目前2027–2031 forecast與2026-11-20修正**；最新數字以[主預測網頁](https://wangchengyeh.github.io/AI_eco/)及[檢查報告](../research/full_review_2026-11-20.md)為準。
 
 **完整成本、股權交換與 Tesla＋SpaceX 終局假說**，繁體中文，24 頁，2026-11-14。
 
@@ -28,3 +30,4 @@ Git 中的檔案與原生簡報均為版本快照，不自動同步。後續修�
 企業披露不等於獨立成本驗證，假設試算不代表企業預測。合併評估不等於簽約或完成，長期持有仍以成本、每股價值與合理價格為條件。
 
 照片僅說明場景，不作 AI 效益證據。製造照片：[Tesla Manufacturing](https://www.tesla.com/en_au/manufacturing)；火箭照片：[WIRED 的 SpaceX 報導](https://www.wired.com/story/spacex-preps-for-three-block-5-launches-in-just-two-weeks/)。來源亦列於相應頁備註。
+

@@ -44,7 +44,7 @@ def validate_research(config, research, registry=None):
 def report_markdown(research):
     lines = ["# 使用者假設網路與 Musk 訊息查核", "", "查核日：" + research["checked_at"], "",
              "範圍：現行主預測全部使用者假設，加上原始理論的重要強版本。查核包含支持、反向及限縮證據；沒有找到支持不等於已證偽。公司目標、Musk預測、第三方逐字稿及已發生實績分開。", "",
-             "Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積極假設；2030–2031維持年產1,000萬為延伸假設。租賃依使用者最新條件：內用優先、可租餘量100%付費出租，每台3萬美元明列按年解讀，沒有額外出租需求上限。這些年度產量、費率與利用率均未找到對應公司原始指引。太空GW規模、Robotaxi滿產月份與股票普遍接受度亦仍待驗證，輸出不因此升格為實證預測。", ""]
+             f"本表包含{len({key for claim in research['claims'] for key in claim.get('user_values', {})})}項使用者輸入及{len(research['claims'])}項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。", ""]
     for claim in research["claims"]:
         lines += ["## " + claim["title"], "", "- 原命題：" + claim["claim"],
                   "- 判定：**" + claim["verdict_label"] + "**", "- 支持／相關證據：" + claim["finding"],

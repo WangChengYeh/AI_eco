@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import copy
 import csv
+import calendar
 import hashlib
 import json
 import math
@@ -562,15 +563,16 @@ def segment_forecast(segment, year, base_year, state):
                 raise ModelError("compute external_share + internal_share must be <= 1")
             available = p("availability", 1, 0, 1)
             ext_util, own_util = p("external_utilization", 1, 0, 1), p("internal_utilization", 1, 0, 1)
-            billable_mwh = mw * external * ext_util * available * 8760
+            calendar_hours = 24 * (366 if calendar.isleap(year) else 365)
+            billable_mwh = mw * external * ext_util * available * calendar_hours
             busy = available * (external * ext_util + internal * own_util)
-            energy_kwh = mw * 1000 * 8760 * p("pue", 1, 1) * (busy + (1 - busy) * p("idle_power_fraction", 0.15, 0, 1))
+            energy_kwh = mw * 1000 * calendar_hours * p("pue", 1, 1) * (busy + (1 - busy) * p("idle_power_fraction", 0.15, 0, 1))
             revenue = billable_mwh * p("price_usd_per_billable_mw_hour")
             if kind == "compute":
                 extra_da = mw * p("hardware_da_usd_per_mw_year")
             cogs = energy_kwh * p("electricity_usd_per_kwh") + mw * p("cash_overhead_usd_per_mw_year") + extra_da
             inputs = {"average_it_mw": mw, "external_share": external, "internal_share": internal,
-                      "billable_mwh": billable_mwh, "electricity_kwh": energy_kwh, **orbital_drivers}
+                      "billable_mwh": billable_mwh, "calendar_hours": calendar_hours, "electricity_kwh": energy_kwh, **orbital_drivers}
     # Pre-launch R&D, capex and depreciation are intentionally NOT suppressed.
     opex, capex = p("opex_usd"), p("capex_usd") + revenue * p("capex_revenue_ratio") + extra_capex
     da = p("da_usd") + revenue * p("da_revenue_ratio") + extra_da
@@ -885,7 +887,9 @@ def forecast(config, scenario="base"):
         row["scenario"] = scenario
     warnings = []
     if resolved.get("metadata", {}).get("input_status") != "calibrated":
-        warnings.append("示例假設，未校準公司財報；輸出為情境計算，不是公司指引。")
+        warnings.append("部分期初財務值有申報錨點，其餘營運、估值及融資條件仍是假設；輸出不是公司指引。")
+    if resolved.get("metadata", {}).get("opening_balance_anchor"):
+        warnings.append("期初股數取2026-10-15、流動資金及債務取2026-09-30，暫假設至2026年底淨變動為0；非已確認年末實績。流動資金包含短期投資。")
     if resolved.get("metadata", {}).get("assumption_review_status") == "searched_not_fully_validated":
         warnings.append("使用者假設已做網路與Musk訊息搜尋；部分僅支持方向或長期產能，尚未支持指定年度產量、滿產時點或股票普遍接受度。")
     if any(row["funding_failed"] for rows in summaries.values() for row in rows):

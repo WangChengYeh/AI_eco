@@ -1,13 +1,8 @@
-"""Recompute the canonical forecast and refresh the committed GitHub Pages page.
-
-The standalone page includes its stylesheet/runtime and a sandboxed document.
-Only result data and the input date are replaced; no browser-side Python server
-or ChatGPT session is required. Run from anywhere with Python 3.10+.
-"""
+"""Build both Pages entrypoints from stable templates and one forecast dataset."""
 import html
 import json
+import math
 from pathlib import Path
-import re
 
 from forecast import forecast, parameter, summary_markdown
 from review_assumptions import validate_research, report_markdown
@@ -16,114 +11,92 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def assumptions(config):
-    base = config["years"][0]
-    robot = config["companies"]["tesla"]["segments"]["optimus_owned"]
-    fsd = config["companies"]["tesla"]["segments"]["fsd"]
-    taxi = config["companies"]["tesla"]["segments"]["robotaxi"]
-    orbit = config["companies"]["spacex"]["segments"]["orbital_compute"]
-    ramp = taxi["production_ramp"]
-    def val(spec, year=2027):
-        return parameter(spec, year, base)
-    return [
-        ["FSD（增量服務成本）", f"每戶每月{val(fsd['monthly_cost_usd']):,.0f}美元（近零假設）；保留研發／營運費用、折舊及共同費用；月費以美國官方99美元為錨點"],
-        ["FSD（車隊與付費戶）", f"2026年底付費{fsd['opening_subscribers'] / 10000:,.0f}萬；每年加對外新車×{val(fsd['new_vehicle_attach_rate']):.0%}；退訂率{val(fsd['annual_churn_rate']):.0%}；全年均勻加入，按平均訂閱計營收（假設）"],
-        ["Optimus（使用者全年產量假設）", "；".join(f"{y}年{val(robot['production_units'], y) / 10000:,.0f}萬台" for y in (2027, 2028, 2029)) + "；內用優先、餘量出租，非公司年度指引"],
-        ["Optimus（延伸與內用假設）", f"2030–2031各年{val(robot['production_units'], 2030) / 10000:,.0f}萬台；平均內用需求{val(robot['internal_demand_robots']) / 10000:,.0f}萬台"],
-        ["Optimus（使用者租賃條件）", f"可租餘量付費出租率{val(robot['rental_utilization']):.0%}；每台每年{val(robot['monthly_rent_usd']) * 12:,.0f}美元" + (f"；付費需求上限{val(robot['rental_demand_robots']) / 10000:,.0f}萬台" if 'rental_demand_robots' in robot else "；無額外出租需求上限")],
-        ["Robotaxi（獲利數據狀態）", "每車實際年淨利尚未披露；未套入3萬美元淨利。2019 Musk約3萬美元指年毛利預估，非淨利實績；目前輸出仍是未校準成本／車資估算"],
-        ["Robotaxi（使用者時程）", f"{ramp['full_rate_year']}年中達全速；以{ramp['full_rate_month']}月起穩定產速實作"],
-        ["Robotaxi（產速假設）", f"年化{val(ramp['annual_capacity_units']):,.0f}台，取已披露裝置產能下限作錨點，非2027產量指引"],
-        ["Robotaxi（爬坡／部署假設）", f"年初達全速{ramp['initial_rate_fraction']:.0%}，線性爬坡；全部自持、投運延遲{ramp['deployment_delay_months']}個月"],
-        ["星艦部署（模型條件）", "2027上半年6MW/次、7月起淨部署15MW/次（使用者假設，不再打80%折扣）；AI占50%；機隊與場址爬坡另限"],
-        ["許可擴容（模型條件）", "Starbase假設2027達100、2028達456；佛州及Louisiana後續擴容為模型延伸，並非已獲准。取消固定3GW部署及製造上限；依使用者假設足量備貨，成本照計"],
-        ["新發射場（模型月份）", "Pad1改建2027/7；LC39A 2027/1；37A 2028/1；37B 2029/7；Louisiana僅首台2029/7，其餘9台未計容量"],
-        ["太空算力（使用者時程）", "2027年底大量量產"],
-        ["太空算力（規模假設）", f"衛星製造不構成瓶頸（使用者假設）；隨每月AI發射能力備貨，2027年{val(orbit['commissioning_start_month']):.0f}月起投運；硬體製造及部署成本照計"],
-        ["太空成本（模型假設）", f"硬體及配套{val(orbit['hardware_cost_usd_per_mw']) / 1e6:,.0f}M美元/MW；發射部署{val(orbit['deployment_cost_usd_per_mw']) / 1e6:,.0f}M美元/MW"],
-        ["股票交換資源（使用者假設）", "有資金缺口時用新股支付合格資源，保留完整成本並計入稀釋"],
-        ["股票支付條件（模型假設）", "；".join(f"{co['name']}接受度{val(co['stock_payment']['acceptance_ratio']):.0%}，協議價{val(co['stock_payment']['reference_price_usd']):,.0f}美元/股" for co in config['companies'].values())],
-        ["資產壽命（模型假設）", f"Optimus {robot['service_life_years']}年到期等量替換；Robotaxi {taxi['service_life_years']}年，年度產量含替換；太空設備{orbit['service_life_years']}年退役"],
-        ["可改善現金成本（模型假設）", f"合格製造業務現金成本的{config['companies']['tesla']['segments']['passenger_vehicles']['automation_eligible_cash_cost_ratio']:.0%}；不含折舊"],
+    base = config['years'][0]
+    tesla, spacex = config['companies']['tesla'], config['companies']['spacex']
+    robot, fsd, taxi = (tesla['segments'][k] for k in ('optimus_owned','fsd','robotaxi'))
+    orbit = spacex['segments']['orbital_compute']
+    network, ramp = orbit['launch_network'], taxi['production_ramp']
+    def v(spec, year=None): return parameter(spec, base if year is None else year, base)
+    upgrade = network.get('capacity_upgrade')
+    initial_mw = v(network['payload_tonnes'])*v(network['it_kw_per_tonne'])*v(network['payload_efficiency'])/1000
+    mw_text = f"基準{initial_mw:g}MW/次"
+    if upgrade:
+        mw_text += f"；{upgrade['year']}/{upgrade['month']}起淨{upgrade['net_it_mw_per_flight']:g}MW/次（使用者假設，不再折減）"
+    dates = '；'.join(f"{site['id']}:"+', '.join(f"{p['id']} {p['online_year']}/{p['online_month']}" for p in site['pads']) for site in network['sites'])
+    ramp_text = '；'.join(f"{y}年{v(network['fleet_rate_start'],y):g}→{v(network['fleet_rate_end'],y):g}" for y in config['years'])
+    limits = '；'.join(site['id']+':'+ '/'.join(f"{v(site['annual_site_limit'],y):g}" for y in config['years']) for site in network['sites'])
+    rows = [
+        ['FSD（增量服務成本）',f"每戶每月{v(fsd['monthly_cost_usd']):g}美元；保留分部費用、折舊與公司費用。美國費率錨點{v(fsd['monthly_price_usd']):g}美元；未來全球實收價格曲線仍是假設"],
+        ['FSD（付費車隊）',f"2026年底{fsd['opening_subscribers']/10000:g}萬；新車加入率{v(fsd['new_vehicle_attach_rate']):.0%}、退訂率{v(fsd['annual_churn_rate']):.0%}；均勻加入，按全年平均計費（假設）"],
+        ['Optimus（全年製造）','；'.join(f"{y}年{v(robot['production_units'],y)/10000:,.0f}萬台" for y in config['years'])+'；非公司年度指引'],
+        ['Optimus（內用與出租）',f"平均內用需求{v(robot['internal_demand_robots'])/10000:g}萬台，內用優先；餘量出租率{v(robot['rental_utilization']):.0%}，每台年租{v(robot['monthly_rent_usd'])*12:,.0f}美元"],
+        ['Optimus（租賃需求）',f"需求上限{v(robot['rental_demand_robots']):,.0f}台" if 'rental_demand_robots' in robot else '未另設需求上限，足量付費需求是使用者假設'],
+        ['Robotaxi（量產／投運）',f"{ramp['full_rate_year']}/{ramp['full_rate_month']}全速，基準年化{v(ramp['annual_capacity_units']):,.0f}台；年初{ramp['initial_rate_fraction']:.0%}、部署延遲{ramp['deployment_delay_months']}月；均為條件假設"],
+        ['Robotaxi（獲利口徑）','未套入每車年淨利3萬美元；2019 Musk約3萬美元是年毛利展望，非淨利實績。車資、里程與成本待校準'],
+        ['星艦（單次容量）',mw_text+f"；AI發射分配{v(network['ai_flight_share']):.0%}（假設）"],
+        ['星艦（全機隊年化爬坡）',ramp_text+'；2027錨定Musk近期說法，之後為模型延伸，不逐塔相乘'],
+        ['發射場（模型啟用月份）',dates+'；日期與許可均含未驗證條件'],
+        ['場址額度（模型曲線）',limits+'；依序為2027–2031，後續擴容並非已獲准'],
+        ['衛星製造／投運',('供應充足、隨AI發射能力備貨（使用者假設）' if orbit.get('manufacture_to_launch_capacity') else '受明列年度製造量限制')+f"；2027從{v(orbit['commissioning_start_month']):g}月起投運，製造及部署成本照計"],
+        ['太空成本（模型假設）',f"硬體{v(orbit['hardware_cost_usd_per_mw'])/1e6:g}M美元/MW、部署{v(orbit['deployment_cost_usd_per_mw'])/1e6:g}M美元/MW；不代表已驗證成本"],
+        ['資產服務壽命',f"Optimus {robot['service_life_years']}年、Robotaxi {taxi['service_life_years']}年、太空設備{orbit['service_life_years']}年；製造投入及退役按批次計算"],
+        ['股票交換資源','；'.join(f"{co['name']}接受度{v(co['stock_payment']['acceptance_ratio']):.0%}、協議價{v(co['stock_payment']['reference_price_usd']):g}美元/股" for co in config['companies'].values())+'；有缺口才發股，保留成本與稀釋，非已簽約條件'],
+        ['可改善現金成本',f"乘用車合格成本占比{v(tesla['segments']['passenger_vehicles']['automation_eligible_cash_cost_ratio']):.0%}，節省仍受公司上限{v(tesla['robotics_max_cogs_share']):.0%}限制；不抵銷折舊"],
     ]
+    return rows
+
+
+def orbital_audit(config, result):
+    network=config['companies']['spacex']['segments']['orbital_compute']['launch_network']
+    rows=[]
+    for row in result['segments']:
+        if row['company_id']!='spacex' or row['segment']!='orbital_compute':continue
+        y,d=row['year'],row['drivers']
+        pads=[p for site in network['sites'] for p in site['pads']]
+        rows.append(dict(year=y,
+            pads_start=sum((y,1)>=(p['online_year'],p['online_month']) for p in pads),
+            pads_end=sum((y,12)>=(p['online_year'],p['online_month']) for p in pads),
+            mw_start=d['mw_per_ai_flight_start'],mw_end=d['mw_per_ai_flight'],
+            fleet_rate_start=d['fleet_rate_start'],fleet_rate_end=d['fleet_rate_end'],
+            available_flights=d['available_starship_flights'],ai_slots=d['allocated_ai_flights'],
+            used_ai_slots=sum(math.ceil(q/p-1e-9) for q,p in zip(d['deployed_monthly_mw'],d['monthly_mw_per_ai_flight']) if q>0 and p>0),
+            manufactured_gw=d['manufactured_it_mw']/1000,new_gw=d['commissioned_new_it_mw']/1000,
+            retired_gw=d['retired_it_mw']/1000,end_gw=d['year_end_it_mw']/1000,
+            average_gw=d['average_it_mw']/1000,capex_usd=row['capex_usd']))
+    return rows
+
+
+def payload(config,research,result):
+    evidence=[dict(title=r['title'],verdict=r['verdict_label'],finding=r['finding'],limits=r['limits'],musk=r['musk_search']) for r in research['claims']]
+    segment_keys={'year','company_id','segment','segment_name','revenue_usd','operating_profit_usd','capex_usd','drivers'}
+    anchors=[dict(company=co['name'],shares=co['opening_shares'],liquid_funds_usd=co['opening_cash_usd'],debt_usd=co['opening_debt_usd']) for co in config['companies'].values()]
+    return [dict(scenario='base',evidence=evidence,assumptions=assumptions(config),companies=result['companies'],
+        segments=[{k:v for k,v in row.items() if k in segment_keys} for row in result['segments']],
+        opening_anchors=anchors,orbital_audit=orbital_audit(config,result),
+        model_notice='條件式預測：部分期初財務值採2026Q3／10月申報錨點，假設至2026年底淨變動為0；其餘營運、許可擴容、估值與股票支付條件仍待驗證。')]
+
+
+def render_document(config,research,result):
+    template=(ROOT/'calculator/site_template.html').read_text(encoding='utf-8')
+    shell=(ROOT/'calculator/site_shell.html').read_text(encoding='utf-8')
+    if template.count('__FORECAST_DATA__')!=1 or shell.count('__FRAME_DOCUMENT__')!=1:
+        raise ValueError('site templates must have exactly one data and frame placeholder')
+    data=json.dumps(payload(config,research,result),ensure_ascii=False,allow_nan=False,separators=(',',':')).replace('<','\\u003c')
+    frame=template.replace('__FORECAST_DATA__',data).replace('__AS_OF__',config['metadata']['as_of']).replace('__YEAR_RANGE__',f"{config['years'][0]}–{config['years'][-1]}")
+    return shell.replace('__FRAME_DOCUMENT__',html.escape(frame,quote=True))
 
 
 def build():
-    config = json.loads((ROOT / "calculator/configs/current.json").read_text(encoding="utf-8"))
-    research = json.loads((ROOT / "calculator/configs/user_assumption_research.json").read_text(encoding="utf-8"))
-    validate_research(config, research)
-    result = forecast(config)
-    evidence = [{"title": r["title"], "verdict": r["verdict_label"], "finding": r["finding"],
-                 "limits": r["limits"], "musk": r["musk_search"]} for r in research["claims"]]
-    data = [{"scenario": "base", "evidence": evidence, "assumptions": assumptions(config), "companies": result["companies"], "segments": [
-        {k: v for k, v in row.items() if k in {
-            "year", "company_id", "segment", "segment_name", "revenue_usd",
-            "operating_profit_usd", "capex_usd", "drivers"}}
-        for row in result["segments"]]}]
-    path = ROOT / "docs/index.html"
-    document = path.read_text(encoding="utf-8")
-    frame = re.search(r'data-srcdoc="([^"]*)"', document)
-    if not frame:
-        raise ValueError("standalone page template has no data-srcdoc document")
-    source = html.unescape(frame[1])
-    start, end = config["years"][0], config["years"][-1]
-    source = re.sub(r"\d{4}–\d{4} · 更新日", f"{start}–{end} · 更新日", source)
-    source = source.replace("+'，2027至2035年，單位'+def.unit",
-                            "+'，'+rows[0].year+'至'+rows[rows.length-1].year+'年，單位'+def.unit")
-    # Keep displayed assumptions tied to the same input that produced results.
-    source = re.sub(r'(<table class="table table-sm"><tbody(?: id="ts-assumptions")?>).*?(</tbody></table>)',
-                    lambda m: '<table class="table table-sm"><tbody id="ts-assumptions"></tbody></table>',
-                    source, count=1, flags=re.S)
-    marker = "const data=JSON.parse(el('ts-data').textContent);"
-    render = """
-el('ts-assumptions').replaceChildren(...data[0].assumptions.map(([label,value])=>{
- const tr=document.createElement('tr');for(const text of [label,value]){const td=document.createElement('td');td.textContent=text;tr.appendChild(td);}return tr;
-}));"""
-    if "replaceChildren(...data[0].assumptions" not in source:
-        source = source.replace(marker, marker + render)
-    if 'id="ts-robotaxi-detail"' not in source:
-        source = source.replace('<div id="ts-current-detail" class="text-small" aria-live="polite"></div>',
-                                '<div id="ts-current-detail" class="text-small" aria-live="polite"></div>\n<div id="ts-robotaxi-detail" class="text-small" aria-live="polite"></div>')
-        source = source.replace("if(!r)return;", """if(!r)return;
- const taxi=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='robotaxi');
- el('ts-robotaxi-detail').textContent=taxi?(()=>{const d=taxi.drivers;return r.year+' Robotaxi：製造 '+fmt(d.manufactured_units)+' 輛／新投運 '+fmt(d.additions)+' 輛／平均服役 '+fmt(d.average_fleet)+' 輛／年底待投運 '+fmt(d.pending_deployment_units)+' 輛；營收 '+fmt(taxi.revenue_usd,1e9)+' 十億美元。';})():'';""")
-    if 'id="ts-fsd-detail"' not in source:
-        source = source.replace('<div id="ts-current-detail"', '<div id="ts-fsd-detail" class="text-small" aria-live="polite"></div><div id="ts-current-detail"')
-        source = source.replace("if(!r)return;", """if(!r)return;
- const fsdRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='fsd');
- el('ts-fsd-detail').textContent=fsdRow?(()=>{const d=fsdRow.drivers;return r.year+' FSD：年初付費 '+fmt(d.opening_subscribers/10000)+' 萬／新增 '+fmt(d.new_subscribers/10000)+' 萬／年底付費 '+fmt(d.closing_subscribers/10000)+' 萬／全年平均 '+fmt(d.average_subscribers/10000)+' 萬；月費 '+fmt(d.monthly_price_usd)+' 美元（模型假設）。';})():'';""")
-    if 'id="ts-launch-detail"' not in source:
-        source = source.replace('<div id="ts-current-detail"', '<div id="ts-launch-detail" class="text-small" aria-live="polite"></div><div id="ts-current-detail"')
-        source = source.replace("if(!r)return;", """if(!r)return;
- const orbitRow=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='orbital_compute');
- el('ts-launch-detail').textContent=orbitRow?(()=>{const d=orbitRow.drivers;return r.year+' 星艦部署：可用發射槽 '+fmt(d.available_starship_flights)+' 次／AI分配 '+fmt(d.allocated_ai_flights)+' 次／單次 '+(d.mw_per_ai_flight_start===d.mw_per_ai_flight?fmt(d.mw_per_ai_flight):fmt(d.mw_per_ai_flight_start)+'→'+fmt(d.mw_per_ai_flight))+' MW；新增投運 '+fmt(d.commissioned_new_it_mw/1000)+' GW／地面未部署庫存 '+fmt(d.closing_inventory_mw/1000)+' GW。含未確認許可與啟用假設。';})():'';""")
-    source = source.replace("fmt(d.mw_per_ai_flight)+' MW；新增投運 '", "(d.mw_per_ai_flight_start===d.mw_per_ai_flight?fmt(d.mw_per_ai_flight):fmt(d.mw_per_ai_flight_start)+'→'+fmt(d.mw_per_ai_flight))+' MW；新增投運 '")
-    if "四步驟 SOP" not in source:
-        source = source.replace('<h2>Tesla／SpaceX 主預測</h2>', '<h2>Tesla／SpaceX 主預測</h2>\n<div class="text-small"><a href="https://github.com/WangChengYeh/AI_eco/blob/main/SOP.md" target="_blank" rel="noopener">四步驟 SOP：理論 → 數據 → Forecast Python → HTML</a></div>')
-    if 'id="ts-evidence"' not in source:
-        source = source.replace('<div class="viz-grid" aria-live="polite">',
-            '<details><summary>使用者假設查核（含Musk訊息）</summary><div class="text-small">已搜尋支持與限縮證據；方向／目標不等於已實現產量，原始影片未核對及X原頁403均明列。</div><div class="table-responsive"><table class="table table-sm"><thead><tr><th>假設</th><th>判定</th><th>支持與限制</th></tr></thead><tbody id="ts-evidence"></tbody></table></div><a href="https://github.com/WangChengYeh/AI_eco/blob/main/research/user_assumption_review_2026-11-19.md" target="_blank" rel="noopener">來源、Musk原貼／原片入口與搜尋紀錄</a></details>\n<div class="viz-grid" aria-live="polite">')
-        source = source.replace(marker, marker + """
-el('ts-evidence').replaceChildren(...data[0].evidence.map(r=>{
- const tr=document.createElement('tr');for(const text of [r.title,r.verdict,r.finding+' '+r.limits+' Musk：'+r.musk]){const td=document.createElement('td');td.textContent=text;tr.appendChild(td);}return tr;
-}));""")
-    payload = json.dumps(data, ensure_ascii=False, allow_nan=False, separators=(",", ":")).replace("<", "\\u003c")
-    source, count = re.subn(r'(<script type="application/json" id="ts-data">).*?(</script>)',
-                           lambda m: m[1] + payload + m[2], source, flags=re.S)
-    if count != 1:
-        raise ValueError("standalone page must contain exactly one primary forecast dataset")
-    source = re.sub(r"更新日 \d{4}-\d{2}-\d{2}", "更新日 " + config["metadata"]["as_of"], source)
-    document = document[:frame.start(1)] + html.escape(source, quote=True) + document[frame.end(1):]
-    # User-activated source links open independently; the frame keeps an opaque
-    # origin and cannot execute scripts in the containing document.
-    document = document.replace('sandbox="allow-scripts"', 'sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"')
-    path.write_text(document, encoding="utf-8")
-    (ROOT / "index.html").write_text(document, encoding="utf-8")
-    (ROOT / "calculator/forecast_summary.md").write_text(summary_markdown([result]), encoding="utf-8")
-    report = ROOT / "research/user_assumption_review_2026-11-19.md"
-    report.parent.mkdir(parents=True, exist_ok=True)
-    report.write_text(report_markdown(research), encoding="utf-8")
-    print("Updated index.html, docs/index.html and calculator/forecast_summary.md from configs/current.json")
+    def read(name):return json.loads((ROOT/'calculator/configs'/name).read_text(encoding='utf-8'))
+    config,research=read('current.json'),read('user_assumption_research.json')
+    validate_research(config,research)
+    result=forecast(config)
+    document=render_document(config,research,result)
+    for entry in ('index.html','docs/index.html'):(ROOT/entry).write_text(document,encoding='utf-8')
+    (ROOT/'calculator/forecast_summary.md').write_text(summary_markdown([result]),encoding='utf-8')
+    (ROOT/'research/user_assumption_review_2026-11-19.md').write_text(report_markdown(research),encoding='utf-8')
+    print('Built both Pages entrypoints, summary and research report from one config and stable templates.')
+    return result
 
 
-if __name__ == "__main__":
-    build()
+if __name__=='__main__':build()

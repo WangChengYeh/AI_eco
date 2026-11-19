@@ -1,5 +1,7 @@
 # 案例 002：AI token 價格與五條算力供應鏈
 
+> 版本說明（2026-11-20）：本文件保留2026-11-14研究快照；歷史價格、榜單與營運數據不能直接當成今日報價或2027預測輸入。最新forecast及資料校準範圍見[完整檢查報告](full_review_2026-11-20.md)。
+
 - 查核日：2026-11-14；價格為當日公開頁面快照，美元／百萬 tokens。
 - 用途：驗證[理論 002](../theories/002_ai_supply_deflation.md)「持續降低完整任務成本」；與[Robotaxi 案例](robotaxi_tesla_waymo_uber_taxi_2026-11-14.md)並列。
 - 結論：已有地面合作與硬體效率進展；尚缺五條供應鏈在同品質、同延遲下的完整成本，不能宣告成本冠軍。太空項目仍列為條件情境。
@@ -155,3 +157,4 @@ Claude Fable 5.2 相對 5.1 的輸入／輸出牌價由 $10／$50 降至 $8／$4
 - [S16：Reuters，NVIDIA Blackwell／TSMC CoWoS，2025-01-16](https://www.marketscreener.com/quote/stock/NVIDIA-CORPORATION-57355629/news/Nvidia-CEO-says-its-advanced-packaging-technology-needs-are-changing-48782596/)
 
 來源中的規劃、公司自述與性能測試，均不視為本研究獨立驗證的成本結果。
+

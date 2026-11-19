@@ -1,5 +1,7 @@
 # AI 公司：模型實力、定價權與股權交換力比較
 
+> 版本說明（2026-11-20）：本文件保留2026-11-14研究快照；歷史價格、榜單與營運數據不能直接當成今日報價或2027預測輸入。最新forecast及資料校準範圍見[完整檢查報告](full_review_2026-11-20.md)。
+
 - 查核日期：2026-11-14
 - 範圍：Alphabet／Google、NVIDIA、台積電、Tesla、SpaceX、OpenAI、Anthropic。
 - 性質：股權交換經濟的初步比較，非股價報酬或投資價值排名；未比較市值、估值倍數、自由流通市值及交易深度。
@@ -133,3 +135,4 @@ Artificial Analysis 原站本次查核顯示：
 - [S10：台積電 2026-11-10 董事會決議](https://www.sec.gov/Archives/edgar/data/1046179/000104617926000797/tsm-boardx202611xx.htm)
 - [S11：Tesla 2026 Q3 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)
 - [S12：Tesla 2026 Q3 Quarterly Update](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)
+

@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-11-19",
-  "purpose": "只供校準參照，不由 forecast.py 自動匯入；季度及九個月值不是全年預測。",
+  "checked_at": "2026-11-20",
+  "purpose": "官方已披露參照；部分已映射為2027期初條件錨點，非已確認2026年底餘額。分類與期間見input_provenance.json。",
   "facts": [
     {
       "company": "Tesla",
@@ -86,6 +86,101 @@
       "status": "company_disclosed_design_target",
       "checked_at": "2026-11-19",
       "mapping_note": "產線設計／長期年產能，不是2027全年實際產量；不能直接取代年度產量輸入。"
+    },
+    {
+      "id": "tesla_shares_anchor_2026",
+      "company": "Tesla",
+      "metric": "shares_anchor",
+      "period": "2026-10-15",
+      "value": 3952757946,
+      "unit": "shares",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "流通普通股合計，SpaceX含A與B類；不是自由流通股或加權平均EPS股數。",
+      "components": [
+        3952757946
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "tesla_cash_anchor_2026",
+      "company": "Tesla",
+      "metric": "cash_anchor",
+      "period": "2026-09-30",
+      "value": 45447000000,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "非受限現金與短期投資合計，模型視為可動用流動資金；不是純現金科目。",
+      "components": [
+        17853000000,
+        27594000000
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "tesla_debt_anchor_2026",
+      "company": "Tesla",
+      "metric": "debt_anchor",
+      "period": "2026-09-30",
+      "value": 9523000000,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "流動加非流動債務及融資租賃帳面值，不是總負債。",
+      "components": [
+        1387000000,
+        8136000000
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_shares_anchor_2026",
+      "company": "SpaceX",
+      "metric": "shares_anchor",
+      "period": "2026-10-15",
+      "value": 13581063709,
+      "unit": "shares",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "流通普通股合計，SpaceX含A與B類；不是自由流通股或加權平均EPS股數。",
+      "components": [
+        8246541218,
+        5334522491
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_cash_anchor_2026",
+      "company": "SpaceX",
+      "metric": "cash_anchor",
+      "period": "2026-09-30",
+      "value": 89855000000,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "非受限現金與短期投資合計，模型視為可動用流動資金；不是純現金科目。",
+      "components": [
+        51294000000,
+        38561000000
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_debt_anchor_2026",
+      "company": "SpaceX",
+      "metric": "debt_anchor",
+      "period": "2026-09-30",
+      "value": 38844000000,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "流動加非流動債務及融資租賃帳面值，不是總負債。",
+      "components": [
+        2698000000,
+        36146000000
+      ],
+      "checked_at": "2026-11-20"
     }
   ]
 }

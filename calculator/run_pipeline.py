@@ -29,12 +29,25 @@ def validate_data(config, registry, facts):
             raise ValueError(f"incomplete data provenance: {path}")
         if any(ref not in fact_ids for ref in record.get("fact_ids", [])):
             raise ValueError(f"missing source fact: {path}")
+        if record.get("fact_value_rule") == "exact_anchor":
+            refs = record.get("fact_ids", [])
+            if len(refs) != 1 or value != facts_by_id[refs[0]]["value"]:
+                raise ValueError("opening anchor must match its dated source fact: " + path)
+            fact = facts_by_id[refs[0]]
+            if fact.get("components") and sum(fact["components"]) != fact["value"]:
+                raise ValueError("source components do not reconcile: " + refs[0])
         if record.get("fact_value_rule") == "lower_bound_anchor":
             sources = [facts_by_id[ref] for ref in record.get("fact_ids", [])]
             if len(sources) != 1 or sources[0].get("comparison") not in {">", ">="} or value != sources[0]["value"]:
                 raise ValueError(f"capacity anchor must match the documented source lower bound: {path}")
             if record["classification"] != "model_assumption":
                 raise ValueError("using installed capacity as production rate is a model assumption")
+    for binding in registry.get("user_bindings", []):
+        value = config
+        for key in binding["input_path"].split("."):
+            value = value[key]
+        if value * binding.get("multiplier", 1) != config["metadata"]["user_assumptions"][binding["user_key"]]:
+            raise ValueError("user instruction/forecast driver mismatch: " + binding["user_key"])
     ramp_path = "companies.tesla.segments.robotaxi.production_ramp."
     required = {ramp_path + k for k in ("annual_capacity_units.value", "full_rate_year", "full_rate_month",
                                        "initial_rate_fraction", "deployment_delay_months")}
@@ -55,11 +68,16 @@ def main():
     # Validate optional sensitivities before changing published HTML.
     sys.path.insert(0, str(ROOT / "calculator"))
     from forecast import forecast
+    from audit_model import reconcile, validate_html
     config = read("current.json")
     for name in config["scenarios"]:
-        forecast(config, name)
+        result = forecast(config, name)
+        print(f"Reconciled {name}: {reconcile(result)} output identities")
     from build_site import build
-    build()
+    primary = build()
+    validate_html((ROOT / "index.html").read_text(encoding="utf-8"), primary)
+    if (ROOT / "index.html").read_bytes() != (ROOT / "docs/index.html").read_bytes():
+        raise ValueError("Pages entrypoints differ")
     print("SOP complete: commit reviewed inputs, Python, summary and both HTML entrypoints together.")
 
 

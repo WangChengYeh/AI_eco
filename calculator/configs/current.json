@@ -3,7 +3,7 @@
   "metadata": {
     "as_of": "2026-11-20",
     "currency": "USD",
-    "input_status": "illustrative",
+    "input_status": "partially_anchored",
     "description": "依理論001股權交換資源、理論002持續降低完整產出成本，統一遞推營運、資產生命週期、獲利、現金及每股價值；使用者未指定的數量、價格、成本、壽命與估值倍數為未校準模型假設。",
     "observed_sources_file": "reference_facts.json",
     "user_assumptions": {
@@ -45,7 +45,15 @@
     "workflow_sop": "../SOP.md",
     "forecast_horizon_policy": "依使用者要求，主預測只估至2031年（含），不輸出更遠年度。",
     "assumption_research_file": "user_assumption_research.json",
-    "assumption_review_status": "searched_not_fully_validated"
+    "assumption_review_status": "searched_not_fully_validated",
+    "opening_balance_anchor": {
+      "balance_sheet_date": "2026-09-30",
+      "shares_date": "2026-10-15",
+      "bridge_to_2026_year_end": "assumed_zero_change_unverified",
+      "cash_definition": "unrestricted cash equivalents plus short-term investments",
+      "debt_definition": "current and noncurrent debt plus finance leases",
+      "share_definition": "outstanding common shares across classes, not free float or weighted EPS shares"
+    }
   },
   "years": [
     2027,
@@ -57,9 +65,9 @@
   "companies": {
     "tesla": {
       "name": "Tesla",
-      "opening_cash_usd": 40000000000.0,
-      "opening_debt_usd": 8000000000.0,
-      "opening_shares": 3500000000.0,
+      "opening_cash_usd": 45447000000,
+      "opening_debt_usd": 9523000000,
+      "opening_shares": 3952757946,
       "corporate_opex_usd": {
         "value": 3000000000.0,
         "growth": 0.07,
@@ -96,7 +104,7 @@
       },
       "passenger_segment_id": "passenger_vehicles",
       "robotaxi_segment_id": "robotaxi",
-      "notes": "包括股數、現金、債務在內均為示例，不是公司基準。上游鋰／電池與自用機器人納入成本及 capex，沒有虛構內部營收。",
+      "notes": "營運、費用與估值仍含待校準假設。上游鋰／電池與自用機器人納入成本及 capex，沒有虛構內部營收。 期初股數、流動資金與債務以2026Q3申報錨定，假設至2026年底淨變動為0；其餘營運參數仍待校準。",
       "segments": {
         "passenger_vehicles": {
           "name": "乘用車對外銷售（不含另列 FSD）",
@@ -388,9 +396,9 @@
     },
     "spacex": {
       "name": "SpaceX",
-      "opening_cash_usd": 25000000000.0,
-      "opening_debt_usd": 20000000000.0,
-      "opening_shares": 8000000000.0,
+      "opening_cash_usd": 89855000000,
+      "opening_debt_usd": 38844000000,
+      "opening_shares": 13581063709,
       "corporate_opex_usd": {
         "value": 2000000000.0,
         "growth": 0.08,
@@ -420,7 +428,7 @@
       "robotics_max_cogs_share": 0,
       "robotics_capex_usd": 0,
       "robotics_da_usd": 0,
-      "notes": "全部數值為示例。發射只計外部客戶，Starlink 自用發射與衛星建設放 Connectivity capex。Grok／X／Cursor 為模型細分，不代表財報單獨揭露。",
+      "notes": "營運、費用與估值仍含待校準假設。發射只計外部客戶，Starlink 自用發射與衛星建設放 Connectivity capex。Grok／X／Cursor 為模型細分，不代表財報單獨揭露。 期初股數、流動資金與債務以2026Q3申報錨定，假設至2026年底淨變動為0；其餘營運參數仍待校準。",
       "segments": {
         "launch_external": {
           "name": "Falcon／Starship 外部發射及太空合約",
@@ -873,7 +881,7 @@
           "capex_revenue_ratio": 0.02,
           "da_revenue_ratio": 0.01,
           "ev_sales_multiple": 7,
-          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。 本分部直接成本假設僅涵蓋非自有算力的平台、服務與外部費用；自有地面／太空算力成本只計於對應compute分部。此成本分攤尚未獲公司分部實績校準。",
           "volume_unit": "average paid accounts"
         },
         "grok_api": {
@@ -902,7 +910,7 @@
           "capex_revenue_ratio": 0.02,
           "da_revenue_ratio": 0.01,
           "ev_sales_multiple": 7,
-          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。",
+          "notes": "純假設的對外銷售；價格／直接成本不含另列折舊與研發。 本分部直接成本假設僅涵蓋非自有算力的平台、服務與外部費用；自有地面／太空算力成本只計於對應compute分部。此成本分攤尚未獲公司分部實績校準。",
           "volume_unit": "million billable tokens"
         },
         "cursor": {
@@ -931,7 +939,7 @@
           "capex_revenue_ratio": 0.02,
           "da_revenue_ratio": 0.01,
           "ev_sales_multiple": 7,
-          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。 本分部直接成本假設僅涵蓋非自有算力的平台、服務與外部費用；自有地面／太空算力成本只計於對應compute分部。此成本分攤尚未獲公司分部實績校準。",
           "volume_unit": "average paid seats"
         },
         "x_and_other": {

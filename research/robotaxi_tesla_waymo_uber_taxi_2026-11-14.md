@@ -1,5 +1,7 @@
 # Robotaxi 與有人計程車：Tesla、Waymo、Uber 的理論與數據驗證
 
+> 版本說明（2026-11-20）：本文件保留2026-11-14研究快照；歷史價格、榜單與營運數據不能直接當成今日報價或2027預測輸入。最新forecast及資料校準範圍見[完整檢查報告](full_review_2026-11-20.md)。
+
 - 查核日期：2026-11-14（台灣時間）
 - 對應：[理論 002](../theories/002_ai_supply_deflation.md)、[理論 001](../theories/001_equity_exchange_economy.md)
 - 範圍：美國 Robotaxi 及有人服務；不把跨城市、跨時期數字當成同條件價格競賽。
@@ -178,3 +180,4 @@ Uber 在 2026 Q3 準備講稿中自述，美國 AV 夥伴平均每日單車行�
 - [S10：BCG，Here at Last: The Evolution of the Robotaxi，2026](https://automotive.messefrankfurt.com/content/dam/messefrankfurt-redaktion/automotive/documents/exl/here-at-last-the-evolution-of-the-robotaxi.pdf)
 - [S11：PwC，Shaping the GCC mobility landscape，2026，Qatar 成本模型](https://www.pwc.com/m1/en/publications/2026/docs/shaping-the-gcc-mobility.pdf)
 - [S12：Waymo 第六代 Driver，2026-02-12](https://waymo.com/blog/2026/02/ro-on-6th-gen-waymo-driver/)
+
