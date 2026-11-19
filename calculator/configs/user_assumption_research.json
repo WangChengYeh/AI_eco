@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-19",
-  "coverage": "全部10項主預測使用者輸入、6項理論／交易命題及Robotaxi年淨利3萬美元待驗證命題。依使用者最新要求，3萬美元淨利不套入主預測。",
+  "coverage": "全部12項主預測使用者輸入與19項查核命題；FSD每戶增量成本0及2026可訂閱車隊500萬均為使用者假設，未升格公司實績。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -134,6 +134,12 @@
       "url": "https://www.elonmuskarchive.org/video/tesla-earnings-q3-2026",
       "access": "secondary_transcript_read",
       "access_note": "2026-11-19讀取第三方逐字稿：CFO稱尚未達30美分單位成本目標，仍在調整清潔等營運成本；未核對官方原片，不能當成本實績。"
+    },
+    "fsd_support": {
+      "title": "Tesla官方FSD訂閱費率與資格",
+      "url": "https://www.tesla.com/support/full-self-driving-subscriptions",
+      "access": "primary_text_read",
+      "access_note": "2026-11-19讀取：美國月費99美元，FSD電腦3.0以上且未買斷可訂閱；市場與資格有限制。未披露每戶現金成本或全球可訂閱車隊500萬。"
     }
   },
   "claims": [
@@ -532,6 +538,54 @@
         "autonomy_2019",
         "tesla_q3",
         "q3_unit_economics"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "fsd_incremental_cost",
+      "title": "FSD新增訂閱近零服務成本",
+      "claim": "移除每戶每月20美元服務成本，以近零邊際成本實作。",
+      "user_values": {
+        "fsd_incremental_monthly_cost_usd": 0
+      },
+      "verdict": "not_established",
+      "verdict_label": "模型假設，未獲官方實績證實",
+      "finding": "官方頁支持99美元月費及既有車可訂閱，但未單列每戶服務成本；未找到Musk或公司可核對的全成本為零證據。",
+      "limits": "近零新增服務成本不等於研發、訓練、維護、折舊及共同費用為零。",
+      "musk_search": "已搜尋Musk FSD marginal cost zero、FSD subscriptions 5 million 2026；未找到對應官方實績支持。",
+      "forecast_action": "每戶每月服務成本設0，仍保留分部費用、折舊、capex及公司層費用、利息與稅；不把營收當淨利。",
+      "search_queries": [
+        "Musk FSD subscription marginal cost zero Tesla software cost 2026",
+        "site.tesla.com FSD subscriptions 5 million 2026"
+      ],
+      "source_ids": [
+        "fsd_support",
+        "tesla_q3",
+        "tesla_sec"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "fsd_eligible_fleet",
+      "title": "2026年底FSD可訂閱車隊500萬",
+      "claim": "2026年底可訂閱車隊以500萬輛作討論基數。",
+      "user_values": {
+        "fsd_eligible_fleet_end2026": 5000000
+      },
+      "verdict": "not_established",
+      "verdict_label": "模型假設，未獲官方實績證實",
+      "finding": "官方資格要求硬體、所在地及未買斷；Q3披露累計車隊及混合買斷／月租的Active FSD，不能直接取得500萬可訂閱車數。",
+      "limits": "500萬是使用者指定基數，非已確認車隊，也非付費訂閱戶數；未選定付費率。",
+      "musk_search": "已搜尋Musk FSD marginal cost zero、FSD subscriptions 5 million 2026；未找到對應官方實績支持。",
+      "forecast_action": "記錄500萬年底可訂閱基數；不把它當500萬付費戶。保留既有2027平均付費200萬假設並明示待校準，未強制套用先前示例40%付費率。",
+      "search_queries": [
+        "Musk FSD subscription marginal cost zero Tesla software cost 2026",
+        "site.tesla.com FSD subscriptions 5 million 2026"
+      ],
+      "source_ids": [
+        "fsd_support",
+        "tesla_q3",
+        "tesla_sec"
       ],
       "searched_at": "2026-11-19"
     }

@@ -188,6 +188,39 @@
       "fact_ids": [],
       "research_claim_id": "optimus_annual_rent",
       "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "companies.tesla.segments.fsd.monthly_cost_usd",
+      "value": {
+        "value": 0,
+        "growth": 0,
+        "annual": {}
+      },
+      "unit": "USD/account-month",
+      "classification": "user_assumption",
+      "basis": "使用者接受移除原每戶每月20美元服務成本；以近零邊際服務成本實作為0，其他成本保留，非公司零成本實績。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19",
+      "research_claim_id": "fsd_incremental_cost"
+    },
+    {
+      "input_path": "companies.tesla.segments.fsd.monthly_price_usd.value",
+      "value": 99,
+      "unit": "USD/account-month",
+      "classification": "model_assumption",
+      "basis": "官方美國月費99美元作全球模型價格錨點；不代表所有市場實收均價或2027官方指引。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19"
+    },
+    {
+      "input_path": "metadata.user_assumptions.fsd_eligible_fleet_end2026",
+      "value": 5000000,
+      "unit": "eligible vehicles",
+      "classification": "user_assumption",
+      "basis": "使用者指定2026可訂閱車隊500萬；作年底基數討論，不直接映射付費戶數。付費率尚未指定。",
+      "fact_ids": [],
+      "checked_at": "2026-11-19",
+      "research_claim_id": "fsd_eligible_fleet"
     }
   ]
 }

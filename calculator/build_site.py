@@ -18,12 +18,15 @@ ROOT = Path(__file__).resolve().parents[1]
 def assumptions(config):
     base = config["years"][0]
     robot = config["companies"]["tesla"]["segments"]["optimus_owned"]
+    fsd = config["companies"]["tesla"]["segments"]["fsd"]
     taxi = config["companies"]["tesla"]["segments"]["robotaxi"]
     orbit = config["companies"]["spacex"]["segments"]["orbital_compute"]
     ramp = taxi["production_ramp"]
     def val(spec, year=2027):
         return parameter(spec, year, base)
     return [
+        ["FSD（增量服務成本）", f"每戶每月{val(fsd['monthly_cost_usd']):,.0f}美元（近零假設）；保留研發／營運費用、折舊及共同費用；月費以美國官方99美元為錨點"],
+        ["FSD（車隊與付費戶）", f"2026年底可訂閱500萬輛為使用者基數，非付費戶；2027平均付費{val(fsd['average_subscribers']) / 10000:,.0f}萬戶仍為待校準假設"],
         ["Optimus（使用者全年產量假設）", "；".join(f"{y}年{val(robot['production_units'], y) / 10000:,.0f}萬台" for y in (2027, 2028, 2029)) + "；內用優先、餘量出租，非公司年度指引"],
         ["Optimus（延伸與內用假設）", f"2030–2031各年{val(robot['production_units'], 2030) / 10000:,.0f}萬台；平均內用需求{val(robot['internal_demand_robots']) / 10000:,.0f}萬台"],
         ["Optimus（使用者租賃條件）", f"可租餘量付費出租率{val(robot['rental_utilization']):.0%}；每台每年{val(robot['monthly_rent_usd']) * 12:,.0f}美元" + (f"；付費需求上限{val(robot['rental_demand_robots']) / 10000:,.0f}萬台" if 'rental_demand_robots' in robot else "；無額外出租需求上限")],

@@ -16,7 +16,9 @@
       "optimus_production_2028": 5000000,
       "optimus_production_2029": 10000000,
       "optimus_rental_utilization": 1,
-      "optimus_annual_rent_usd": 30000
+      "optimus_annual_rent_usd": 30000,
+      "fsd_incremental_monthly_cost_usd": 0,
+      "fsd_eligible_fleet_end2026": 5000000
     },
     "additional_assumptions": {
       "orbital_manufactured_2027_mw": 1000,
@@ -199,13 +201,13 @@
             "annual": {}
           },
           "monthly_price_usd": {
-            "value": 100,
+            "value": 99,
             "growth": -0.02,
             "annual": {}
           },
           "monthly_cost_usd": {
-            "value": 20,
-            "growth": -0.03,
+            "value": 0,
+            "growth": 0,
             "annual": {}
           },
           "opex_usd": {
@@ -216,7 +218,7 @@
           "capex_revenue_ratio": 0.02,
           "da_revenue_ratio": 0.01,
           "ev_sales_multiple": 7,
-          "notes": "年平均付費用戶，不是年底用戶。Grok 等自用運算成本集中在 compute；不重算。",
+          "notes": "全年平均外部付費用戶，不是年底或可訂閱車數。依使用者設定，每增加一戶的服務現金成本近零（以0實作），非公司已驗證全成本為零；保留分部營業費用、折舊、資本支出及公司共同費用。99美元為美國官方當前月費錨點，全球實收均價與未來-2%年變動仍是假設。2026年底可訂閱車隊500萬為使用者假設，不能直接當付費戶數；2027平均付費200萬及20%年增仍待校準。",
           "volume_unit": "average paid accounts"
         },
         "robotaxi": {

@@ -350,6 +350,46 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 - [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 - [Tesla 2026Q3逐字稿：Robotaxi單位成本（第三方）](https://www.elonmuskarchive.org/video/tesla-earnings-q3-2026)：2026-11-19讀取第三方逐字稿：CFO稱尚未達30美分單位成本目標，仍在調整清潔等營運成本；未核對官方原片，不能當成本實績。
 
+## FSD新增訂閱近零服務成本
+
+- 原命題：移除每戶每月20美元服務成本，以近零邊際成本實作。
+- 判定：**模型假設，未獲官方實績證實**
+- 支持／相關證據：官方頁支持99美元月費及既有車可訂閱，但未單列每戶服務成本；未找到Musk或公司可核對的全成本為零證據。
+- 限縮／相反證據：近零新增服務成本不等於研發、訓練、維護、折舊及共同費用為零。
+- Musk查核：已搜尋Musk FSD marginal cost zero、FSD subscriptions 5 million 2026；未找到對應官方實績支持。
+- 計算處理：每戶每月服務成本設0，仍保留分部費用、折舊、capex及公司層費用、利息與稅；不把營收當淨利。
+
+搜尋紀錄：
+
+- `Musk FSD subscription marginal cost zero Tesla software cost 2026`
+- `site.tesla.com FSD subscriptions 5 million 2026`
+
+來源：
+
+- [Tesla官方FSD訂閱費率與資格](https://www.tesla.com/support/full-self-driving-subscriptions)：2026-11-19讀取：美國月費99美元，FSD電腦3.0以上且未買斷可訂閱；市場與資格有限制。未披露每戶現金成本或全球可訂閱車隊500萬。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
+- [Tesla 2026Q3 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)：原始申報已讀；含營運限制、資金需求及潛在交易委員會。
+
+## 2026年底FSD可訂閱車隊500萬
+
+- 原命題：2026年底可訂閱車隊以500萬輛作討論基數。
+- 判定：**模型假設，未獲官方實績證實**
+- 支持／相關證據：官方資格要求硬體、所在地及未買斷；Q3披露累計車隊及混合買斷／月租的Active FSD，不能直接取得500萬可訂閱車數。
+- 限縮／相反證據：500萬是使用者指定基數，非已確認車隊，也非付費訂閱戶數；未選定付費率。
+- Musk查核：已搜尋Musk FSD marginal cost zero、FSD subscriptions 5 million 2026；未找到對應官方實績支持。
+- 計算處理：記錄500萬年底可訂閱基數；不把它當500萬付費戶。保留既有2027平均付費200萬假設並明示待校準，未強制套用先前示例40%付費率。
+
+搜尋紀錄：
+
+- `Musk FSD subscription marginal cost zero Tesla software cost 2026`
+- `site.tesla.com FSD subscriptions 5 million 2026`
+
+來源：
+
+- [Tesla官方FSD訂閱費率與資格](https://www.tesla.com/support/full-self-driving-subscriptions)：2026-11-19讀取：美國月費99美元，FSD電腦3.0以上且未買斷可訂閱；市場與資格有限制。未披露每戶現金成本或全球可訂閱車隊500萬。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
+- [Tesla 2026Q3 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)：原始申報已讀；含營運限制、資金需求及潛在交易委員會。
+
 ## 更新規則
 
 新增或修改任何使用者假設，必須同步重新搜尋並更新查核記錄，才能通過run_pipeline。不能把多年後的年化產能寫成當年產量、把Musk目標當已發生實績、把媒體轉述標為已直接看過原片，或把供應商投資當成股票抵付採購帳款。
