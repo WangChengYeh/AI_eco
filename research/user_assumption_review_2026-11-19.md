@@ -24,7 +24,7 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 來源：
 
 - [Tesla 2026Q1 Update：長期Optimus產能](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf)：原始PDF已讀：第6頁列德州產線長期年產能設計1,000萬台。
-- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 - [Tesla 2026Q3 Musk發言轉述](https://www.shacknews.com/article/151108/tesla-optimus-robot-delay-end-of-2027)：2026-10-21電話會議發言轉述：預計2027年底向外部公司交付；不是原始電話會議字幕。
 
 ## Optimus優先內用
@@ -45,7 +45,7 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 
 - [2024年Musk內用優先時程報導](https://www.theguardian.com/technology/article/2024/jul/23/elon-musk-tesla-humanoid-robots-optimus)：搜尋到2024-07-22 Musk內用優先發言；舊時間目標不能視為2027實績。
 - [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-06報導已讀；提及傾向出租，未公布租金。
-- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 
 ## Optimus剩餘出租
 
@@ -107,7 +107,7 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 - [Musk X原貼：Cybertruck產線調整](https://x.com/elonmusk/status/2118591788701421573)：原貼URL已定位，直接讀取403；正文僅能透過報導交叉檢查。
 - [Musk X原貼：June/July擴線](https://x.com/elonmusk/status/2119130949434888330)：原貼URL已定位，直接讀取403；搜尋索引及轉述提及2027年6/7月拆線擴產，並非滿產承諾。
 - [TeslaNorth：2026-11-06產線調整報導](https://teslanorth.com/2026/11/06/tesla-cybertruck-wind-down-cybercab-2027/)：報導已讀並追到Musk原貼；原頁未能直接讀取。
-- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 
 ## 資金缺口用股票換資源
 
@@ -265,7 +265,7 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 來源：
 
 - [Tesla 2026Q1 Update：長期Optimus產能](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf)：原始PDF已讀：第6頁列德州產線長期年產能設計1,000萬台。
-- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 - [Tesla 2026Q3 Musk發言轉述](https://www.shacknews.com/article/151108/tesla-optimus-robot-delay-end-of-2027)：2026-10-21電話會議發言轉述：預計2027年底向外部公司交付；不是原始電話會議字幕。
 
 ## Optimus 2029全年1,000萬台
@@ -286,7 +286,7 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 來源：
 
 - [Tesla 2026Q1 Update：長期Optimus產能](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q1-2026-Update.pdf)：原始PDF已讀：第6頁列德州產線長期年產能設計1,000萬台。
-- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 - [Tesla 2026Q3 Musk發言轉述](https://www.shacknews.com/article/151108/tesla-optimus-robot-delay-end-of-2027)：2026-10-21電話會議發言轉述：預計2027年底向外部公司交付；不是原始電話會議字幕。
 
 ## Optimus剩餘100%付費出租
@@ -328,6 +328,27 @@ Optimus全年產量為2027年100萬、2028年500萬、2029年1,000萬台的積�
 - [Baron Capital：2026-11-06 Musk訪談原片入口](https://www.baroncapitalgroup.com/conference-2026/fireside-chat-ron-baron-elon-musk)：主辦方活動頁與日期已定位；本輪未取得原片可核對字幕。
 - [Baron訪談第三方逐字稿](https://www.elonmuskarchive.org/video/baron-investment-conference-2026-11-06)：逐字稿可讀，非主辦方認證；發言歸屬及數字須回看原片，不能標成已觀看驗證。
 - [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-06報導已讀；提及傾向出租，未公布租金。
+
+## Robotaxi每車年淨利3萬美元
+
+- 原命題：每台Robotaxi完整營運一年淨利30,000美元。
+- 判定：**淨利目標尚未獲證實**
+- 支持／相關證據：2019年Musk逐字稿提到每車年毛利約3萬美元；毛利與淨利不同，不能作目前每車稅後淨利證據。 2026Q3官方文件披露累計無監督里程近200萬與Cybercab裝置年產能>125,000，未單列每車淨利；當季第三方電話會議逐字稿稱30美分成本目標尚未達成。
+- 限縮／相反證據：歷史展望不是已實現財報；尚無已核對每車稅後淨利3萬美元實績或現行官方承諾。需求、營運效率、監管及可接受車資均待驗證。
+- Musk查核：已搜尋Musk Robotaxi annual profit及2019 Autonomy Day原話，讀取第三方逐字稿；未核對官方原片。
+- 計算處理：依使用者最新要求優先引用數據，未將3萬美元年淨利套入主預測，也不反推車資強迫達標。每車實際淨利尚未披露；原車資、里程與成本模型僅為待校準估算，不能當已驗證每車獲利。
+
+搜尋紀錄：
+
+- `Musk robotaxi earn $30000 net profit per year 2026`
+- `Tesla 2019 autonomy day robotaxi "$30,000" "gross profit" Musk`
+- `site.tesla.com robotaxi "30,000" "year"`
+
+來源：
+
+- [2019 Autonomy Investor Day Musk逐字稿（第三方）](https://stockanalysis.com/stocks/tsla/transcripts/24777-autonomy-investor-day-2019/)：2026-11-19已讀第三方逐字稿；Musk說每車年毛利約3萬美元，並非稅後淨利。未核對官方原片。
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
+- [Tesla 2026Q3逐字稿：Robotaxi單位成本（第三方）](https://www.elonmuskarchive.org/video/tesla-earnings-q3-2026)：2026-11-19讀取第三方逐字稿：CFO稱尚未達30美分單位成本目標，仍在調整清潔等營運成本；未核對官方原片，不能當成本實績。
 
 ## 更新規則
 

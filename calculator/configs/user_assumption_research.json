@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-19",
-  "coverage": "全部10項主預測使用者輸入及6項理論／交易命題；100%出租與每台年租3萬美元為使用者條件，未獲官方租賃指引支持。",
+  "coverage": "全部10項主預測使用者輸入、6項理論／交易命題及Robotaxi年淨利3萬美元待驗證命題。依使用者最新要求，3萬美元淨利不套入主預測。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -13,7 +13,7 @@
       "title": "Tesla 2026Q3 Update：產線狀態",
       "url": "https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf",
       "access": "primary_text_read",
-      "access_note": "原始公司文件已讀；Optimus Fremont為Early Ramp、Texas為Construction。"
+      "access_note": "2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。"
     },
     "tesla_sec": {
       "title": "Tesla 2026Q3 10-Q",
@@ -122,6 +122,18 @@
       "url": "https://www.investor.gov/additional-resources/general-resources/publications-research/info-sheets/beginners-guide-asset",
       "access": "primary_indexed_read",
       "access_note": "官方教育資料已定位：長期投資仍須管理集中及資產風險。"
+    },
+    "autonomy_2019": {
+      "title": "2019 Autonomy Investor Day Musk逐字稿（第三方）",
+      "url": "https://stockanalysis.com/stocks/tsla/transcripts/24777-autonomy-investor-day-2019/",
+      "access": "secondary_transcript_read",
+      "access_note": "2026-11-19已讀第三方逐字稿；Musk說每車年毛利約3萬美元，並非稅後淨利。未核對官方原片。"
+    },
+    "q3_unit_economics": {
+      "title": "Tesla 2026Q3逐字稿：Robotaxi單位成本（第三方）",
+      "url": "https://www.elonmuskarchive.org/video/tesla-earnings-q3-2026",
+      "access": "secondary_transcript_read",
+      "access_note": "2026-11-19讀取第三方逐字稿：CFO稱尚未達30美分單位成本目標，仍在調整清潔等營運成本；未核對官方原片，不能當成本實績。"
     }
   },
   "claims": [
@@ -497,6 +509,29 @@
         "baron_host",
         "baron_transcript",
         "rental_report"
+      ],
+      "searched_at": "2026-11-19"
+    },
+    {
+      "id": "robotaxi_annual_net_income",
+      "title": "Robotaxi每車年淨利3萬美元",
+      "claim": "每台Robotaxi完整營運一年淨利30,000美元。",
+      "user_values": {},
+      "verdict": "not_supported_as_stated",
+      "verdict_label": "淨利目標尚未獲證實",
+      "finding": "2019年Musk逐字稿提到每車年毛利約3萬美元；毛利與淨利不同，不能作目前每車稅後淨利證據。 2026Q3官方文件披露累計無監督里程近200萬與Cybercab裝置年產能>125,000，未單列每車淨利；當季第三方電話會議逐字稿稱30美分成本目標尚未達成。",
+      "limits": "歷史展望不是已實現財報；尚無已核對每車稅後淨利3萬美元實績或現行官方承諾。需求、營運效率、監管及可接受車資均待驗證。",
+      "musk_search": "已搜尋Musk Robotaxi annual profit及2019 Autonomy Day原話，讀取第三方逐字稿；未核對官方原片。",
+      "forecast_action": "依使用者最新要求優先引用數據，未將3萬美元年淨利套入主預測，也不反推車資強迫達標。每車實際淨利尚未披露；原車資、里程與成本模型僅為待校準估算，不能當已驗證每車獲利。",
+      "search_queries": [
+        "Musk robotaxi earn $30000 net profit per year 2026",
+        "Tesla 2019 autonomy day robotaxi \"$30,000\" \"gross profit\" Musk",
+        "site.tesla.com robotaxi \"30,000\" \"year\""
+      ],
+      "source_ids": [
+        "autonomy_2019",
+        "tesla_q3",
+        "q3_unit_economics"
       ],
       "searched_at": "2026-11-19"
     }
