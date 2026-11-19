@@ -193,6 +193,90 @@
       "status": "company_disclosed",
       "mapping_note": "僅支持舊車訂閱來源；不是500萬月租、全球可用或新費率的數量證據。",
       "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_ground_nameplate_2026q3",
+      "company": "SpaceX",
+      "metric": "installed GPU nameplate compute",
+      "period": "2026-Q3 / 2026-10 disclosure",
+      "value": 1700,
+      "unit": "MW",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "期末GPU數量乘各自all-in功率；排除冷卻、配電損耗等設施耗電，不等於實際用電或利用率。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "musk_ground_end2026_target",
+      "company": "SpaceX",
+      "metric": "ground compute year-end 2026 target",
+      "period": "2026-Q3 / 2026-10 disclosure",
+      "value": 3000,
+      "unit": "MW",
+      "source": "https://stockanalysis.com/stocks/spcx/transcripts/723936-q3-2026/",
+      "status": "secondary_transcribed_management_target",
+      "mapping_note": "原話範圍2.5–3GW，取3GW作條件式模型期初；原片／官方逐字稿未直接核對。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "musk_ground_incremental2027_target",
+      "company": "SpaceX",
+      "metric": "incremental compute in 2027 target",
+      "period": "2026-Q3 / 2026-10 disclosure",
+      "value": 10000,
+      "unit": "MW/year",
+      "source": "https://stockanalysis.com/stocks/spcx/transcripts/723936-q3-2026/",
+      "status": "secondary_transcribed_management_target",
+      "mapping_note": "新增10GW，非全年平均或全部對外出租容量。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "musk_ground_end2027_target",
+      "company": "SpaceX",
+      "metric": "ground compute year-end 2027 target",
+      "period": "2026-Q3 / 2026-10 disclosure",
+      "value": 13000,
+      "unit": "MW",
+      "source": "https://stockanalysis.com/stocks/spcx/transcripts/723936-q3-2026/",
+      "status": "secondary_transcribed_management_target",
+      "mapping_note": "逐字稿稱13GW total；超20GW算力是挑戰情境，約23GW電力冷卻不是相同口徑。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "jll_2026_shell_core_cost",
+      "company": "JLL",
+      "metric": "global forecast shell/core construction cost",
+      "period": "2026 outlook",
+      "value": 11300000,
+      "unit": "USD/MW",
+      "source": "https://www.jll.com/content/dam/jllcom/en/global/documents/reports/research-reports/26-research-global-data-center-outlook-new.pdf",
+      "status": "industry_research_forecast",
+      "mapping_note": "JLL第25頁全球2026預測，第26頁註明土地與IT另計、液冷約10%溢價；非SpaceX實際成本。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "jll_2026_ai_fitout_high_cost",
+      "company": "JLL",
+      "metric": "AI technology fitout cost up to",
+      "period": "2026 outlook",
+      "value": 25000000,
+      "unit": "USD/MW",
+      "source": "https://www.jll.com/content/dam/jllcom/en/global/documents/reports/research-reports/26-research-global-data-center-outlook-new.pdf",
+      "status": "industry_research_upper_example",
+      "mapping_note": "JLL第25頁as much as，不是平均或SpaceX已知成本；模型暫取高端代理。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_apollo_gpu_lease_commitment",
+      "company": "SpaceX",
+      "metric": "conditional GPU master finance lease commitment",
+      "period": "2026-Q3 / 2026-10 disclosure",
+      "value": 40000000000,
+      "unit": "USD",
+      "source": "https://ir.spacex.com/updates/releases-details/2026/SPACEX-SECURES-40-BILLION-IN-THE-LARGEST-GPU-FINANCING-EVER-2026-EnDqGhTAB3/",
+      "status": "company_disclosed_conditional_commitment",
+      "mapping_note": "2026-10-26公告；預計年底前交割、2027上半年交貨，不視為已實收現金或已交付算力。本次未建模其租賃負債與付款時間表。",
+      "checked_at": "2026-11-20"
     }
   ]
 }

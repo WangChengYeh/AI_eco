@@ -4,7 +4,7 @@
 
 範圍：現行主預測全部使用者假設，加上原始理論的重要強版本。查核包含支持、反向及限縮證據；沒有找到支持不等於已證偽。公司目標、Musk預測、第三方逐字稿及已發生實績分開。
 
-本表包含17項使用者輸入及23項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
+本表包含19項使用者輸入及24項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
 
 ## Optimus 2027全年100萬台
 
@@ -477,6 +477,29 @@
 
 - [SpaceX AI1官方頁](https://new.spacex.com/spacexai/starmind)：官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。
 - [SpaceX官方Updates：軌道資料中心與星艦](https://new.spacex.com/updates)：2026-11-20官方搜尋索引提及AI衛星需求推動星艦高頻發射，並同時列Starlink及直連手機任務；直接讀取逾時。支持AI方向，不提供2027–2031精確90%任務分配。
+
+## 地面AI算力：2027年底13GW與平均8GW
+
+- 原命題：依本輪分析採2027年初3GW、年底13GW，月度爬坡並更新完整模型投入成本。
+- 判定：**支持管理層目標方向；月度時程、成本與多年擴張仍為模型假設**
+- 支持／相關證據：SEC已披露2026Q3名目容量1.7GW；第三方逐字稿支持3→13GW的條件目標。JLL提供產業成本代理，公司40B租賃承諾支持資源動員方向。
+- 限縮／相反證據：13GW不是已交付容量；平均8GW依均勻投運推導。18%多年成長、設備價格降3%、4／20年壽命、期初零齡與15M基建預算未獲SpaceX驗證。GW不衡量不同GPU的同品質任務效能。Apollo租賃尚未納入負債與付款表，不能同時當新現金與免費設備。
+- Musk查核：第三方2026-10-20逐字稿稱年底約2.5–3GW，2027新增10GW、總計13GW；20GW以上算力是挑戰，23GW電力冷卻不等於已上線算力。官方IR頁定位活動，原片未直接核對；其他轉錄有GPU月數量差異，本次不以GPU台數反推GW。
+- 計算處理：以月中批次計3→13GW，平均8GW；2028起按年底容量18%曲線。硬體25M、基建15M美元/MW；按4／20年批次折舊與替換，新增成本進capex與FCF，資金缺口依既有股票資源支付假設計稀釋。
+
+搜尋紀錄：
+
+- `Musk SpaceX Q3 2026 13 gigawatts incremental 10 power cooling 23`
+- `site.sec.gov/Archives/edgar/data/1181412/000162828026066880 Nameplate power`
+- `site.ir.spacex.com 40 BILLION GPU 2026`
+- `AI data center cost per gigawatt 2026 JLL`
+
+來源：
+
+- [SpaceX Q3 10-Q：nameplate口徑與1.7GW](https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm)：原始申報已讀，nameplate排除設施用電，不是實際負載。
+- [Musk 2026Q3法說會第三方逐字稿](https://stockanalysis.com/stocks/spcx/transcripts/723936-q3-2026/)：已讀2026-10-20完整第三方逐字稿；官方IR頁可定位法說會，但未核對原片或官方逐字稿。
+- [JLL 2026 Global Data Center Outlook](https://www.jll.com/content/dam/jllcom/en/global/documents/reports/research-reports/26-research-global-data-center-outlook-new.pdf)：第25–26頁：殼體11.3M/MW預測、AI fitout最高25M、液冷溢價約10%，不含土地，非SpaceX報價。
+- [SpaceX Apollo GPU lease公告](https://ir.spacex.com/updates/releases-details/2026/SPACEX-SECURES-40-BILLION-IN-THE-LARGEST-GPU-FINANCING-EVER-2026-EnDqGhTAB3/)：已讀公司2026-10-26公告，40B為附交割條件融資租賃承諾，不是本次已交付設備。
 
 ## 更新規則
 

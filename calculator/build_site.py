@@ -15,6 +15,7 @@ def assumptions(config):
     tesla, spacex = config['companies']['tesla'], config['companies']['spacex']
     robot, fsd, taxi = (tesla['segments'][k] for k in ('optimus_owned','fsd','robotaxi'))
     orbit = spacex['segments']['orbital_compute']
+    ground = spacex['segments']['ground_compute'].get('capacity_ramp')
     network, ramp = orbit['launch_network'], taxi['production_ramp']
     def v(spec, year=None): return parameter(spec, base if year is None else year, base)
     upgrade = network.get('capacity_upgrade')
@@ -44,6 +45,13 @@ def assumptions(config):
         ['股票交換資源','；'.join(f"{co['name']}接受度{v(co['stock_payment']['acceptance_ratio']):.0%}、協議價{v(co['stock_payment']['reference_price_usd']):g}美元/股" for co in config['companies'].values())+'；有缺口才發股，保留成本與稀釋，非已簽約條件'],
         ['可改善現金成本',f"乘用車合格成本占比{v(tesla['segments']['passenger_vehicles']['automation_eligible_cash_cost_ratio']):.0%}，節省仍受公司上限{v(tesla['robotics_max_cogs_share']):.0%}限制；不抵銷折舊"],
     ]
+    if ground:
+        rows += [
+            ['地面算力（名目IT容量）', f"2027年初{v(ground['opening_it_mw'])/1000:g}GW→年底{v(ground['year_end_it_mw'])/1000:g}GW，均勻月度投運、平均{(v(ground['opening_it_mw'])+v(ground['year_end_it_mw']))/2000:g}GW；依Musk第三方逐字稿目標，非已確認實績；20GW以上未納入主預測"],
+            ['地面算力（後續擴張）',f"2028起年底容量每年成長{ground['year_end_it_mw'].get('growth',0):.0%}，沿用模型假設，非公司多年指引"],
+            ['地面算力（資本成本）',f"硬體{v(ground['hardware_cost_usd_per_mw'])/1e6:g}M、基建{v(ground['infrastructure_cost_usd_per_mw'])/1e6:g}M美元/MW；JLL產業代理與預備額，非SpaceX報價；硬體{ground['hardware_life_years']}年／基建{ground['infrastructure_life_years']}年折舊並到期替換；期初視為零齡，年初資產不重複購置"],
+            ['地面算力（計費與資金）', f"對外份額{v(spacex['segments']['ground_compute']['external_share']):.0%}、利用率{v(spacex['segments']['ground_compute']['external_utilization']):.0%}仍為模型假設；Apollo40B租賃未建模其交割、負債及付款時間表，不另增現金或重複減capex"]
+        ]
     return rows
 
 

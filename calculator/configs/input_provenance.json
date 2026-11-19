@@ -1,6 +1,6 @@
 {
   "checked_at": "2026-11-20",
-  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。",
+  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。",
   "records": [
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.value",
@@ -587,6 +587,92 @@
       "fact_ids": [],
       "checked_at": "2026-11-20",
       "research_claim_id": "orbital_ai_flight_share"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.opening_it_mw",
+      "value": 3000,
+      "unit": "MW",
+      "classification": "user_assumption",
+      "basis": "使用者要求採用本輪Musk目標分析；取2.5–3GW上端3GW作期初，非實績。",
+      "fact_ids": [
+        "musk_ground_end2026_target"
+      ],
+      "checked_at": "2026-11-20",
+      "research_claim_id": "ground_compute_musk_2027"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.year_end_it_mw.value",
+      "value": 13000,
+      "unit": "MW",
+      "classification": "user_assumption",
+      "basis": "使用者要求採用2027年底13GW目標；月度爬坡為模型實作。",
+      "fact_ids": [
+        "musk_ground_end2027_target"
+      ],
+      "checked_at": "2026-11-20",
+      "research_claim_id": "ground_compute_musk_2027"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.year_end_it_mw.growth",
+      "value": 0.18,
+      "unit": "fraction/year",
+      "classification": "model_assumption",
+      "basis": "2028起年底容量沿用18%成長，非Musk多年指引。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.hardware_cost_usd_per_mw",
+      "value": {
+        "value": 25000000,
+        "growth": -0.03,
+        "annual": {}
+      },
+      "unit": "USD/MW",
+      "classification": "model_assumption",
+      "basis": "JLL高端25M代理，之後每年降3%沿用原降本率，非SpaceX採購價。",
+      "fact_ids": [
+        "jll_2026_ai_fitout_high_cost"
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.infrastructure_cost_usd_per_mw",
+      "value": 15000000,
+      "unit": "USD/MW",
+      "classification": "model_assumption",
+      "basis": "11.3M×1.1液冷=12.43M，加2.57M土地／額外供電等預備額；缺少場址BOM，非已驗證完整預算。",
+      "fact_ids": [
+        "jll_2026_shell_core_cost"
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.hardware_life_years",
+      "value": 4,
+      "unit": "years",
+      "classification": "model_assumption",
+      "basis": "硬體4年直線折舊、到期即替換；期初零齡假設待實際批次校準。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.infrastructure_life_years",
+      "value": 20,
+      "unit": "years",
+      "classification": "model_assumption",
+      "basis": "基建20年直線折舊與到期替換，非GPU壽命。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capex_usd",
+      "value": 0,
+      "unit": "USD/year",
+      "classification": "model_assumption",
+      "basis": "取消舊固定12B曲線，由新增MW及兩類資產汰換計完整模型投入，避免重複計費。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20"
     }
   ],
   "user_bindings": [
@@ -630,6 +716,14 @@
     {
       "input_path": "companies.spacex.segments.orbital_compute.launch_network.ai_flight_share",
       "user_key": "orbital_ai_flight_share"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.opening_it_mw",
+      "user_key": "ground_opening_mw_2027"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.year_end_it_mw.value",
+      "user_key": "ground_year_end_mw_2027"
     }
   ]
 }

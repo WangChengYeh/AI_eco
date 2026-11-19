@@ -121,7 +121,7 @@ KIND_FIELDS = {
                     "internal_avoided_cost_usd_per_robot_year", "rental_utilization",
                     "rental_demand_robots", "monthly_rent_usd", "cash_cost_usd_per_robot_year",
                     "production_quarter_units"},
-    "compute": {"average_it_mw", "external_share", "internal_share", "external_utilization",
+    "compute": {"capacity_ramp", "average_it_mw", "external_share", "internal_share", "external_utilization",
                 "internal_utilization", "availability", "price_usd_per_billable_mw_hour",
                 "electricity_usd_per_kwh", "pue", "idle_power_fraction",
                 "cash_overhead_usd_per_mw_year", "hardware_da_usd_per_mw_year"},
@@ -317,6 +317,53 @@ def orbital_launch_capacity(network, year, base_year):
             "available_starship_flights": available,
             "allocated_ai_flights": allocated,
             "annual_launch_capacity_mw": sum(monthly_mw), "launch_sites": site_details}
+
+
+def ground_capacity_rollforward(ramp, year, base_year, state):
+    """Net capacity targets with monthly commissioning and funded asset renewal."""
+    allowed = {"opening_it_mw", "year_end_it_mw", "hardware_cost_usd_per_mw",
+               "infrastructure_cost_usd_per_mw", "hardware_life_years",
+               "infrastructure_life_years", "monthly_addition_weights"}
+    if not isinstance(ramp, dict) or set(ramp) - allowed:
+        raise ModelError("invalid ground capacity_ramp fields")
+    def p(key, default=0, minimum=0):
+        return parameter(ramp.get(key, default), year, base_year, key, minimum)
+    opening = state.get("ground_closing_mw", p("opening_it_mw"))
+    target = p("year_end_it_mw")
+    if target < opening - 1e-8:
+        raise ModelError("ground capacity target cannot decline; explicit decommissioning is not implemented")
+    additions = max(target - opening, 0)
+    weights = ramp.get("monthly_addition_weights", {}).get(str(year), [1 / 12] * 12)
+    if not isinstance(weights, list) or len(weights) != 12:
+        raise ModelError("monthly_addition_weights needs 12 weights")
+    weights = [number(w, "monthly_addition_weight", 0, 1) for w in weights]
+    if not math.isclose(sum(weights), 1, abs_tol=1e-9):
+        raise ModelError("monthly_addition_weights must sum to 1")
+    costs, ledgers = {}, {}
+    for asset, default_life in (("hardware", 4), ("infrastructure", 20)):
+        cost = p(asset + "_cost_usd_per_mw")
+        life = p(asset + "_life_years", default_life, 1)
+        ledger = asset_rollforward(state.setdefault("ground_" + asset, {}), year,
+            [(additions * w, cost, m) for m, w in enumerate(weights, 1)], life, life,
+            opening_units=p("opening_it_mw"),
+            opening_unit_cost=parameter(ramp.get(asset + "_cost_usd_per_mw", 0), base_year, base_year),
+            replace=True, replacement_unit_cost=cost)
+        costs[asset] = (additions + ledger["replacements"]) * cost
+        ledgers[asset] = ledger
+    hardware, infra = ledgers["hardware"], ledgers["infrastructure"]
+    state["ground_closing_mw"] = hardware["closing"]
+    monthly_adds = [additions * w for w in weights]
+    monthly_average = [opening + sum(monthly_adds[:m]) + monthly_adds[m] / 2 for m in range(12)]
+    drivers = {"opening_it_mw": opening, "year_end_it_mw": hardware["closing"],
+        "commissioned_new_it_mw": additions, "average_it_mw": hardware["average"],
+        "monthly_new_it_mw": monthly_adds, "monthly_average_it_mw": monthly_average,
+        "retired_hardware_mw": hardware["retirements"],
+        "replacement_hardware_mw": hardware["replacements"],
+        "replacement_infrastructure_mw": infra["replacements"],
+        "hardware_capex_usd": costs["hardware"], "infrastructure_capex_usd": costs["infrastructure"],
+        "hardware_da_usd": hardware["da"], "infrastructure_da_usd": infra["da"],
+        "closing_net_book_value_usd": hardware["book"] + infra["book"]}
+    return drivers, sum(costs.values()), hardware["da"] + infra["da"]
 
 
 def segment_forecast(segment, year, base_year, state):
@@ -576,6 +623,12 @@ def segment_forecast(segment, year, base_year, state):
                                    "retired_it_mw": retired_mw,
                                    "commissioning_start_month": month, "deployment_writeoff_usd": writeoff,
                                    "closing_net_book_value_usd": state["orbital_book"], **launch_drivers}
+            elif "capacity_ramp" in segment:
+                if "average_it_mw" in segment or "hardware_da_usd_per_mw_year" in segment:
+                    raise ModelError("capacity_ramp cannot also set average_it_mw or manual hardware depreciation")
+                orbital_drivers, extra_capex, extra_da = ground_capacity_rollforward(
+                    segment["capacity_ramp"], year, base_year, state)
+                mw = orbital_drivers["average_it_mw"]
             else:
                 mw = p("average_it_mw")
             external, internal = p("external_share", 1, 0, 1), p("internal_share", 0, 0, 1)
@@ -588,7 +641,7 @@ def segment_forecast(segment, year, base_year, state):
             busy = available * (external * ext_util + internal * own_util)
             energy_kwh = mw * 1000 * calendar_hours * p("pue", 1, 1) * (busy + (1 - busy) * p("idle_power_fraction", 0.15, 0, 1))
             revenue = billable_mwh * p("price_usd_per_billable_mw_hour")
-            if kind == "compute":
+            if kind == "compute" and "capacity_ramp" not in segment:
                 extra_da = mw * p("hardware_da_usd_per_mw_year")
             cogs = energy_kwh * p("electricity_usd_per_kwh") + mw * p("cash_overhead_usd_per_mw_year") + extra_da
             inputs = {"average_it_mw": mw, "external_share": external, "internal_share": internal,

@@ -57,6 +57,17 @@ def reconcile(result):
             hours=24*(366 if calendar.isleap(year) else 365)
             eq(d['calendar_hours'],hours,'calendar hours')
             eq(row['revenue_usd'],d['average_it_mw']*p('external_share',1)*p('external_utilization',1)*p('availability',1)*hours*p('price_usd_per_billable_mw_hour'),'compute billed revenue')
+        if spec['kind']=='compute' and 'capacity_ramp' in spec and row['active']:
+            ramp=spec['capacity_ramp']
+            def rp(key):return parameter(ramp[key],year,base)
+            eq(d['year_end_it_mw'],d['opening_it_mw']+d['commissioned_new_it_mw'],'ground net capacity target')
+            eq(d['year_end_it_mw'],rp('year_end_it_mw'),'ground target reached')
+            eq(sum(d['monthly_new_it_mw']),d['commissioned_new_it_mw'],'ground monthly additions')
+            eq(sum(d['monthly_average_it_mw'])/12,d['average_it_mw'],'ground capacity exposure')
+            eq(d['hardware_capex_usd'],(d['commissioned_new_it_mw']+d['replacement_hardware_mw'])*rp('hardware_cost_usd_per_mw'),'ground hardware funding')
+            eq(d['infrastructure_capex_usd'],(d['commissioned_new_it_mw']+d['replacement_infrastructure_mw'])*rp('infrastructure_cost_usd_per_mw'),'ground infrastructure funding')
+            eq(row['capex_usd'],d['hardware_capex_usd']+d['infrastructure_capex_usd']+p('capex_usd')+row['revenue_usd']*p('capex_revenue_ratio'),'ground capital cost sum')
+            eq(row['da_usd'],d['hardware_da_usd']+d['infrastructure_da_usd']+p('da_usd')+row['revenue_usd']*p('da_revenue_ratio'),'ground depreciation sum')
         if spec['kind']=='orbital_compute' and row['active']:
             eq(d['year_end_it_mw'],d['opening_it_mw']+d['commissioned_new_it_mw']-d['retired_it_mw'],'orbital live capacity rollforward')
             previous=inventory.get((cid,sid),p('opening_inventory_mw'))

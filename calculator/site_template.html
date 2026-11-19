@@ -1809,6 +1809,11 @@ html>body{padding:0}</style>
 <div class="text-small">流動資金含非受限現金與短期投資；債務含融資租賃。以2026Q3／10月申報作2027期初錨點，未建模第四季變動，並非2026年底實績。</div>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>公司</th><th>已發行在外普通股數</th><th>流動資金（十億美元）</th><th>債務（十億美元）</th></tr></thead><tbody id="ts-opening-anchors"></tbody></table></div>
 </details>
+<details id="ts-ground-audit"><summary>SpaceX：逐年地面AI容量與投入</summary>
+<div class="text-small">主預測以Musk第三方逐字稿目標作條件式容量錨點，按月均勻投運；後續成長率見主預測假設。名目IT容量不等於實際耗電、GPU效能或全部出租。硬體與基建分別按4／20年批次折舊、到期替換；資金與稀釋同步重算。</div>
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>年初GW</th><th>新增GW</th><th>年底GW</th><th>平均GW</th><th>硬體替換GW</th><th>投入十億美元</th><th>營收十億美元</th><th>分部營業利益十億美元</th></tr></thead><tbody id="ts-ground-annual"></tbody></table></div>
+<div class="text-small">投入按新增與汰換容量乘單位模型預算計算，不是公司指引；JLL產業價格代理、土地／供電預備額及歷史資產年齡仍待校準。自用容量不創造對外營收。</div>
+</details>
 <details id="ts-orbit-audit"><summary>SpaceX：逐年發射塔、頻率與GW計算</summary>
 <div class="text-small">每台能力＝啟用後各月年化頻率÷12，加總各台及各場。場址額度為共用年化上限，按月分配；先前月份未使用額度不回補。按月切分為模型排程假設，非FAA月度要求。主預測不再有額外全機隊上限。AI槽不等於全部已用於投運。</div>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>可用台數：年初→年底</th><th>單次MW：年初→年底</th><th>每台年化率：年初→年底</th><th>啟用台月數</th><th>台數×頻率合計（限制前）</th><th>共用場址額度限制後</th><th>AI分配槽</th><th>投運使用AI槽</th></tr></thead><tbody id="ts-orbit-flights"></tbody></table></div>
@@ -1885,6 +1890,7 @@ auditTable('ts-pad-audit',data[0].orbital_audit.flatMap(r=>r.site_details.flatMa
 auditTable('ts-site-audit',data[0].orbital_audit.flatMap(r=>r.site_details.map(site=>[r.year,site.site,fmt(site.raw_annual_flights),site.annual_site_limit,site.available_flights])));
 auditTable('ts-orbit-capacity',data[0].orbital_audit.map(r=>[r.year,...[r.manufactured_gw,r.new_gw,r.retired_gw,r.end_gw,r.average_gw].map(x=>x.toLocaleString('en-US',{maximumFractionDigits:6})),fmt(r.capex_usd,1e9)]));
 auditTable('ts-fsd-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='fsd').map(r=>[r.year,...['opening_subscribers','new_subscribers','closing_subscribers','average_subscribers'].map(k=>fmt(r.drivers[k],10000)),fmt(r.drivers.monthly_price_usd),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
+auditTable('ts-ground-annual',data[0].segments.filter(r=>r.company_id==='spacex'&&r.segment==='ground_compute').map(r=>[r.year,...['opening_it_mw','commissioned_new_it_mw','year_end_it_mw','average_it_mw','replacement_hardware_mw'].map(k=>fmt(r.drivers[k],1000)),fmt(r.capex_usd,1e9),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 const seriesColors=['var(--viz-series-1)','var(--viz-series-2)'];
 let rows=[],selectedData=null;
 year.innerHTML=data[0].companies.tesla.map(r=>'<option>'+r.year+'</option>').join('');

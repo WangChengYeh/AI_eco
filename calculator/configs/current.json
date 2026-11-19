@@ -23,7 +23,9 @@
       "orbital_manufacturing_unconstrained": true,
       "fsd_opening_fleet_basis": "HW3／AI3的FSD Lite上線支持舊車訂閱；2026年底500萬為含舊車的付費總基數，非500萬再加HW3車數。Lite與其他訂閱暫用同一費率曲線，未另設硬體別價格。",
       "orbital_ai_flight_share": 0.9,
-      "orbital_launch_aggregation": "逐台按啟用月份與每台發射頻率相乘、各場加總；保留場址共用額度，不另加全機隊頻率上限。"
+      "orbital_launch_aggregation": "逐台按啟用月份與每台發射頻率相乘、各場加總；保留場址共用額度，不另加全機隊頻率上限。",
+      "ground_opening_mw_2027": 3000,
+      "ground_year_end_mw_2027": 13000
     },
     "additional_assumptions": {
       "commissioning_start_month_2027": 10,
@@ -582,11 +584,6 @@
           "name": "地面算力租賃及自用基建",
           "kind": "compute",
           "start_year": 2027,
-          "average_it_mw": {
-            "value": 1800,
-            "growth": 0.18,
-            "annual": {}
-          },
           "external_share": 0.65,
           "internal_share": 0.35,
           "availability": 0.95,
@@ -605,24 +602,31 @@
             "growth": -0.02,
             "annual": {}
           },
-          "hardware_da_usd_per_mw_year": {
-            "value": 6000000.0,
-            "growth": -0.03,
-            "annual": {}
-          },
           "opex_usd": {
             "value": 200000000.0,
             "growth": 0.1,
             "annual": {}
           },
-          "capex_usd": {
-            "value": 12000000000.0,
-            "growth": 0.12,
-            "annual": {}
-          },
+          "capex_usd": 0,
           "ev_sales_multiple": 4,
-          "notes": "MW 為全年平均 IT 容量。自用份額沒有算力銷售營收。capex 含擴建／汰換，須自行校準。",
-          "volume_unit": "billable MW-hour"
+          "notes": "依Musk 2026Q3第三方逐字稿：2026年底約2.5–3GW、2027新增10GW，主預測取年初3GW→年底13GW，月度均勻投運，全年平均8GW。非已確認實績或原片核驗。2028起年底容量沿用18%成長（模型假設）；20GW以上僅作目標邊界，不納入主預測。新增與汰換按歷史成本批次折舊；硬體25M美元/MW為JLL產業高端代理，基建15M含液冷殼體12.43M與土地／額外供電等2.57M預備額；非SpaceX報價或已驗證完整預算。硬體4年、基建20年，期初資產視為零齡並以同單位成本估值，期初購置不重複計capex。Apollo40B租賃尚有交割條件，未另增現金或債務，避免與股票支付情境重複融資。",
+          "volume_unit": "billable MW-hour",
+          "capacity_ramp": {
+            "opening_it_mw": 3000,
+            "year_end_it_mw": {
+              "value": 13000,
+              "growth": 0.18,
+              "annual": {}
+            },
+            "hardware_cost_usd_per_mw": {
+              "value": 25000000,
+              "growth": -0.03,
+              "annual": {}
+            },
+            "infrastructure_cost_usd_per_mw": 15000000,
+            "hardware_life_years": 4,
+            "infrastructure_life_years": 20
+          }
         },
         "orbital_compute": {
           "name": "太空算力",
