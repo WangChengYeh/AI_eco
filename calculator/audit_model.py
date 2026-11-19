@@ -120,6 +120,14 @@ def validate_html(document,result):
     expected=[{k:v for k,v in row.items() if k in fields} for row in result['segments']]
     if data['segments']!=expected:raise ValueError('HTML segment results differ from Python')
     if len(data['orbital_audit'])!=len(result['companies']['spacex']):raise ValueError('missing annual launch audit rows')
+    share_rows=data['share_dilution']
+    if len(share_rows)!=sum(len(rows) for rows in result['companies'].values()):raise ValueError('missing annual share rows')
+    for row in share_rows:
+        actual=next(r for r in result['companies'][row['company_id']] if r['year']==row['year'])
+        if not math.isclose(row['opening_shares']+row['gross_new_shares']-row['buyback_shares'],actual['shares'],rel_tol=1e-10):
+            raise ValueError('share report does not reconcile to forecast')
+        if row['closing_shares']!=actual['shares'] or row['resource_shares']!=actual['resource_shares_issued']:
+            raise ValueError('share report differs from forecast')
     return True
 
 

@@ -67,3 +67,7 @@ SOTP股價＝（各分部收入×各自EV/Sales−公司成本資本化＋流動
 `capacity_ramp.opening_it_mw`與`year_end_it_mw`決定淨容量路徑，預設12個月均勻投運；可用`monthly_addition_weights`的年度12項權重（合計1）檢查較晚投運的影響。不得同時輸入`average_it_mw`或手動硬體折舊，以免口徑衝突。
 
 硬體與基建成本分別由`hardware_cost_usd_per_mw`及`infrastructure_cost_usd_per_mw`指定，按各自壽命分批折舊、到期替換。淨新增容量只增加一次；替換硬體會產生capex，容量不重複增加。舊資產保留歷史成本。期初資產按零齡與基準成本估值，購置款不再計入2027。詳見[本輪研究](../research/ground_compute_musk_2026-11-20.md)。
+
+## 逐年股數與稀釋報告
+
+Pipeline另生成[Tesla／SpaceX股數報告](../research/share_dilution_2026-11-20.md)，區分員工股權、現金募資、資源支付及回購；計算當年與累計稀釋、固定期初持股的保留比例。網頁及主預測摘要同步展示。股數為普通股數量口徑，不等同投票權、自由流通股或加權平均EPS股數。原持股者如增購或獲配新股，需另計個人部位。

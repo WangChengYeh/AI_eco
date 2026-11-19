@@ -33,7 +33,7 @@ Optimus與Robotaxi按批次、投運與退役計算；FSD以期初付費車數�
 
 ## 4．HTML 輸出與交付
 
-Pipeline從固定模板與同一份Python結果生成`index.html`及`docs/index.html`，不讀取舊HTML作模板。同步產生`calculator/forecast_summary.md`及使用者假設查核報告。
+Pipeline從固定模板與同一份Python結果生成`index.html`及`docs/index.html`，不讀取舊HTML作模板。同步產生`calculator/forecast_summary.md`、使用者假設查核及`research/share_dilution_2026-11-20.md`逐年股數報告。
 
 每次完成更新，先在本文件的「更新日誌」最上方新增一筆，記錄日期（台北時間）、修改原因、理論／數據／forecast／HTML的改動、驗證結果及相關報告或Git版本。純文件調整可註明不影響計算；未完成的查核或發布應明列待辦，不能寫成已完成。保留舊紀錄，不以新內容覆蓋歷史。
 
@@ -45,6 +45,15 @@ Pipeline從固定模板與同一份Python結果生成`index.html`及`docs/index.
 ## 更新日誌
 
 按日期由新到舊排列；同日新紀錄置頂。此處記錄變更摘要，完整差異以[本檔Git歷史](https://github.com/WangChengYeh/AI_eco/commits/main/SOP.md)及所連結的commit為準。
+
+### 2026-11-20｜新增Tesla與SpaceX逐年股數及稀釋報告
+
+- 原因：使用者要求估算SpaceX每年股數與稀釋、放進report，並追加Tesla一併比較。
+- 理論／數據：沿用既有股數錨點、資源支付與員工增發假設，區分固定持股比例、普通股數量及投票權。本輪純計算報告展示，未新增外部事實或變更營運、價格及融資輸入。
+- Forecast：由相同Python結果拆分年初、員工／現金募資／資源新股、回購、年底股數、當年與累計稀釋。2031原持股保留Tesla95.15%、SpaceX22.21%；資源協議價保持獨立於同年估值，不自行重設發股價。
+- HTML／report：新增兩公司逐年股數表、來源與解讀限制；完整報告與主預測摘要自動生成，星艦報告交叉連結。
+- 驗證：122項既有測試通過，三組各685項公式勾稽；額外核對報表股數與Python合計一致、兩HTML入口一致。公司與分部預測數值不變。Pages發布與公開頁面驗證以後續Actions及本輪交付訊息確認。
+- 報告：[Tesla／SpaceX逐年股數與持股稀釋](research/share_dilution_2026-11-20.md)。
 
 ### 2026-11-20｜按每架頻率乘啟用時間，取消場址封頂
 

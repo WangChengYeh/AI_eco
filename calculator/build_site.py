@@ -81,13 +81,91 @@ def orbital_audit(config, result):
     return rows
 
 
+def share_dilution_audit(result):
+    """Follow a fixed opening holding, adjusted only for stock splits."""
+    config=result['resolved_assumptions']
+    base=config['years'][0]
+    rows=[]
+    for cid, annual in result['companies'].items():
+        spec=config['companies'][cid]
+        previous=initial_block=spec['opening_shares']
+        for row in annual:
+            year=row['year']
+            def p(key,default=0):return parameter(spec.get(key,default),year,base)
+            split=p('stock_split',1)
+            opening=previous*split
+            initial_block*=split
+            sbc=opening*p('sbc_dilution_rate')
+            retired=p('buybacks_usd')/p('buyback_price_usd') if p('buybacks_usd') else 0
+            gross=sbc+row['cash_equity_shares_issued']+row['resource_shares_issued']
+            retained=initial_block/row['shares']
+            rows.append(dict(company_id=cid,company=spec['name'],year=year,
+                opening_shares=opening,sbc_shares=sbc,
+                cash_equity_shares=row['cash_equity_shares_issued'],
+                resource_shares=row['resource_shares_issued'],gross_new_shares=gross,
+                buyback_shares=retired,net_new_shares=gross-retired,
+                closing_shares=row['shares'],annual_dilution=1-opening/row['shares'],
+                original_holding_retained=retained,cumulative_dilution=1-retained,
+                stock_payment_usd=row['stock_payment_usd'],
+                resource_price_usd=row['stock_payment_price_usd']))
+            previous=row['shares']
+    return rows
+
+
+def dilution_report(result):
+    config=result['resolved_assumptions']
+    rows=share_dilution_audit(result)
+    sx_price=parameter(config['companies']['spacex']['stock_payment']['reference_price_usd'],config['years'][0],config['years'][0])
+    lines=['# Tesla／SpaceX：逐年股數與持股稀釋', '',
+        '更新日：'+config['metadata']['as_of']+'（台北）。本報告由主預測Python結果自動生成；修改輸入後執行run_pipeline即可同步更新。不是公司已宣布增發計畫或股價預測。', '',
+        '## 結論與比較', '',
+        '股數為億股。保留比例以期初持股不買賣、未獲配新增股份的持有人衡量；例如原本持有1%，將剩下表列「保留比例」乘1%。不是直接把保留比例當成該人的公司持股百分比。', '',
+        '| 年 | Tesla年底股數 | Tesla原持股保留 | SpaceX年底股數 | SpaceX原持股保留 |',
+        '|---|---:|---:|---:|---:|']
+    for year in config['years']:
+        t=next(x for x in rows if x['company_id']=='tesla' and x['year']==year)
+        x=next(x for x in rows if x['company_id']=='spacex' and x['year']==year)
+        lines.append(f"| {year} | {t['closing_shares']/1e8:,.2f} | {t['original_holding_retained']:.2%} | {x['closing_shares']/1e8:,.2f} | {x['original_holding_retained']:.2%} |")
+    for cid,spec in config['companies'].items():
+        company_rows=[x for x in rows if x['company_id']==cid]
+        final=company_rows[-1]
+        rate=parameter(spec.get('sbc_dilution_rate',0),config['years'][0],config['years'][0])
+        price=parameter(spec['stock_payment']['reference_price_usd'],config['years'][0],config['years'][0])
+        lines+=['', '## '+spec['name'], '',
+            f"期初普通股{spec['opening_shares']/1e8:,.4f}億股；員工／其他股權增發率在模型中為每年{rate:.1%}。資源支付每股基準協議價{price:g}美元，另依折價及年度設定處理；不是市場成交價。", '',
+            '股數為億股；「本年新增」＝員工股權＋現金募資＋資源支付；年底股數另扣回購。', '',
+            '| 年 | 年初股數 | 員工股權新增 | 資源支付新增 | 本年新增合計 | 年底股數 | 當年稀釋 | 累計稀釋 |',
+            '|---|---:|---:|---:|---:|---:|---:|---:|---:|']
+        for x in company_rows:
+            vals=[f"{x[k]/1e8:,.2f}" for k in ('opening_shares','sbc_shares','resource_shares','gross_new_shares','closing_shares')]
+            lines.append('| '+str(x['year'])+' | '+' | '.join(vals)+f" | {x['annual_dilution']:.2%} | {x['cumulative_dilution']:.2%} |")
+        lines+=['',f"到{final['year']}年底，期初固定持股的比例保留{final['original_holding_retained']:.2%}，累計稀釋{final['cumulative_dilution']:.2%}；原持有公司1%者，在不增減持股的條件下剩{final['original_holding_retained']:.4f}%。", '',
+            '股票直接支付資源，單位十億美元；沒有把它當作現金募資收入。', '',
+            '| 年 | 股票資源對價 | 本年資源新股（億股） | 協議價美元／股 |',
+            '|---|---:|---:|---:|']
+        for x in company_rows:
+            px=f"{x['resource_price_usd']:,.2f}" if x['resource_price_usd'] else '—（未發行）'
+            lines.append(f"| {x['year']} | {x['stock_payment_usd']/1e9:,.2f} | {x['resource_shares']/1e8:,.2f} | {px} |")
+    lines+=['', '## 公式、來源與解讀限制', '',
+        '- 年底股數＝拆股調整後年初股數＋員工股權新增＋現金募資新股＋資源支付新股−回購註銷。拆股不改變所有權比例。',
+        '- 資源支付新股＝本年股票支付資源價值÷實際模型協議價；當年稀釋＝1−拆股調整後年初股數÷年底股數。累計稀釋＝1−拆股調整後期初固定持股÷年底股數；每年稀釋率不能直接相加。',
+        '- 本輪兩公司均未設定現金募資、回購或拆股。Tesla雖有部分年度經濟FCF為負，仍可動用模型期初流動資金，沒有觸發額外資源新股，因此主要為每年1%員工股權增發；不代表真實世界沒有融資需要。',
+        f'- SpaceX大量太空與地面設備投入產生資金缺口；直接股票支付假設使股數快速增加。供應商接受度、可交換資源範圍與每股{sx_price:g}美元基準協議價均為情境輸入，不是已簽約或能無限發股的證據。',
+        '- 資源協議價保持獨立於同年度P/E及SOTP估值；公司估值上升不會自動提高發股價格。若以更高協議價換取相同資源，所需新股會減少；本輪沒有自行改價，也沒有以同年稀釋後估值回填發股價。',
+        '- 所有權稀釋不等於持有資產價值必然同幅減少，還須檢查取得資源的收益、投入、負債及每股價值。此表為普通股數量口徑，未分A／B類投票權，也不是加權平均EPS股數、自由流通股或各類潛在權益工具完整fully-diluted口徑。',
+        '- 期初股數取2026-10-15申報錨點，假設至2026年底淨變動為0；[Tesla 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)、[SpaceX 10-Q](https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm)。本輪未新增外部事實或營運假設；來源分類見[reference_facts](../calculator/configs/reference_facts.json)，實際輸入見[current.json](../calculator/configs/current.json)。',
+        '- 理論001的股份資源支付仍保留完整經濟成本；來源與假設查核見[使用者假設報告](user_assumption_review_2026-11-19.md)，產能與投入見[星艦報告](starship_launch_capacity_2026-11-20.md)。', '',
+        '此報告、年度比較及網頁由同一份主預測結果生成；財務及股數公式由run_pipeline勾稽。', '']
+    return '\n'.join(lines)
+
+
 def payload(config,research,result):
     evidence=[dict(title=r['title'],verdict=r['verdict_label'],finding=r['finding'],limits=r['limits'],musk=r['musk_search']) for r in research['claims']]
     segment_keys={'year','company_id','segment','segment_name','revenue_usd','operating_profit_usd','capex_usd','drivers'}
     anchors=[dict(company=co['name'],shares=co['opening_shares'],liquid_funds_usd=co['opening_cash_usd'],debt_usd=co['opening_debt_usd']) for co in config['companies'].values()]
     return [dict(scenario='base',evidence=evidence,assumptions=assumptions(config),companies=result['companies'],
         segments=[{k:v for k,v in row.items() if k in segment_keys} for row in result['segments']],
-        opening_anchors=anchors,orbital_audit=orbital_audit(config,result),
+        opening_anchors=anchors,orbital_audit=orbital_audit(config,result),share_dilution=share_dilution_audit(result),
         model_notice='條件式預測：部分期初財務值採2026Q3／10月申報錨點，假設至2026年底淨變動為0；其餘營運、估值與股票支付仍待驗證。星艦為逐架技術容量情境，未依場址許可封頂，不代表已取得可執行任務額度。')]
 
 
@@ -108,7 +186,9 @@ def build():
     result=forecast(config)
     document=render_document(config,research,result)
     for entry in ('index.html','docs/index.html'):(ROOT/entry).write_text(document,encoding='utf-8')
-    (ROOT/'calculator/forecast_summary.md').write_text(summary_markdown([result]),encoding='utf-8')
+    share_report=dilution_report(result)
+    (ROOT/'research/share_dilution_2026-11-20.md').write_text(share_report,encoding='utf-8')
+    (ROOT/'calculator/forecast_summary.md').write_text(summary_markdown([result])+'\n\n## 股數與稀釋\n\n'+share_report.split('## 結論與比較\n\n',1)[1].split('\n## Tesla',1)[0]+'\n\n[逐年增發、資源對價與累計稀釋](../research/share_dilution_2026-11-20.md)。\n',encoding='utf-8')
     (ROOT/'research/user_assumption_review_2026-11-19.md').write_text(report_markdown(research),encoding='utf-8')
     print('Built both Pages entrypoints, summary and research report from one config and stable templates.')
     return result

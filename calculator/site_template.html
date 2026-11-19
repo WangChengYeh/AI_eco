@@ -1841,6 +1841,11 @@ html>body{padding:0}</style>
     <summary>股票交換資源與稀釋</summary>
     <table class="table table-sm"><tbody id="ts-equity-payment"></tbody></table>
   </details>
+  <details id="ts-share-audit" open><summary>Tesla／SpaceX：逐年股數與累計稀釋</summary>
+  <div class="text-small">股數單位億股。「原持股保留」以期初持股不買賣、未獲配新股者衡量；原持有1%者，持股比例＝1%×保留比例。每年稀釋不能直接相加。普通股數量口徑，不代表A／B類投票權。</div>
+  <div class="table-responsive"><table class="table table-sm"><thead><tr><th>公司</th><th>年</th><th>員工股權新增</th><th>資源支付新增</th><th>本年新增合計</th><th>年底股數</th><th>原持股保留</th><th>累計稀釋</th></tr></thead><tbody id="ts-share-annual"></tbody></table></div>
+  <div class="text-small">資源協議價與同年估值分開；協議價、員工增發率與接受度以主預測輸入及完整報告為準，仍屬模型假設。股權支付仍有成本與稀釋。<a href="https://github.com/WangChengYeh/AI_eco/blob/main/research/share_dilution_2026-11-20.md" target="_blank" rel="noopener">完整股數及稀釋報告</a></div>
+  </details>
   <div id="ts-charts">
     <section><h3>年度營收與淨利</h3><div class="ts-legend" id="ts-legend-profit"></div><div class="ts-plot" id="ts-profit"></div></section>
     <section><h3>主預測每股估值</h3><div class="ts-legend" id="ts-legend-price"></div><div class="ts-plot" id="ts-valuation"></div></section>
@@ -1896,6 +1901,7 @@ auditTable('ts-orbit-capacity',data[0].orbital_audit.map(r=>[r.year,...[r.manufa
 auditTable('ts-fsd-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='fsd').map(r=>[r.year,...['opening_subscribers','new_subscribers','closing_subscribers','average_subscribers'].map(k=>fmt(r.drivers[k],10000)),fmt(r.drivers.monthly_price_usd),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 auditTable('ts-ground-annual',data[0].segments.filter(r=>r.company_id==='spacex'&&r.segment==='ground_compute').map(r=>[r.year,...['opening_it_mw','commissioned_new_it_mw','year_end_it_mw','average_it_mw','replacement_hardware_mw'].map(k=>fmt(r.drivers[k],1000)),fmt(r.capex_usd,1e9),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 auditTable('ts-optimus-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='optimus_owned').map(r=>[r.year,fmt(r.drivers.production_units,10000),fmt(r.drivers.average_rented_robots,10000),fmt(r.drivers.monthly_rent_usd*12),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
+auditTable('ts-share-annual',data[0].share_dilution.map(r=>[r.company,r.year,fmt(r.sbc_shares,1e8),fmt(r.resource_shares,1e8),fmt(r.gross_new_shares,1e8),fmt(r.closing_shares,1e8),fmt(r.original_holding_retained*100)+'%',fmt(r.cumulative_dilution*100)+'%']));
 const seriesColors=['var(--viz-series-1)','var(--viz-series-2)'];
 let rows=[],selectedData=null;
 year.innerHTML=data[0].companies.tesla.map(r=>'<option>'+r.year+'</option>').join('');
