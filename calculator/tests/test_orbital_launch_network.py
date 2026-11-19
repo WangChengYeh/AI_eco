@@ -32,6 +32,8 @@ class LaunchNetwork(unittest.TestCase):
     def test_zero_ai_allocation_prevents_output_but_preserves_paid_inventory(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
         o=c['companies']['spacex']['segments']['orbital_compute']
+        o.pop('manufacture_to_launch_capacity',None)
+        o['manufactured_it_mw']={'value':3000,'annual':{'2027':1000}}
         o['launch_network']['ai_flight_share']=0
         rows=[s for s in m.forecast(c)['segments'] if s['segment']=='orbital_compute']
         self.assertEqual(rows[0]['revenue_usd'],0)
@@ -90,3 +92,28 @@ class LaunchNetwork(unittest.TestCase):
         n=self.network()
         n['capacity_upgrade']={'year':2027,'month':13,'net_it_mw_per_flight':15}
         with self.assertRaises(m.ModelError):m.orbital_launch_capacity(n,2027,2027)
+
+    def test_unconstrained_manufacturing_matches_flights_and_keeps_full_capex(self):
+        c=json.loads((ROOT/'configs/current.json').read_text())
+        spec=c['companies']['spacex']['segments']['orbital_compute']
+        rows=[s for s in m.forecast(c)['segments'] if s['segment']=='orbital_compute']
+        for row in rows:
+            d=row['drivers']
+            self.assertAlmostEqual(d['manufactured_it_mw'],d['commissioned_new_it_mw'])
+            self.assertAlmostEqual(d['closing_inventory_mw'],0)
+            expected=d['manufactured_it_mw']*spec['hardware_cost_usd_per_mw']+d['deployment_attempted_mw']*spec['deployment_cost_usd_per_mw']
+            self.assertAlmostEqual(row['capex_usd'],expected,delta=.1)
+        self.assertEqual(rows[-1]['drivers']['commissioned_new_it_mw'],16425)
+        self.assertEqual(rows[-1]['drivers']['year_end_it_mw'],30480)
+
+    def test_no_ai_slots_means_no_unnecessary_matched_manufacture(self):
+        c=json.loads((ROOT/'configs/current.json').read_text())
+        c['companies']['spacex']['segments']['orbital_compute']['launch_network']['ai_flight_share']=0
+        rows=[s for s in m.forecast(c)['segments'] if s['segment']=='orbital_compute']
+        self.assertEqual(rows[0]['drivers']['manufactured_it_mw'],0)
+        self.assertEqual(rows[0]['capex_usd'],0)
+
+    def test_fixed_and_unconstrained_manufacturing_inputs_conflict(self):
+        c=json.loads((ROOT/'configs/current.json').read_text())
+        c['companies']['spacex']['segments']['orbital_compute']['manufactured_it_mw']=3000
+        with self.assertRaisesRegex(m.ModelError,'no manufactured_it_mw'):m.forecast(c)

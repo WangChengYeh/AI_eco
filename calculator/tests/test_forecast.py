@@ -404,7 +404,7 @@ class StockResourceExchange(unittest.TestCase):
                     self.assertEqual(r["resource_shares_issued"], 0)
                 else:
                     self.assertGreater(r["resource_shares_issued"], 0)
-        self.assertGreater(result["companies"]["spacex"][1]["resource_shares_issued"], 0)
+        self.assertGreater(sum(r["resource_shares_issued"] for r in result["companies"]["spacex"]), 0)
 
 
 class OrbitalRamp(unittest.TestCase):

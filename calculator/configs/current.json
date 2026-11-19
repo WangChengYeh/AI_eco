@@ -19,18 +19,16 @@
       "optimus_annual_rent_usd": 30000,
       "fsd_incremental_monthly_cost_usd": 0,
       "fsd_paid_subscribers_end2026": 5000000,
-      "orbital_mw_per_launch_from_mid2027": 15
+      "orbital_mw_per_launch_from_mid2027": 15,
+      "orbital_manufacturing_unconstrained": true
     },
     "additional_assumptions": {
-      "orbital_manufactured_2027_mw": 1000,
-      "orbital_manufactured_2028_mw": 3000,
       "commissioning_start_month_2027": 10,
       "hardware_usd_per_mw": 20000000,
       "launch_and_deployment_usd_per_mw": 5000000,
       "external_share": 0.8,
       "external_utilization": 0.75,
       "price_usd_per_billable_mw_hour": 3500,
-      "post_2028_orbital_new_it_mw_per_year": 3000,
       "stock_payment_tesla_reference_usd": 250,
       "stock_payment_spacex_reference_usd": 100,
       "stock_payment_acceptance_ratio": 1,
@@ -622,12 +620,6 @@
           "opening_it_mw": 0,
           "opening_inventory_mw": 0,
           "opening_net_book_value_usd": 0,
-          "manufactured_it_mw": {
-            "value": 3000,
-            "annual": {
-              "2027": 1000
-            }
-          },
           "commissioning_yield": 1,
           "commissioning_start_month": {
             "value": 1,
@@ -658,7 +650,7 @@
           "capex_usd": 0,
           "ev_sales_multiple": 4,
           "volume_unit": "billable MW-hour",
-          "notes": "2027製造1GW、2028起每年製造3GW為模型假設；依逐月庫存、實際製造與星艦發射網路決定投運，取消固定3GW部署上限。Musk指引是機隊整體頻率，不逐塔相乘。2027依較新每週1到2發說法錨定；2028朝機隊每日一發為推估，2029起每年倍增是延伸假設。新增場址、許可擴容及單塔周轉為條件式假設；未部署硬體留庫存不產生營收。",
+          "notes": "使用者假設衛星製造不構成限制；按每月AI發射槽及既有庫存備貨，不設年度1/3GW製造天花板，仍支付完整硬體與部署capex。2027從10月起投運，7月起每次淨15MW；發射頻率、場址啟用及許可假設不變；投運後四年退役。無製造瓶頸不是公司已實現能力。",
           "service_life_years": 4,
           "depreciation_life_years": 4,
           "launch_network": {
@@ -852,7 +844,8 @@
               "month": 7,
               "net_it_mw_per_flight": 15
             }
-          }
+          },
+          "manufacture_to_launch_capacity": true
         },
         "grok_subscriptions": {
           "name": "Grok 消費者與企業訂閱",

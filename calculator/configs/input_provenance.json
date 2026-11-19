@@ -453,6 +453,16 @@
       "fact_ids": [],
       "checked_at": "2026-11-20",
       "research_claim_id": "orbital_15mw_mid2027"
+    },
+    {
+      "input_path": "companies.spacex.segments.orbital_compute.manufacture_to_launch_capacity",
+      "value": true,
+      "unit": "boolean",
+      "classification": "user_assumption",
+      "basis": "使用者指定沒有衛星製造限制；以足量月度備貨滿足AI發射能力實作，不消除硬體製造與部署支出。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20",
+      "research_claim_id": "orbital_manufacturing_unconstrained"
     }
   ]
 }

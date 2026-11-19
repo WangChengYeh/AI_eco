@@ -58,11 +58,9 @@ python calculator/forecast.py --scenario base \
   --set merger.target_exchange_ratio=0.3 \
   --out forecast_output/combined
 
-# 修正同一分析的 2027 年太空算力製造量為 500 MW
-# 發射部署容量亦須一起調整
+# 修正同一分析的升級後每次淨部署容量為12MW
 python calculator/forecast.py --scenario base \
-  --set 'companies.spacex.segments.orbital_compute.manufactured_it_mw.annual={"2027":500}' \
-  --set 'companies.spacex.segments.orbital_compute.deployment_limit_mw.annual={"2027":500}' \
+  --set companies.spacex.segments.orbital_compute.launch_network.capacity_upgrade.net_it_mw_per_flight=12 \
   --out forecast_output/orbital_experiment
 ```
 
@@ -103,7 +101,7 @@ python calculator/forecast.py --scenario base \
 `current.json` 同時保留 Optimus 的既有修正，並將太空算力由原本未商轉的示例改為 `orbital_compute`。不是獨立的新分析，也不把量產時程視為公司已驗證進度。
 
 - 使用者指定：2027 年底大量量產。
-- 額外規模示例：2027年製造1,000MW，10月起按月供貨，年度部署上限1,000MW；2028起每年製造3,000MW、部署上限3,000MW。實際投運另受星艦逐月發射槽限制，並非製造即上軌。投運成功率100%仍是假設。這些數量、月份、成功率均可修改，不是使用者已指定的數字。
+- 使用者最新假設：衛星製造不構成限制；按月度AI發射能力先用庫存、再足量備貨，取消固定1GW／3GW製造及部署上限。2027從10月起投運，成功率100%仍是假設。供應充足為使用者指定；10月投運與成功率仍是模型補充假設，可依資料修改。
 - 沒有退役時，全年平均可用 MW＝期初已投運 MW＋當年新投運 MW × `(13－部署起始月份) / 24`；有退役時按各月投運批次的實際服務期間積分。
 - 主預測加入發射網路後，2027年底在軌0.195GW、平均0.023125GW；2028年底1.950GW、平均0.904375GW。原先無發射限制的1GW／4GW已不適用。
 - 已製造但受 `deployment_limit_mw` 限制而未部署的設備留作庫存，不產生服務收入；次年可繼續部署。
@@ -112,7 +110,7 @@ python calculator/forecast.py --scenario base \
 - 示範單位成本為硬體／衛星／發電／散熱／通訊 2,000 萬美元／MW，發射部署 500 萬美元／MW；4 年服務與折舊壽命是模型補充假設。按月度投運批次追蹤原始成本、折舊與退役，庫存採先進先出成本，未投運不折舊。失敗部署費用及設備成本當年認列損失。
 - 對外服務份額 80%、自用 20%，地面算力不因太空量產而自動減少；不再額外把自用算力算成模型銷售收入。
 
-目前預測期為2027–2031。Optimus全年產量依使用者最新假設為100萬、500萬、1,000萬台；2030–2031暫維持每年1,000萬台。季度分配為模型補充假設，另保留5年壽命及到期付費替換機制。太空設備 4 年後退役；製造量不等於新部署量；發射槽同時負擔退役替換與擴張，本輪2031年底在軌12.805GW，地面未部署庫存0GW。壽命與替換規則需隨新資料更新。
+目前預測期為2027–2031。Optimus全年產量依使用者最新假設為100萬、500萬、1,000萬台；2030–2031暫維持每年1,000萬台。季度分配為模型補充假設，另保留5年壽命及到期付費替換機制。太空設備 4 年後退役；製造量不等於新部署量；發射槽同時負擔退役替換與擴張，本輪2031年底在軌30.480GW，地面未部署庫存0GW。壽命與替換規則需隨新資料更新。
 
 ### Optimus年度產量：100萬 → 500萬 → 1,000萬台
 
@@ -363,6 +361,8 @@ FSD訂閱修訂（2026-11-19）：移除無實證的每戶每月20美元服務�
 
 原始不帶`launch_network`的示例維持簡化模型；主預測啟用此約束並要求資產批次帳。硬體capex、地面庫存、在軌折舊與四年退役分開。工程資訊不能當已獲營運許可；精確啟用月份、機隊年度起終點頻率、單台周轉、條件式許可擴容、AI占50%與有效裝載80%均可修改，且仍未實證校準。完整來源、會計限制與重算表見[星艦部署查核](../research/starship_launch_capacity_2026-11-20.md)。
 
-`launch_network.fleet_rate_start`與`fleet_rate_end`必須成對設定，表示當年年初／年底全機隊年化頻率，按月中點線性爬坡，再受各場址實體能力與條件式許可曲線限制。這是全機隊目標，不能對每台重複套用。未設定時保留僅按場址計算的簡化模式。`deployment_limit_mw`目前已從主預測移除；衛星製造、月度庫存及發射能力仍限制部署，沒有無限容量。
+`launch_network.fleet_rate_start`與`fleet_rate_end`必須成對設定，表示當年年初／年底全機隊年化頻率，按月中點線性爬坡，再受各場址實體能力與條件式許可曲線限制。這是全機隊目標，不能對每台重複套用。未設定時保留僅按場址計算的簡化模式。`deployment_limit_mw`目前已從主預測移除；主預測衛星製造不設供應瓶頸，按月度AI發射能力備貨；發射能力及啟用時程仍限制投運，沒有無限容量。
 
 `launch_network.capacity_upgrade={year:2027,month:7,net_it_mw_per_flight:15}`指定淨部署容量切換，切換前仍用載重×功率重量比×有效率，切換後直接用15MW，不再重複折減。月、年必須整數；各月容量用在當月發射槽，不能把年底單次容量回填全年。此為使用者假設，不是SpaceX已驗證性能或上市時程。
+
+`orbital_compute.manufacture_to_launch_capacity=true`表示供應充足，按當月AI發射容量先用庫存、再製造差額；必須搭配`launch_network`且不能同時填`manufactured_it_mw`。此模式移除衛星製造上限但保留完整製造與部署capex，投運起始月份、收益利用率、折舊、退役與融資稀釋不變。未使用AI發射槽時不無端製造庫存；固定製造模式仍供歷史示例使用。

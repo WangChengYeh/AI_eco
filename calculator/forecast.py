@@ -131,7 +131,7 @@ KIND_FIELDS["orbital_compute"] = (KIND_FIELDS["compute"] - {
     "opening_it_mw", "opening_inventory_mw", "opening_net_book_value_usd",
     "manufactured_it_mw", "deployment_limit_mw", "commissioning_yield",
     "commissioning_start_month", "hardware_cost_usd_per_mw",
-    "deployment_cost_usd_per_mw", "asset_life_years", "launch_network",
+    "deployment_cost_usd_per_mw", "asset_life_years", "launch_network", "manufacture_to_launch_capacity",
 }
 for _kind in ("robot_fleet", "robotaxi", "orbital_compute"):
     KIND_FIELDS[_kind] |= {"service_life_years", "depreciation_life_years"}
@@ -469,6 +469,11 @@ def segment_forecast(segment, year, base_year, state):
             if kind == "orbital_compute":
                 opening = state.setdefault("commissioned_mw", p("opening_it_mw"))
                 inventory = state.setdefault("inventory_mw", p("opening_inventory_mw"))
+                matched_manufacture = segment.get("manufacture_to_launch_capacity", False)
+                if not isinstance(matched_manufacture, bool):
+                    raise ModelError("manufacture_to_launch_capacity must be boolean")
+                if matched_manufacture and ("manufactured_it_mw" in segment or "launch_network" not in segment):
+                    raise ModelError("launch-matched manufacture requires launch_network and no manufactured_it_mw")
                 produced = p("manufactured_it_mw")
                 deployment = min(inventory + produced, p("deployment_limit_mw", inventory + produced))
                 launch_drivers = {}
@@ -484,10 +489,18 @@ def segment_forecast(segment, year, base_year, state):
                     # Manufacture across the configured months; do not carry a
                     # missed launch slot forward or deploy inventory before it exists.
                     available_inventory = inventory
-                    remaining_limit = p("deployment_limit_mw", inventory + produced)
+                    remaining_limit = p("deployment_limit_mw", sum(launch_drivers["monthly_launch_capacity_mw"]) if matched_manufacture else inventory + produced)
                     deployed_monthly = []
+                    manufactured_monthly = []
                     for m in range(1, 13):
-                        available_inventory += produced / (13 - month) if m >= month else 0
+                        if matched_manufacture:
+                            target = min(remaining_limit, launch_drivers["monthly_launch_capacity_mw"][m - 1]) if m >= month else 0
+                            new_hardware = max(target - available_inventory, 0)
+                            produced += new_hardware
+                        else:
+                            new_hardware = produced / (13 - month) if m >= month else 0
+                        available_inventory += new_hardware
+                        manufactured_monthly.append(new_hardware)
                         deployed = (min(available_inventory, remaining_limit,
                                         launch_drivers["monthly_launch_capacity_mw"][m - 1]) if m >= month else 0)
                         deployed_monthly.append(deployed)
@@ -496,6 +509,8 @@ def segment_forecast(segment, year, base_year, state):
                     deployment = sum(deployed_monthly)
                     commissioned = deployment * p("commissioning_yield", 1, 0, 1)
                     launch_drivers["deployed_monthly_mw"] = deployed_monthly
+                    launch_drivers["manufactured_monthly_mw"] = manufactured_monthly
+                    launch_drivers["manufacture_to_launch_capacity"] = matched_manufacture
                 closing = opening + commissioned
                 # New capacity ramps linearly from zero across the remaining months.
                 # October start -> 3/12 of a year x 1/2 average of new end-year MW.
