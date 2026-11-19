@@ -238,7 +238,6 @@ def orbital_launch_capacity(network, year, base_year):
         per_flight_monthly = [net_mw if (year, month) >= (uy, um) else mw_per_flight
                               for month in range(1, 13)]
     ai_share = p("ai_flight_share", 1, 0, 1)
-    monthly_mw = [0.0] * 12
     monthly_site_slots = [0] * 12
     site_details, ids = [], set()
     for site in network["sites"]:
@@ -246,32 +245,51 @@ def orbital_launch_capacity(network, year, base_year):
             raise ModelError("invalid/duplicate launch site")
         ids.add(site["id"])
         limit = parameter(site["annual_site_limit"], year, base_year, "annual_site_limit")
-        total, ai, cumulative = 0, 0, 0.0
-        active_pad_months = 0
-        for month in range(1, 13):
-            rate = 0.0
-            for pad in site["pads"]:
-                if set(pad) - {"id", "online_year", "online_month", "flights_per_year", "planned_pads", "notes"}:
-                    raise ModelError("unknown launch pad field")
-                online_year = number(pad["online_year"], "online_year", base_year - 100)
-                online_month = number(pad["online_month"], "online_month", 1, 12)
-                if not online_year.is_integer() or not online_month.is_integer():
-                    raise ModelError("launch pad activation must use integer year/month")
-                if (year, month) >= (online_year, online_month):
-                    active_pad_months += 1
-                    rate += parameter(pad["flights_per_year"], year, base_year, "flights_per_year")
-            cumulative += min(rate, limit) / 12
-            flights = math.floor(cumulative + 1e-9)
-            ai_flights = math.floor(flights * ai_share + 1e-9)
-            monthly_site_slots[month - 1] += flights - total
-            monthly_mw[month - 1] += (ai_flights - ai) * per_flight_monthly[month - 1]
-            total, ai = flights, ai_flights
-        site_details.append({"site": site["id"], "available_flights": total,
-                             "ai_flights": ai, "active_pad_months": active_pad_months,
-                             "limit_status": site.get("limit_status", "model_assumption")})
+        pad_details, pad_ids = [], set()
+        for pad in site["pads"]:
+            if set(pad) - {"id", "online_year", "online_month", "flights_per_year", "flights_per_year_start", "flights_per_year_end", "planned_pads", "notes"}:
+                raise ModelError("unknown launch pad field")
+            if pad["id"] in pad_ids: raise ModelError("duplicate launch pad")
+            pad_ids.add(pad["id"])
+            oy=number(pad["online_year"], "online_year", base_year-100)
+            om=number(pad["online_month"], "online_month", 1, 12)
+            if not oy.is_integer() or not om.is_integer():
+                raise ModelError("launch pad activation must use integer year/month")
+            ramp_keys={"flights_per_year_start","flights_per_year_end"}
+            if ramp_keys & set(pad):
+                if not ramp_keys <= set(pad) or "flights_per_year" in pad:
+                    raise ModelError("pad ramp requires paired start/end and no constant rate")
+                start=parameter(pad["flights_per_year_start"],year,base_year,"pad_rate_start")
+                end=parameter(pad["flights_per_year_end"],year,base_year,"pad_rate_end")
+            else:
+                start=end=parameter(pad["flights_per_year"],year,base_year,"flights_per_year")
+            monthly=[(start+(end-start)*(m-.5)/12)/12 if (year,m)>=(oy,om) else 0.0 for m in range(1,13)]
+            pad_details.append({"pad":pad["id"],"online_year":int(oy),"online_month":int(om),
+                "rate_start":start,"rate_end":end,"active_months":sum((year,m)>=(oy,om) for m in range(1,13)),
+                "raw_monthly_flights":monthly,"raw_annual_flights":sum(monthly)})
+        raw_monthly=[sum(p["raw_monthly_flights"][i] for p in pad_details) for i in range(12)]
+        monthly, cumulative, previous = [], 0.0, 0
+        for i, raw in enumerate(raw_monthly):
+            # Shared site envelope is a monthly-prorated planning rate; unused
+            # earlier capacity is not banked as extra later-month throughput.
+            cumulative+=min(raw,limit/12)
+            total=math.floor(cumulative+1e-9)
+            monthly.append(total-previous)
+            monthly_site_slots[i]+=total-previous
+            previous=total
+        site_details.append({"site":site["id"],"available_flights":previous,
+            "raw_annual_flights":sum(raw_monthly),"raw_monthly_flights":raw_monthly,
+            "monthly_available_flights":monthly,"annual_site_limit":limit,"pads":pad_details,
+            "active_pad_months":sum(p["active_months"] for p in pad_details),
+            "limit_status":site.get("limit_status","model_assumption")})
     infrastructure_slots = sum(x["available_flights"] for x in site_details)
     available = infrastructure_slots
-    allocated = sum(x["ai_flights"] for x in site_details)
+    cumulative, allocated, monthly_mw = 0, 0, []
+    for i, slots in enumerate(monthly_site_slots):
+        cumulative+=slots
+        ai=math.floor(cumulative*ai_share+1e-9)
+        monthly_mw.append((ai-allocated)*per_flight_monthly[i])
+        allocated=ai
     fleet_drivers = {}
     if "fleet_rate_start" in network or "fleet_rate_end" in network:
         if not {"fleet_rate_start", "fleet_rate_end"} <= set(network):
@@ -289,7 +307,9 @@ def orbital_launch_capacity(network, year, base_year):
             available, allocated = flights, ai
         fleet_drivers = {"fleet_rate_start": start, "fleet_rate_end": end}
     return {"infrastructure_site_slots": infrastructure_slots,
-            "site_detail_scope": "potential slots before fleet-wide ramp",
+            "site_detail_scope": "per-pad capacity after shared site limits; optional legacy fleet cap applied only when configured",
+            "raw_pad_capacity_flights":sum(x["raw_annual_flights"] for x in site_details),
+            "monthly_available_starship_flights":monthly_site_slots,
             **fleet_drivers, "monthly_launch_capacity_mw": monthly_mw,
             "mw_per_ai_flight": per_flight_monthly[-1],
             "mw_per_ai_flight_start": per_flight_monthly[0],

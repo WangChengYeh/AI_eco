@@ -51,12 +51,12 @@ class LaunchNetwork(unittest.TestCase):
             for used,cap in zip(d['deployed_monthly_mw'],d['monthly_launch_capacity_mw']):
                 self.assertLessEqual(used,cap+1e-8)
         self.assertEqual(rows[0]['drivers']['deployed_monthly_mw'][:9],[0]*9)
-        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],3495)
+        self.assertEqual(rows[1]['drivers']['year_end_it_mw'],7455)
 
     def test_uncommissioned_inventory_does_not_retire_as_operating_assets(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
         rows=[s for s in m.forecast(c)['segments'] if s['segment']=='orbital_compute']
-        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],345)
+        self.assertEqual(rows[-1]['drivers']['retired_it_mw'],480)
 
     def test_invalid_ai_share_is_rejected(self):
         n=self.network();n['ai_flight_share']=1.1
@@ -103,8 +103,8 @@ class LaunchNetwork(unittest.TestCase):
             self.assertAlmostEqual(d['closing_inventory_mw'],0)
             expected=d['manufactured_it_mw']*spec['hardware_cost_usd_per_mw']+d['deployment_attempted_mw']*spec['deployment_cost_usd_per_mw']
             self.assertAlmostEqual(row['capex_usd'],expected,delta=.1)
-        self.assertEqual(rows[-1]['drivers']['commissioned_new_it_mw'],29565)
-        self.assertEqual(rows[-1]['drivers']['year_end_it_mw'],54870)
+        self.assertEqual(rows[-1]['drivers']['commissioned_new_it_mw'],65280)
+        self.assertEqual(rows[-1]['drivers']['year_end_it_mw'],126435)
 
     def test_no_ai_slots_means_no_unnecessary_matched_manufacture(self):
         c=json.loads((ROOT/'configs/current.json').read_text())
@@ -135,3 +135,38 @@ class LaunchNetwork(unittest.TestCase):
         self.assertEqual(ai90[0]['drivers']['deployed_monthly_mw'][:9],[0]*9)
         self.assertEqual(ninety['companies']['tesla'],fifty['companies']['tesla'])
         self.assertGreater(ninety['companies']['spacex'][-1]['resource_shares_issued'],fifty['companies']['spacex'][-1]['resource_shares_issued'])
+
+    def test_independent_pads_add_capacity_without_global_cap(self):
+        n=self.network();n['ai_flight_share']=1
+        n['sites'][0]['annual_site_limit']=1000
+        n['sites'][0]['pads'][0]['flights_per_year']=24
+        one=m.orbital_launch_capacity(n,2027,2027)
+        n['sites'][0]['pads'].append(dict(id='b',online_year=2027,online_month=1,flights_per_year=24))
+        two=m.orbital_launch_capacity(n,2027,2027)
+        self.assertEqual(one['available_starship_flights'],24)
+        self.assertEqual(two['available_starship_flights'],48)
+
+    def test_ramped_pad_only_counts_online_months(self):
+        n=self.network();n['sites'][0]['annual_site_limit']=1000
+        p=n['sites'][0]['pads'][0];p.pop('flights_per_year')
+        p.update(online_month=7,flights_per_year_start=52,flights_per_year_end=104)
+        d=m.orbital_launch_capacity(n,2027,2027)
+        pad=d['launch_sites'][0]['pads'][0]
+        self.assertEqual(pad['active_months'],6)
+        self.assertAlmostEqual(pad['raw_annual_flights'],45.5)
+        self.assertEqual(pad['raw_monthly_flights'][:6],[0]*6)
+        self.assertEqual(d['available_starship_flights'],45)
+
+    def test_incomplete_pad_ramp_is_rejected(self):
+        n=self.network();p=n['sites'][0]['pads'][0];p.pop('flights_per_year')
+        p['flights_per_year_start']=52
+        with self.assertRaisesRegex(m.ModelError,'paired start/end'):m.orbital_launch_capacity(n,2027,2027)
+
+    def test_primary_uses_pad_sum_and_preserves_shared_site_limits(self):
+        c=json.loads((ROOT/'configs/current.json').read_text())
+        n=c['companies']['spacex']['segments']['orbital_compute']['launch_network']
+        self.assertNotIn('fleet_rate_start',n)
+        d=m.orbital_launch_capacity(n,2027,2027)
+        self.assertEqual(d['available_starship_flights'],126)
+        self.assertEqual([s['available_flights'] for s in d['launch_sites']],[82,44,0,0])
+        self.assertAlmostEqual(d['raw_pad_capacity_flights'],201.5)

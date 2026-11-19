@@ -22,7 +22,8 @@
       "orbital_mw_per_launch_from_mid2027": 15,
       "orbital_manufacturing_unconstrained": true,
       "fsd_opening_fleet_basis": "HW3／AI3的FSD Lite上線支持舊車訂閱；2026年底500萬為含舊車的付費總基數，非500萬再加HW3車數。Lite與其他訂閱暫用同一費率曲線，未另設硬體別價格。",
-      "orbital_ai_flight_share": 0.9
+      "orbital_ai_flight_share": 0.9,
+      "orbital_launch_aggregation": "逐台按啟用月份與每台發射頻率相乘、各場加總；保留場址共用額度，不另加全機隊頻率上限。"
     },
     "additional_assumptions": {
       "commissioning_start_month_2027": 10,
@@ -660,7 +661,7 @@
           "capex_usd": 0,
           "ev_sales_multiple": 4,
           "volume_unit": "billable MW-hour",
-          "notes": "使用者假設衛星製造不構成限制；按每月AI發射槽及既有庫存備貨，不設年度1/3GW製造天花板，仍支付完整硬體與部署capex。2027從10月起投運，7月起每次淨15MW；發射頻率、場址啟用及許可假設不變；投運後四年退役。無製造瓶頸不是公司已實現能力。",
+          "notes": "使用者假設衛星製造不構成限制；按每月AI發射槽及既有庫存備貨，不設年度1/3GW製造天花板，仍支付完整硬體與部署capex。2027從10月起投運，7月起每次淨15MW；發射頻率、場址啟用及許可假設不變；投運後四年退役。無製造瓶頸不是公司已實現能力。 逐台頻率按月爬坡後加總，依使用者要求移除額外全機隊率上限；各場址共用額度仍限制輸出。每台52→104等曲線為模型假設，不宣稱Musk逐台指引。",
           "service_life_years": 4,
           "depreciation_life_years": 4,
           "launch_network": {
@@ -687,7 +688,17 @@
                     "id": "pad2",
                     "online_year": 2026,
                     "online_month": 1,
-                    "flights_per_year": {
+                    "flights_per_year_start": {
+                      "value": 52,
+                      "annual": {
+                        "2027": 52,
+                        "2028": 104,
+                        "2029": 365,
+                        "2030": 730,
+                        "2031": 1460
+                      }
+                    },
+                    "flights_per_year_end": {
                       "value": 104,
                       "annual": {
                         "2027": 104,
@@ -702,7 +713,17 @@
                     "id": "pad1_rebuild",
                     "online_year": 2027,
                     "online_month": 7,
-                    "flights_per_year": {
+                    "flights_per_year_start": {
+                      "value": 52,
+                      "annual": {
+                        "2027": 52,
+                        "2028": 104,
+                        "2029": 365,
+                        "2030": 730,
+                        "2031": 1460
+                      }
+                    },
+                    "flights_per_year_end": {
                       "value": 104,
                       "annual": {
                         "2027": 104,
@@ -734,7 +755,17 @@
                     "id": "lc39a",
                     "online_year": 2027,
                     "online_month": 1,
-                    "flights_per_year": {
+                    "flights_per_year_start": {
+                      "value": 52,
+                      "annual": {
+                        "2027": 52,
+                        "2028": 104,
+                        "2029": 365,
+                        "2030": 730,
+                        "2031": 1460
+                      }
+                    },
+                    "flights_per_year_end": {
                       "value": 104,
                       "annual": {
                         "2027": 104,
@@ -766,7 +797,17 @@
                     "id": "37a",
                     "online_year": 2028,
                     "online_month": 1,
-                    "flights_per_year": {
+                    "flights_per_year_start": {
+                      "value": 52,
+                      "annual": {
+                        "2027": 52,
+                        "2028": 104,
+                        "2029": 365,
+                        "2030": 730,
+                        "2031": 1460
+                      }
+                    },
+                    "flights_per_year_end": {
                       "value": 104,
                       "annual": {
                         "2027": 104,
@@ -781,7 +822,17 @@
                     "id": "37b",
                     "online_year": 2029,
                     "online_month": 7,
-                    "flights_per_year": {
+                    "flights_per_year_start": {
+                      "value": 52,
+                      "annual": {
+                        "2027": 52,
+                        "2028": 104,
+                        "2029": 365,
+                        "2030": 730,
+                        "2031": 1460
+                      }
+                    },
+                    "flights_per_year_end": {
                       "value": 104,
                       "annual": {
                         "2027": 104,
@@ -813,7 +864,18 @@
                     "id": "first_pad",
                     "online_year": 2029,
                     "online_month": 7,
-                    "flights_per_year": {
+                    "planned_pads": 10,
+                    "flights_per_year_start": {
+                      "value": 52,
+                      "annual": {
+                        "2027": 52,
+                        "2028": 104,
+                        "2029": 365,
+                        "2030": 730,
+                        "2031": 1460
+                      }
+                    },
+                    "flights_per_year_end": {
                       "value": 104,
                       "annual": {
                         "2027": 104,
@@ -822,33 +884,12 @@
                         "2030": 1460,
                         "2031": 2920
                       }
-                    },
-                    "planned_pads": 10
+                    }
                   }
                 ],
                 "notes": "僅首台2029/7啟用，365/730/1460為模型年化容量，非核准額度；其餘9台仍不計容量。"
               }
             ],
-            "fleet_rate_start": {
-              "value": 52,
-              "annual": {
-                "2027": 52,
-                "2028": 104,
-                "2029": 365,
-                "2030": 730,
-                "2031": 1460
-              }
-            },
-            "fleet_rate_end": {
-              "value": 104,
-              "annual": {
-                "2027": 104,
-                "2028": 365,
-                "2029": 730,
-                "2030": 1460,
-                "2031": 2920
-              }
-            },
             "capacity_upgrade": {
               "year": 2027,
               "month": 7,

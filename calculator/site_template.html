@@ -1810,9 +1810,11 @@ html>body{padding:0}</style>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>公司</th><th>已發行在外普通股數</th><th>流動資金（十億美元）</th><th>債務（十億美元）</th></tr></thead><tbody id="ts-opening-anchors"></tbody></table></div>
 </details>
 <details id="ts-orbit-audit"><summary>SpaceX：逐年發射塔、頻率與GW計算</summary>
-<div class="text-small">均為模型能力與條件式啟用／許可假設，非實績；整體機隊頻率不乘塔數。AI槽不等於全部已用於投運。</div>
-<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>可用台數：年初→年底</th><th>單次MW：年初→年底</th><th>機隊年化率：年初→年底</th><th>全年可用發射槽</th><th>AI分配槽</th><th>投運使用AI槽</th></tr></thead><tbody id="ts-orbit-flights"></tbody></table></div>
+<div class="text-small">每台能力＝啟用後各月年化頻率÷12，加總各台及各場。場址額度為共用年化上限，按月分配；先前月份未使用額度不回補。按月切分為模型排程假設，非FAA月度要求。主預測不再有額外全機隊上限。AI槽不等於全部已用於投運。</div>
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>可用台數：年初→年底</th><th>單次MW：年初→年底</th><th>每台年化率：年初→年底</th><th>啟用台月數</th><th>台數×頻率合計（限制前）</th><th>共用場址額度限制後</th><th>AI分配槽</th><th>投運使用AI槽</th></tr></thead><tbody id="ts-orbit-flights"></tbody></table></div>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>製造GW</th><th>新增投運GW</th><th>退役GW</th><th>年底在軌GW</th><th>全年平均GW</th><th>製造部署capex（十億美元）</th></tr></thead><tbody id="ts-orbit-capacity"></tbody></table></div>
+<details><summary>逐台乘法：啟用月份與每台頻率</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>場址／發射台</th><th>模型啟用</th><th>有效月數</th><th>年化頻率初→末</th><th>限制前能力：Σ每月頻率÷12</th></tr></thead><tbody id="ts-pad-audit"></tbody></table></div></details>
+<details><summary>逐場加總與共用額度</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>場址</th><th>台數×頻率合計</th><th>共用年化額度</th><th>按月限制後整數次數</th></tr></thead><tbody id="ts-site-audit"></tbody></table></div></details>
 <div class="text-small">2028閏年服務時數8,784；其餘年度8,760。按全年平均容量、對外份額、可用率及利用率計費。</div>
 </details>
 <details id="ts-fsd-audit"><summary>Tesla：逐年FSD訂閱收益計算</summary>
@@ -1878,7 +1880,9 @@ el('ts-model-notice').textContent=data[0].model_notice;
 function auditTable(id,rows){el(id).replaceChildren(...rows.map(values=>{const tr=document.createElement('tr');for(const value of values){const td=document.createElement('td');td.textContent=String(value);tr.appendChild(td);}return tr;}));}
 const pair=(a,b)=>a===b?fmt(a):fmt(a)+'→'+fmt(b);
 auditTable('ts-opening-anchors',data[0].opening_anchors.map(r=>[r.company,Math.round(r.shares).toLocaleString('en-US'),fmt(r.liquid_funds_usd,1e9),fmt(r.debt_usd,1e9)]));
-auditTable('ts-orbit-flights',data[0].orbital_audit.map(r=>[r.year,pair(r.pads_start,r.pads_end),pair(r.mw_start,r.mw_end),pair(r.fleet_rate_start,r.fleet_rate_end),r.available_flights,r.ai_slots,r.used_ai_slots]));
+auditTable('ts-orbit-flights',data[0].orbital_audit.map(r=>[r.year,pair(r.pads_start,r.pads_end),pair(r.mw_start,r.mw_end),pair(r.pad_rate_start,r.pad_rate_end),r.active_pad_months,fmt(r.raw_pad_capacity),r.available_flights,r.ai_slots,r.used_ai_slots]));
+auditTable('ts-pad-audit',data[0].orbital_audit.flatMap(r=>r.site_details.flatMap(site=>site.pads.map(p=>[r.year,site.site+'/'+p.pad,p.online_year+'/'+p.online_month,p.active_months,pair(p.rate_start,p.rate_end),fmt(p.raw_annual_flights)]))));
+auditTable('ts-site-audit',data[0].orbital_audit.flatMap(r=>r.site_details.map(site=>[r.year,site.site,fmt(site.raw_annual_flights),site.annual_site_limit,site.available_flights])));
 auditTable('ts-orbit-capacity',data[0].orbital_audit.map(r=>[r.year,...[r.manufactured_gw,r.new_gw,r.retired_gw,r.end_gw,r.average_gw].map(x=>x.toLocaleString('en-US',{maximumFractionDigits:6})),fmt(r.capex_usd,1e9)]));
 auditTable('ts-fsd-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='fsd').map(r=>[r.year,...['opening_subscribers','new_subscribers','closing_subscribers','average_subscribers'].map(k=>fmt(r.drivers[k],10000)),fmt(r.drivers.monthly_price_usd),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 const seriesColors=['var(--viz-series-1)','var(--viz-series-2)'];

@@ -69,6 +69,17 @@ def reconcile(result):
                     if deployed>limit+1e-8:raise ValueError('monthly deployment exceeds launch capacity')
                 checks+=1
                 if d['available_starship_flights']>d['infrastructure_site_slots']:raise ValueError('fleet exceeds site slots')
+                eq(d['raw_pad_capacity_flights'],sum(site['raw_annual_flights'] for site in d['launch_sites']),'sum of pad capacities')
+                if 'fleet_rate_start' not in spec['launch_network']:
+                    eq(d['available_starship_flights'],sum(site['available_flights'] for site in d['launch_sites']),'site launch sum without fleet cap')
+                    eq(d['allocated_ai_flights'],math.floor(d['available_starship_flights']*parameter(spec['launch_network'].get('ai_flight_share',1),year,base)+1e-9),'global AI allocation')
+                for site in d['launch_sites']:
+                    eq(site['raw_annual_flights'],sum(pad['raw_annual_flights'] for pad in site['pads']),'per-pad site sum')
+                    eq(site['available_flights'],math.floor(sum(min(q,site['annual_site_limit']/12) for q in site['raw_monthly_flights'])+1e-9),'monthly shared site envelope')
+                    eq(site['available_flights'],sum(site['monthly_available_flights']),'site monthly count')
+                    for pad in site['pads']:
+                        expected=sum((pad['rate_start']+(pad['rate_end']-pad['rate_start'])*(m-.5)/12)/12 for m in range(1,13) if (year,m)>=(pad['online_year'],pad['online_month']))
+                        eq(pad['raw_annual_flights'],expected,'pad frequency times active months')
                 if spec.get('manufacture_to_launch_capacity'):
                     eq(sum(d['manufactured_monthly_mw']),d['manufactured_it_mw'],'monthly manufacturing sum')
             expected_capex=d['manufactured_it_mw']*p('hardware_cost_usd_per_mw')+d['deployment_attempted_mw']*p('deployment_cost_usd_per_mw')+p('capex_usd')+row['revenue_usd']*p('capex_revenue_ratio')

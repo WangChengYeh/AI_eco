@@ -23,7 +23,8 @@ def assumptions(config):
     if upgrade:
         mw_text += f"；{upgrade['year']}/{upgrade['month']}起淨{upgrade['net_it_mw_per_flight']:g}MW/次（使用者假設，不再折減）"
     dates = '；'.join(f"{site['id']}:"+', '.join(f"{p['id']} {p['online_year']}/{p['online_month']}" for p in site['pads']) for site in network['sites'])
-    ramp_text = '；'.join(f"{y}年{v(network['fleet_rate_start'],y):g}→{v(network['fleet_rate_end'],y):g}" for y in config['years'])
+    first_pad = network['sites'][0]['pads'][0]
+    ramp_text = '；'.join(f"{y}年{v(first_pad['flights_per_year_start'],y):g}→{v(first_pad['flights_per_year_end'],y):g}" for y in config['years'])
     limits = '；'.join(site['id']+':'+ '/'.join(f"{v(site['annual_site_limit'],y):g}" for y in config['years']) for site in network['sites'])
     rows = [
         ['FSD（增量服務成本）',f"每戶每月{v(fsd['monthly_cost_usd']):g}美元；保留分部費用、折舊與公司費用。美國費率錨點{v(fsd['monthly_price_usd']):g}美元；未來全球實收價格曲線仍是假設"],
@@ -34,7 +35,7 @@ def assumptions(config):
         ['Robotaxi（量產／投運）',f"{ramp['full_rate_year']}/{ramp['full_rate_month']}全速，基準年化{v(ramp['annual_capacity_units']):,.0f}台；年初{ramp['initial_rate_fraction']:.0%}、部署延遲{ramp['deployment_delay_months']}月；均為條件假設"],
         ['Robotaxi（獲利口徑）','未套入每車年淨利3萬美元；2019 Musk約3萬美元是年毛利展望，非淨利實績。車資、里程與成本待校準'],
         ['星艦（單次容量）',mw_text+f"；AI發射分配{v(network['ai_flight_share']):.0%}（假設）"],
-        ['星艦（全機隊年化爬坡）',ramp_text+'；2027錨定Musk近期說法，之後為模型延伸，不逐塔相乘'],
+        ['星艦（每台年化頻率假設）',ramp_text+'；各台按啟用月份及月中頻率相乘、各場加總，再套場址共用額度；不再另加全機隊上限。這是每台模型假設，非Musk逐台指引'],
         ['發射場（模型啟用月份）',dates+'；日期與許可均含未驗證條件'],
         ['場址額度（模型曲線）',limits+'；依序為2027–2031，後續擴容並非已獲准'],
         ['衛星製造／投運',('供應充足、隨AI發射能力備貨（使用者假設）' if orbit.get('manufacture_to_launch_capacity') else '受明列年度製造量限制')+f"；2027從{v(orbit['commissioning_start_month']):g}月起投運，製造及部署成本照計"],
@@ -57,7 +58,11 @@ def orbital_audit(config, result):
             pads_start=sum((y,1)>=(p['online_year'],p['online_month']) for p in pads),
             pads_end=sum((y,12)>=(p['online_year'],p['online_month']) for p in pads),
             mw_start=d['mw_per_ai_flight_start'],mw_end=d['mw_per_ai_flight'],
-            fleet_rate_start=d['fleet_rate_start'],fleet_rate_end=d['fleet_rate_end'],
+            pad_rate_start=min(p['rate_start'] for site in d['launch_sites'] for p in site['pads'] if p['active_months']),
+            pad_rate_end=max(p['rate_end'] for site in d['launch_sites'] for p in site['pads'] if p['active_months']),
+            raw_pad_capacity=d['raw_pad_capacity_flights'],
+            active_pad_months=sum(site['active_pad_months'] for site in d['launch_sites']),
+            site_details=d['launch_sites'],
             available_flights=d['available_starship_flights'],ai_slots=d['allocated_ai_flights'],
             used_ai_slots=sum(math.ceil(q/p-1e-9) for q,p in zip(d['deployed_monthly_mw'],d['monthly_mw_per_ai_flight']) if q>0 and p>0),
             manufactured_gw=d['manufactured_it_mw']/1000,new_gw=d['commissioned_new_it_mw']/1000,

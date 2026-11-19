@@ -268,7 +268,17 @@
                 "id": "pad2",
                 "online_year": 2026,
                 "online_month": 1,
-                "flights_per_year": {
+                "flights_per_year_start": {
+                  "value": 52,
+                  "annual": {
+                    "2027": 52,
+                    "2028": 104,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "flights_per_year_end": {
                   "value": 104,
                   "annual": {
                     "2027": 104,
@@ -283,7 +293,17 @@
                 "id": "pad1_rebuild",
                 "online_year": 2027,
                 "online_month": 7,
-                "flights_per_year": {
+                "flights_per_year_start": {
+                  "value": 52,
+                  "annual": {
+                    "2027": 52,
+                    "2028": 104,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "flights_per_year_end": {
                   "value": 104,
                   "annual": {
                     "2027": 104,
@@ -315,7 +335,17 @@
                 "id": "lc39a",
                 "online_year": 2027,
                 "online_month": 1,
-                "flights_per_year": {
+                "flights_per_year_start": {
+                  "value": 52,
+                  "annual": {
+                    "2027": 52,
+                    "2028": 104,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "flights_per_year_end": {
                   "value": 104,
                   "annual": {
                     "2027": 104,
@@ -347,7 +377,17 @@
                 "id": "37a",
                 "online_year": 2028,
                 "online_month": 1,
-                "flights_per_year": {
+                "flights_per_year_start": {
+                  "value": 52,
+                  "annual": {
+                    "2027": 52,
+                    "2028": 104,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "flights_per_year_end": {
                   "value": 104,
                   "annual": {
                     "2027": 104,
@@ -362,7 +402,17 @@
                 "id": "37b",
                 "online_year": 2029,
                 "online_month": 7,
-                "flights_per_year": {
+                "flights_per_year_start": {
+                  "value": 52,
+                  "annual": {
+                    "2027": 52,
+                    "2028": 104,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "flights_per_year_end": {
                   "value": 104,
                   "annual": {
                     "2027": 104,
@@ -394,7 +444,18 @@
                 "id": "first_pad",
                 "online_year": 2029,
                 "online_month": 7,
-                "flights_per_year": {
+                "planned_pads": 10,
+                "flights_per_year_start": {
+                  "value": 52,
+                  "annual": {
+                    "2027": 52,
+                    "2028": 104,
+                    "2029": 365,
+                    "2030": 730,
+                    "2031": 1460
+                  }
+                },
+                "flights_per_year_end": {
                   "value": 104,
                   "annual": {
                     "2027": 104,
@@ -403,33 +464,12 @@
                     "2030": 1460,
                     "2031": 2920
                   }
-                },
-                "planned_pads": 10
+                }
               }
             ],
             "notes": "僅首台2029/7啟用，365/730/1460為模型年化容量，非核准額度；其餘9台仍不計容量。"
           }
         ],
-        "fleet_rate_start": {
-          "value": 52,
-          "annual": {
-            "2027": 52,
-            "2028": 104,
-            "2029": 365,
-            "2030": 730,
-            "2031": 1460
-          }
-        },
-        "fleet_rate_end": {
-          "value": 104,
-          "annual": {
-            "2027": 104,
-            "2028": 365,
-            "2029": 730,
-            "2030": 1460,
-            "2031": 2920
-          }
-        },
         "capacity_upgrade": {
           "year": 2027,
           "month": 7,
@@ -438,7 +478,7 @@
       },
       "unit": "sites, flights/year, tonnes, kW/tonne, fractions",
       "classification": "model_assumption",
-      "basis": "Musk目標做成機隊整體年度起終點爬坡，另受單台周轉與共用場址限制；2027年化52→104、2028年化104→365；2029以後倍增及許可擴容均為未驗證模型延伸，詳見research/starship_launch_capacity_2026-11-20.md。 2026-11-20使用者另指定2027年7月起淨部署15MW/次，見capacity_upgrade子項查核。 AI任務占比改為使用者指定90%，其餘10%留給其他任務；無官方90%分配指引。",
+      "basis": "使用者要求逐台頻率×啟用時間、各場加總；不加額外全機隊上限。每台頻率2027年化52→104、2028年化104→365、2029以後倍增為未驗證模型路徑，非Musk逐台承諾；場址共用額度與工程日期仍為條件假設。AI任務90%，每次2027年7月起淨15MW。",
       "fact_ids": [],
       "checked_at": "2026-11-20"
     },

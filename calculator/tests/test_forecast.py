@@ -466,9 +466,9 @@ class OrbitalRamp(unittest.TestCase):
         orbital = [s for s in result["segments"] if s["segment"] == "orbital_compute"]
         self.assertEqual(robots[0]["drivers"]["production_units"], 1000000)
         self.assertEqual(robots[1]["drivers"]["production_units"], 5000000)
-        self.assertAlmostEqual(orbital[0]["drivers"]["average_it_mw"], 41.875)
-        self.assertAlmostEqual(orbital[1]["drivers"]["average_it_mw"], 1623.75)
-        self.assertEqual(orbital[1]["drivers"]["year_end_it_mw"], 3495)
+        self.assertAlmostEqual(orbital[0]["drivers"]["average_it_mw"], 57.5)
+        self.assertAlmostEqual(orbital[1]["drivers"]["average_it_mw"], 3684.375)
+        self.assertEqual(orbital[1]["drivers"]["year_end_it_mw"], 7455)
         self.assertEqual([r["year"] for r in result["companies"]["tesla"]], list(range(2027, 2032)))
 
 
