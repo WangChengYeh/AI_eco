@@ -181,6 +181,18 @@
         36146000000
       ],
       "checked_at": "2026-11-20"
+    },
+    {
+      "id": "tesla_ai3_fsd_v14_lite_rollout_2026q2",
+      "company": "Tesla",
+      "metric": "AI3 FSD v14 Lite rollout",
+      "period": "2026-Q2 update including July rollout",
+      "value": "Started delivery in the United States and South Korea to AI3 customers",
+      "unit": "rollout status",
+      "source": "https://ir.tesla.com/_flysystem/s3/sec/000162828026049213/tsla-20260722-gen.pdf",
+      "status": "company_disclosed",
+      "mapping_note": "僅支持舊車訂閱來源；不是500萬月租、全球可用或新費率的數量證據。",
+      "checked_at": "2026-11-20"
     }
   ]
 }

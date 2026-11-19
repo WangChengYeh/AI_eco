@@ -27,7 +27,7 @@ def assumptions(config):
     limits = '；'.join(site['id']+':'+ '/'.join(f"{v(site['annual_site_limit'],y):g}" for y in config['years']) for site in network['sites'])
     rows = [
         ['FSD（增量服務成本）',f"每戶每月{v(fsd['monthly_cost_usd']):g}美元；保留分部費用、折舊與公司費用。美國費率錨點{v(fsd['monthly_price_usd']):g}美元；未來全球實收價格曲線仍是假設"],
-        ['FSD（付費車隊）',f"2026年底{fsd['opening_subscribers']/10000:g}萬；新車加入率{v(fsd['new_vehicle_attach_rate']):.0%}、退訂率{v(fsd['annual_churn_rate']):.0%}；均勻加入，按全年平均計費（假設）"],
+        ['FSD（付費車隊）',f"2026年底{fsd['opening_subscribers']/10000:g}萬；新車加入率{v(fsd['new_vehicle_attach_rate']):.0%}、退訂率{v(fsd['annual_churn_rate']):.0%}；均勻加入，按全年平均計費（假設）" + ('；'+config['metadata']['user_assumptions']['fsd_opening_fleet_basis'] if config['metadata']['user_assumptions'].get('fsd_opening_fleet_basis') else '')],
         ['Optimus（全年製造）','；'.join(f"{y}年{v(robot['production_units'],y)/10000:,.0f}萬台" for y in config['years'])+'；非公司年度指引'],
         ['Optimus（內用與出租）',f"平均內用需求{v(robot['internal_demand_robots'])/10000:g}萬台，內用優先；餘量出租率{v(robot['rental_utilization']):.0%}，每台年租{v(robot['monthly_rent_usd'])*12:,.0f}美元"],
         ['Optimus（租賃需求）',f"需求上限{v(robot['rental_demand_robots']):,.0f}台" if 'rental_demand_robots' in robot else '未另設需求上限，足量付費需求是使用者假設'],

@@ -217,9 +217,11 @@
       "value": 5000000,
       "unit": "paid accounts",
       "classification": "user_assumption",
-      "basis": "使用者更正為2026年底500萬付費訂閱，非可訂閱車隊。",
-      "fact_ids": [],
-      "checked_at": "2026-11-19",
+      "basis": "使用者假設2026年底付費總基數500萬（已包含HW3／AI3 Lite舊車）；官方Lite推送支持舊車來源，不能證明500萬付費。2027只再加模型新增車，不重複加HW3存量。",
+      "fact_ids": [
+        "tesla_ai3_fsd_v14_lite_rollout_2026q2"
+      ],
+      "checked_at": "2026-11-20",
       "research_claim_id": "fsd_paid_fleet"
     },
     {

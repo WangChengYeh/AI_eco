@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-20",
-  "coverage": "14項使用者輸入及22項命題；新增無衛星製造瓶頸假設，按發射能力足量備貨並保留成本。",
+  "coverage": "15項使用者輸入及22項命題；補充HW3 Lite與2026年底500萬付費基數的關係，未重複計入舊車。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -182,6 +182,12 @@
       "url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026039276/spaceexplorationtechnologi.htm",
       "access": "primary_indexed_only",
       "access_note": "2026-11-20官方搜尋索引列V3預期100噸、未來可能自V4達200噸；未證實2027年7月達成15MW淨部署。"
+    },
+    "tesla_q2_hw3_lite": {
+      "title": "Tesla 2026Q2 Update：AI3／HW3 FSD v14 Lite",
+      "url": "https://ir.tesla.com/_flysystem/s3/sec/000162828026049213/tsla-20260722-gen.pdf",
+      "access": "primary_text_read",
+      "access_note": "2026-11-20讀取原始PDF：合併PDF第10頁（Update印刷第8頁），公司記載在美國及南韓向AI3車主開始推送FSD v14 Lite。只支持特定市場開始推送，不證明全球所有HW3可用、500萬月租或Lite特別費率。"
     }
   },
   "claims": [
@@ -609,26 +615,31 @@
     },
     {
       "id": "fsd_paid_fleet",
-      "title": "2026年底FSD付費訂閱500萬",
-      "claim": "2026年底以500萬付費訂閱起算，2027再加新增車輛。",
+      "title": "2026年底FSD付費訂閱500萬（含HW3 Lite舊車）",
+      "claim": "2026年底以500萬付費訂閱起算，包含HW3 Lite上線帶動的舊車訂閱；2027起再加新增車輛。",
       "user_values": {
-        "fsd_paid_subscribers_end2026": 5000000
+        "fsd_paid_subscribers_end2026": 5000000,
+        "fsd_opening_fleet_basis": "HW3／AI3的FSD Lite上線支持舊車訂閱；2026年底500萬為含舊車的付費總基數，非500萬再加HW3車數。Lite與其他訂閱暫用同一費率曲線，未另設硬體別價格。"
       },
       "verdict": "not_established",
       "verdict_label": "模型假設，未獲官方實績證實",
-      "finding": "官方Q3 Active FSD為174萬且包含買斷與月租；官方披露北美新車FSD附加率超過75%，不能證明全球500萬月租或所有新車全年持續付費。",
-      "limits": "使用者已明確改為付費車數500萬；仍非公司已披露實績。2027銷量200萬、新車100%訂閱、零退訂與均勻加入均為模型假設。",
-      "musk_search": "重新搜尋Musk／Tesla Q3 2026 FSD 75%與付費用戶口徑；未找到2026年底500萬月租官方指引。",
-      "forecast_action": "以500萬付費訂閱作2027年初基數，每年連動對外乘用車銷量，按100%新車加入、0退訂遞推；營收按全年平均，不按年底訂閱乘12。移除舊平均200萬及20%獨立成長曲線。",
+      "finding": "Tesla 2026Q2官方更新已記載向美國與南韓AI3車主推送FSD v14 Lite，支持舊車可成為訂閱來源；官方Q3 Active FSD為174萬且含買斷與月租，不能證明年底500萬月租。",
+      "limits": "500萬是含HW3與其他硬體的付費總基數，不是所有可用車隊或全球已證實付費量。Lite推送不保證訂閱轉換；區域與車型限制仍在。2027模型新車200萬、100%加入、零退訂、均勻加入及Lite與其他版本暫用同費率均為假設，未再加一次HW3車數。",
+      "musk_search": "2026-11-20重新搜尋site:x.com/elonmusk HW3 lite及Musk／Tesla HW3 v14 Lite；結果以Tesla官方Q2 PDF為可直接讀取的原始支持。本輪未取得可直接核對的Musk原貼正文或500萬月租承諾，不將第三方轉述當作Musk已證實數字。",
+      "forecast_action": "2027期初維持500萬，新增連動對外乘用車模型銷量；2027新增200萬、年底700萬、全年平均600萬。500萬已包含HW3，不重複加舊車、不把買斷視為月租。原有數值不變，補明來源及硬體口徑。",
       "search_queries": [
         "site.assets-ir.tesla.com \"Q3-2026\" \"Active FSD\" \"1.74\"",
-        "Musk Tesla Q3 2026 FSD 75% deliveries subscriptions 50%"
+        "Musk Tesla Q3 2026 FSD 75% deliveries subscriptions 50%",
+        "Tesla HW3 FSD Lite November 2026 Musk subscription",
+        "site:x.com/elonmusk \"HW3\" \"lite\"",
+        "site:tesla.com \"v14 lite\" \"AI3\""
       ],
       "source_ids": [
         "tesla_q3",
-        "fsd_support"
+        "fsd_support",
+        "tesla_q2_hw3_lite"
       ],
-      "searched_at": "2026-11-19"
+      "searched_at": "2026-11-20"
     },
     {
       "id": "orbital_launch_network",
