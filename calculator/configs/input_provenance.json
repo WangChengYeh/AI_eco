@@ -1,6 +1,6 @@
 {
   "checked_at": "2026-11-20",
-  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。",
+  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。 Optimus租金曲線及2030／2031年租與使用者指令綁定。",
   "records": [
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.value",
@@ -181,13 +181,20 @@
     },
     {
       "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd",
-      "value": 2500,
+      "value": {
+        "value": 2500,
+        "growth": 0,
+        "annual": {
+          "2030": 2250,
+          "2031": 2025
+        }
+      },
       "unit": "USD/robot-month",
       "classification": "user_assumption",
-      "basis": "使用者每台3萬美元本輪明列按每年解讀，除以12換算月租2,500美元，未有公司官方租金指引。",
+      "basis": "2027–2029年租3萬；使用者確認2029年產達1,000萬後，2030起每年降10%，2030／2031月租2250／2025，適用全部租賃。非公司費率指引。",
       "fact_ids": [],
-      "research_claim_id": "optimus_annual_rent",
-      "checked_at": "2026-11-19"
+      "research_claim_id": "optimus_rent_decline",
+      "checked_at": "2026-11-20"
     },
     {
       "input_path": "companies.tesla.segments.fsd.monthly_cost_usd",
@@ -694,7 +701,7 @@
     },
     {
       "user_key": "optimus_annual_rent_usd",
-      "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd",
+      "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd.value",
       "multiplier": 12
     },
     {
@@ -724,6 +731,16 @@
     {
       "input_path": "companies.spacex.segments.ground_compute.capacity_ramp.year_end_it_mw.value",
       "user_key": "ground_year_end_mw_2027"
+    },
+    {
+      "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd.annual.2030",
+      "user_key": "optimus_annual_rent_usd_2030",
+      "multiplier": 12
+    },
+    {
+      "input_path": "companies.tesla.segments.optimus_owned.monthly_rent_usd.annual.2031",
+      "user_key": "optimus_annual_rent_usd_2031",
+      "multiplier": 12
     }
   ]
 }

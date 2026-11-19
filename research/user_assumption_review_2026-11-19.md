@@ -4,7 +4,7 @@
 
 範圍：現行主預測全部使用者假設，加上原始理論的重要強版本。查核包含支持、反向及限縮證據；沒有找到支持不等於已證偽。公司目標、Musk預測、第三方逐字稿及已發生實績分開。
 
-本表包含19項使用者輸入及24項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
+本表包含21項使用者輸入及25項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
 
 ## Optimus 2027全年100萬台
 
@@ -44,7 +44,7 @@
 來源：
 
 - [2024年Musk內用優先時程報導](https://www.theguardian.com/technology/article/2024/jul/23/elon-musk-tesla-humanoid-robots-optimus)：搜尋到2024-07-22 Musk內用優先發言；舊時間目標不能視為2027實績。
-- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-06報導已讀；提及傾向出租，未公布租金。
+- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-20重讀2026-11-06報導：Musk傾向出租，但未提出租金；3萬降至2萬為製造成本，不能當租金。原片仍未直接核對。
 - [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
 
 ## Optimus剩餘出租
@@ -54,7 +54,7 @@
 - 支持／相關證據：11月6日Baron訪談逐字稿及報導均記載Musk傾向出租。
 - 限縮／相反證據：未公布月租、簽約數及出租率；傾向出租不證明任何指定的全年平均付費台數。
 - Musk查核：已定位主辦方原片及第三方逐字稿；租賃段落原片尚未直接核對，不把轉述冒充已觀看。
-- 計算處理：保留內用優先、剩餘出租；本輪出租率改100%、租金按每台每年3萬美元，均另列查核項目，未當公司指引。
+- 計算處理：保留內用優先、剩餘出租；出租率100%與初始年租3萬為使用者假設，2030起另套使用者確認的每年10%降租。
 
 搜尋紀錄：
 
@@ -65,7 +65,7 @@
 
 - [Baron Capital：2026-11-06 Musk訪談原片入口](https://www.baroncapitalgroup.com/conference-2026/fireside-chat-ron-baron-elon-musk)：主辦方活動頁與日期已定位；本輪未取得原片可核對字幕。
 - [Baron訪談第三方逐字稿](https://www.elonmuskarchive.org/video/baron-investment-conference-2026-11-06)：逐字稿可讀，非主辦方認證；發言歸屬及數字須回看原片，不能標成已觀看驗證。
-- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-06報導已讀；提及傾向出租，未公布租金。
+- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-20重讀2026-11-06報導：Musk傾向出租，但未提出租金；3萬降至2萬為製造成本，不能當租金。原片仍未直接核對。
 - [Tesla 2026Q3 Musk發言轉述](https://www.shacknews.com/article/151108/tesla-optimus-robot-delay-end-of-2027)：2026-10-21電話會議發言轉述：預計2027年底向外部公司交付；不是原始電話會議字幕。
 
 ## 2027年底太空算力量產
@@ -307,16 +307,16 @@
 
 - [Baron Capital：2026-11-06 Musk訪談原片入口](https://www.baroncapitalgroup.com/conference-2026/fireside-chat-ron-baron-elon-musk)：主辦方活動頁與日期已定位；本輪未取得原片可核對字幕。
 - [Baron訪談第三方逐字稿](https://www.elonmuskarchive.org/video/baron-investment-conference-2026-11-06)：逐字稿可讀，非主辦方認證；發言歸屬及數字須回看原片，不能標成已觀看驗證。
-- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-06報導已讀；提及傾向出租，未公布租金。
+- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-20重讀2026-11-06報導：Musk傾向出租，但未提出租金；3萬降至2萬為製造成本，不能當租金。原片仍未直接核對。
 
-## Optimus每台年租3萬美元
+## Optimus初始年租3萬美元
 
-- 原命題：Optimus每台年租3萬美元。
+- 原命題：Optimus在2027–2029每台年租3萬美元；後續降租另列。
 - 判定：**使用者條件，未獲租賃實績支持**
 - 支持／相關證據：Musk有傾向出租的發言轉述，支持租賃商業模式方向。
 - 限縮／相反證據：使用者指定每台3萬美元，本輪按每年解讀；未找到Tesla對外公布此年租金。Musk所談約3萬降至2萬是製造成本，不能當作租金證據。
 - Musk查核：已搜尋Musk租賃報價與利用率訊息；找到出租方向及製造成本說法，未找到本項費率或100%付費利用率的原始指引。
-- 計算處理：依使用者本輪參數重算。內用優先，餘量全部付費出租；租金按實際全年平均付費台數乘年租金，不把年底數量乘全年。
+- 計算處理：初始年租維持3萬美元；2029年產達1,000萬台後，2030起租金每年降10%，見降租命題。仍依全年平均付費台數計費。
 
 搜尋紀錄：
 
@@ -327,7 +327,7 @@
 
 - [Baron Capital：2026-11-06 Musk訪談原片入口](https://www.baroncapitalgroup.com/conference-2026/fireside-chat-ron-baron-elon-musk)：主辦方活動頁與日期已定位；本輪未取得原片可核對字幕。
 - [Baron訪談第三方逐字稿](https://www.elonmuskarchive.org/video/baron-investment-conference-2026-11-06)：逐字稿可讀，非主辦方認證；發言歸屬及數字須回看原片，不能標成已觀看驗證。
-- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-06報導已讀；提及傾向出租，未公布租金。
+- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-20重讀2026-11-06報導：Musk傾向出租，但未提出租金；3萬降至2萬為製造成本，不能當租金。原片仍未直接核對。
 
 ## Robotaxi每車年淨利3萬美元
 
@@ -500,6 +500,28 @@
 - [Musk 2026Q3法說會第三方逐字稿](https://stockanalysis.com/stocks/spcx/transcripts/723936-q3-2026/)：已讀2026-10-20完整第三方逐字稿；官方IR頁可定位法說會，但未核對原片或官方逐字稿。
 - [JLL 2026 Global Data Center Outlook](https://www.jll.com/content/dam/jllcom/en/global/documents/reports/research-reports/26-research-global-data-center-outlook-new.pdf)：第25–26頁：殼體11.3M/MW預測、AI fitout最高25M、液冷溢價約10%，不含土地，非SpaceX報價。
 - [SpaceX Apollo GPU lease公告](https://ir.spacex.com/updates/releases-details/2026/SPACEX-SECURES-40-BILLION-IN-THE-LARGEST-GPU-FINANCING-EVER-2026-EnDqGhTAB3/)：已讀公司2026-10-26公告，40B為附交割條件融資租賃承諾，不是本次已交付設備。
+
+## Optimus達年產1,000萬台後年租每年降10%
+
+- 原命題：使用者確認1,000萬指全年產量，2029達標；2030年租27,000美元，2031年租24,300美元，適用該年全部付費機器人。
+- 判定：**使用者價格路徑，未獲公司租金指引支持**
+- 支持／相關證據：重讀Tesla Q3官方文件：Optimus仍在early ramp；Baron訪談主辦頁可定位，報導支持出租方向。這些不驗證2029實際產量或本項租金路徑。
+- 限縮／相反證據：沒有從本輪查閱來源取得初始年租3萬或年降10%的官方指引。Musk轉述的3萬降至2萬是製造成本。原片尚未核對，降租不自動推導需求增加或維修成本同步下降。
+- Musk查核：已搜尋Musk Optimus rent／lease 2026 November annual rental price與官方頁；主辦方2026-11-06訪談已定位、報導已重讀，未取得10%降租承諾。
+- 計算處理：沿用現有年度參數曲線，2027–2029月租2500、2030月租2250、2031月租2025；不提前從2028降價、不按累計持有量觸發。全部租賃用當年費率，內用避免費用與資產成本保持原口徑。
+
+搜尋紀錄：
+
+- `site.tesla.com Optimus rental annual price 30000 2026`
+- `Elon Musk Optimus rent lease 2026 November annual rental price`
+- `site.baroncapitalgroup.com 2026 Musk Optimus rent November 6 rental price`
+- `site.tesla.com Optimus rental 10% price 2026`
+
+來源：
+
+- [Tesla 2026Q3 Update：產線狀態](https://assets-ir.tesla.com/tesla-contents/IR/TSLA-Q3-2026-Update.pdf)：2026-11-19重讀原始PDF：第6頁Cybercab裝置年產能>125,000且註明產能不等於產速；第8頁累計無監督里程近200萬、Austin營運6時至午夜，未單列每車年淨利。
+- [Baron Capital：2026-11-06 Musk訪談原片入口](https://www.baroncapitalgroup.com/conference-2026/fireside-chat-ron-baron-elon-musk)：主辦方活動頁與日期已定位；本輪未取得原片可核對字幕。
+- [Musk出租Optimus報導](https://www.notateslaapp.com/news/4959/musk-tesla-will-rent-optimus-robots-instead-of-selling-them)：2026-11-20重讀2026-11-06報導：Musk傾向出租，但未提出租金；3萬降至2萬為製造成本，不能當租金。原片仍未直接核對。
 
 ## 更新規則
 

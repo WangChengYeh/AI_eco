@@ -1822,6 +1822,10 @@ html>body{padding:0}</style>
 <details><summary>逐場加總與共用額度</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>場址</th><th>台數×頻率合計</th><th>共用年化額度</th><th>按月限制後整數次數</th></tr></thead><tbody id="ts-site-audit"></tbody></table></div></details>
 <div class="text-small">2028閏年服務時數8,784；其餘年度8,760。按全年平均容量、對外份額、可用率及利用率計費。</div>
 </details>
+<details id="ts-optimus-audit"><summary>Tesla：逐年Optimus出租與租金</summary>
+<div class="text-small">2029年產達1,000萬台後，2030起每年降租10%，適用該年全部付費機器人；按全年平均付費數量計收入。降租不自動增加需求或降低製造／維護成本，仍屬使用者情境。</div>
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>全年產量萬台</th><th>平均出租萬台</th><th>每台年租美元</th><th>出租營收十億美元</th><th>分部營業利益十億美元</th></tr></thead><tbody id="ts-optimus-annual"></tbody></table></div>
+</details>
 <details id="ts-fsd-audit"><summary>Tesla：逐年FSD訂閱收益計算</summary>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>年初付費萬輛</th><th>新增萬輛</th><th>年底付費萬輛</th><th>全年平均萬輛</th><th>月費美元</th><th>營收十億美元</th><th>分部營業利益十億美元</th></tr></thead><tbody id="ts-fsd-annual"></tbody></table></div>
 <div class="text-small">分部營業利益尚未扣公司共同費用、利息與稅；近零新增服務成本不代表研發及折舊免費。</div>
@@ -1891,6 +1895,7 @@ auditTable('ts-site-audit',data[0].orbital_audit.flatMap(r=>r.site_details.map(s
 auditTable('ts-orbit-capacity',data[0].orbital_audit.map(r=>[r.year,...[r.manufactured_gw,r.new_gw,r.retired_gw,r.end_gw,r.average_gw].map(x=>x.toLocaleString('en-US',{maximumFractionDigits:6})),fmt(r.capex_usd,1e9)]));
 auditTable('ts-fsd-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='fsd').map(r=>[r.year,...['opening_subscribers','new_subscribers','closing_subscribers','average_subscribers'].map(k=>fmt(r.drivers[k],10000)),fmt(r.drivers.monthly_price_usd),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 auditTable('ts-ground-annual',data[0].segments.filter(r=>r.company_id==='spacex'&&r.segment==='ground_compute').map(r=>[r.year,...['opening_it_mw','commissioned_new_it_mw','year_end_it_mw','average_it_mw','replacement_hardware_mw'].map(k=>fmt(r.drivers[k],1000)),fmt(r.capex_usd,1e9),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
+auditTable('ts-optimus-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='optimus_owned').map(r=>[r.year,fmt(r.drivers.production_units,10000),fmt(r.drivers.average_rented_robots,10000),fmt(r.drivers.monthly_rent_usd*12),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 const seriesColors=['var(--viz-series-1)','var(--viz-series-2)'];
 let rows=[],selectedData=null;
 year.innerHTML=data[0].companies.tesla.map(r=>'<option>'+r.year+'</option>').join('');
@@ -1956,7 +1961,7 @@ function selection(){
  const orbital=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='orbital_compute');
  const robots=selectedData.segments.find(s=>s.company_id===company.value&&s.year===r.year&&s.segment==='optimus_owned');
  if(orbital){const d=orbital.drivers;el('ts-current-detail').textContent=r.year+' 太空算力：年底 '+fmt(d.year_end_it_mw/1000)+' GW／平均 '+fmt(d.average_it_mw/1000)+' GW；退役 '+fmt(d.retired_it_mw/1000)+' GW；業務成本 '+fmt(d.segment_cost_per_billable_mw_hour_usd)+' 美元／計費 MW-hour。';}
- else if(robots){const d=robots.drivers;el('ts-current-detail').textContent=r.year+' Optimus：年底 '+fmt(d.closing_fleet/10000)+' 萬台／平均內用 '+fmt(d.average_internal_robots/10000)+' 萬台／平均付費出租 '+fmt(d.average_rented_robots/10000)+' 萬台；本年替換 '+fmt(d.replacement_units/10000)+' 萬台。';}
+ else if(robots){const d=robots.drivers;el('ts-current-detail').textContent=r.year+' Optimus：年底 '+fmt(d.closing_fleet/10000)+' 萬台／平均內用 '+fmt(d.average_internal_robots/10000)+' 萬台／平均付費出租 '+fmt(d.average_rented_robots/10000)+' 萬台／每台年租 '+fmt(d.monthly_rent_usd*12)+' 美元；本年替換 '+fmt(d.replacement_units/10000)+' 萬台。';}
  else el('ts-current-detail').textContent='';
  el('ts-revenue').textContent=fmt(r.revenue_usd,1e9);el('ts-income').textContent=fmt(r.net_income_usd,1e9);el('ts-price').textContent=fmt(r.price_pe_usd);el('ts-sotp').textContent='P/E '+fmt(r.pe_multiple)+' 倍；分部估值 '+fmt(r.price_sotp_usd)+' 美元／股';
  el('ts-business-label').textContent=r.year+' 年各業務明細（十億美元）';

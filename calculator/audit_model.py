@@ -53,6 +53,8 @@ def reconcile(result):
             if 'closing_subscribers' in d:
                 eq(d['closing_subscribers'],d['opening_subscribers']+d['new_subscribers']-d['cancellations'],'subscription cohort')
                 eq(d['average_subscribers'],(d['opening_subscribers']+d['closing_subscribers'])/2,'subscription average')
+        if spec['kind']=='robot_fleet' and row['active']:
+            eq(row['revenue_usd'],d['average_rented_robots']*p('monthly_rent_usd')*12,'robot rental revenue at current year price')
         if spec['kind'] in ('compute','orbital_compute') and row['active']:
             hours=24*(366 if calendar.isleap(year) else 365)
             eq(d['calendar_hours'],hours,'calendar hours')

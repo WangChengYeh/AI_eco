@@ -53,6 +53,19 @@ def validate_data(config, registry, facts):
                                        "initial_rate_fraction", "deployment_delay_months")}
     if not required <= seen:
         raise ValueError("Robotaxi production/deployment inputs require complete provenance")
+    rent_policy = config.get("metadata", {}).get("additional_assumptions", {}).get("optimus_rent_policy")
+    if rent_policy:
+        from forecast import parameter
+        robot = config["companies"]["tesla"]["segments"]["optimus_owned"]
+        base = config["years"][0]
+        reached = next((y for y in config["years"] if parameter(robot["production_units"], y, base)
+                        >= rent_policy["annual_production_threshold"]), None)
+        if reached != rent_policy["threshold_year"] or reached + 1 != rent_policy["decline_start_year"]:
+            raise ValueError("Optimus rent policy must follow first annual-production threshold year")
+        for y in config["years"]:
+            expected = parameter(robot["monthly_rent_usd"], base, base) * (1-rent_policy["annual_decline_rate"]) ** max(y-reached, 0)
+            if abs(parameter(robot["monthly_rent_usd"],y,base)-expected) > 1e-6:
+                raise ValueError("Optimus rent policy and yearly price curve disagree")
     print(f"Validated {len(seen)} input mappings; unmapped inputs remain uncalibrated.")
 
 

@@ -25,7 +25,9 @@
       "orbital_ai_flight_share": 0.9,
       "orbital_launch_aggregation": "逐台按啟用月份與每台發射頻率相乘、各場加總；保留場址共用額度，不另加全機隊頻率上限。",
       "ground_opening_mw_2027": 3000,
-      "ground_year_end_mw_2027": 13000
+      "ground_year_end_mw_2027": 13000,
+      "optimus_annual_rent_usd_2030": 27000,
+      "optimus_annual_rent_usd_2031": 24300
     },
     "additional_assumptions": {
       "commissioning_start_month_2027": 10,
@@ -42,7 +44,14 @@
       "robotaxi_service_life_years": 6,
       "orbital_service_life_years": 4,
       "automation_eligible_cash_cost_ratio": 0.3,
-      "optimus_production_2030_2031": 10000000
+      "optimus_production_2030_2031": 10000000,
+      "optimus_rent_policy": {
+        "annual_production_threshold": 10000000,
+        "threshold_year": 2029,
+        "annual_decline_rate": 0.1,
+        "decline_start_year": 2030,
+        "scope": "當年全部付費租賃，包含既有與新增機器人；本模型只至2031"
+      }
     },
     "analysis_id": "tesla_spacex",
     "forecast_policy": "同一主預測持續修訂；base是程式識別碼，bear/bull僅為敏感度檢查，修訂版本由Git管理。",
@@ -356,13 +365,20 @@
           "internal_demand_robots": 1000000,
           "internal_avoided_cost_usd_per_robot_year": 30000,
           "rental_utilization": 1,
-          "monthly_rent_usd": 2500,
+          "monthly_rent_usd": {
+            "value": 2500,
+            "growth": 0,
+            "annual": {
+              "2030": 2250,
+              "2031": 2025
+            }
+          },
           "cash_cost_usd_per_robot_year": 2000,
           "opex_usd": 1000000000,
           "capex_usd": 100000000,
           "ev_sales_multiple": 5,
           "volume_unit": "average robots / robot-months",
-          "notes": "使用者本輪全年產量路徑：2027為100萬、2028為500萬、2029為1,000萬台；積極推估，並非公司年度指引。各季分配是爬坡模型假設，不以年底產速乘全年。2030–2031延伸為每年1,000萬、均勻生產，尚未額外假設擴產。內用優先，平均內用需求100萬台；剩餘按100%付費出租，每台每年30,000美元（按月2,500美元計費），不再設額外出租需求上限；年租期間為本輪對使用者報價單位的明列解讀。移除原先累積車隊1,000萬台限制，避免混淆年度製造與持有總量。5年壽命及到期付費替換仍保留。",
+          "notes": "使用者本輪全年產量路徑：2027為100萬、2028為500萬、2029為1,000萬台；積極推估，並非公司年度指引。各季分配是爬坡模型假設，不以年底產速乘全年。2030–2031延伸為每年1,000萬、均勻生產，尚未額外假設擴產。內用優先，平均內用需求100萬台；剩餘按100%付費出租，2027–2029每台年租30,000美元，2029全年產量達1,000萬台後，2030起年租每年複利下降10%：2030為27,000、2031為24,300美元（月租2,250／2,025美元），不再設額外出租需求上限；年租期間為本輪對使用者報價單位的明列解讀。移除原先累積車隊1,000萬台限制，避免混淆年度製造與持有總量。5年壽命及到期付費替換仍保留。 降租適用該年全部付費租賃，包括既有及新增機器人；不是只對新機器人降價。內用節省、製造、維修與折舊不隨租金同比減少。",
           "service_life_years": 5,
           "depreciation_life_years": 5,
           "replace_retired": true,
