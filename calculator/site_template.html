@@ -1814,6 +1814,16 @@ html>body{padding:0}</style>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>年初GW</th><th>新增GW</th><th>年底GW</th><th>平均GW</th><th>硬體替換GW</th><th>投入十億美元</th><th>營收十億美元</th><th>分部營業利益十億美元</th></tr></thead><tbody id="ts-ground-annual"></tbody></table></div>
 <div class="text-small">投入按新增與汰換容量乘單位模型預算計算，不是公司指引；JLL產業價格代理、土地／供電預備額及歷史資產年齡仍待校準。自用容量不創造對外營收。</div>
 </details>
+<details id="ts-payback-audit" open><summary>SpaceX：完整成本與回收期</summary>
+<div class="text-small">2027地面以12個月稅前、無槓桿分部簡單回收反推必要租價，非已證實的公司售價。保留硬體與基建全成本，現金貢獻扣電力、維護及分部研發；未扣公司費用、稅、利息及未來汰換。後續仍降價，不強制每年一年回本；太空獨立計算。</div>
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>分部</th><th>完整成本M美元/MW</th><th>租價美元/計費MWh</th><th>現金貢獻M美元/MW年</th><th>簡單回收月</th></tr></thead><tbody id="ts-payback-annual"></tbody></table></div>
+</details>
+<details id="ts-finance-audit" open><summary>SpaceX：逐年現金、設備租賃與增發</summary>
+<div class="text-small">十億美元。先計營運回款與完整投入，再計40B條件式租賃、5B有限信用及還本付息，剩餘缺口才股票支付。租賃保留資產、折舊與負債，不當現金收入。2031年5月信用額度到期，不自動續約；實際利率、帳期與部分到期金額仍待校準。</div>
+<div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>完整capex</th><th>經濟FCF</th><th>新租賃資產</th><th>現金借款</th><th>全部本金償還</th><th>股票資源對價</th><th>年底現金</th><th>年底債務</th></tr></thead><tbody id="ts-finance-annual"></tbody></table></div>
+<a href="https://github.com/WangChengYeh/AI_eco/blob/main/research/spacex_payback_financing_2026-11-20.md" target="_blank" rel="noopener">完整口徑、來源、前後比較及60個月資金明細</a>
+<details><summary id="ts-monthly-title">所選年度SpaceX逐月資金</summary><div class="text-small">跟隨年度選單；獨立展示SpaceX，金額十億美元。其他業務與營運資金暫均分月份，尚未代表實際帳期或月內最低現金。</div><div class="table-responsive"><table class="table table-sm"><thead><tr><th>月</th><th>稅息前營運現金</th><th>capex</th><th>租賃資產</th><th>信用提用</th><th>信用歸還</th><th>股票支付</th><th>月底現金</th><th>月底信用</th></tr></thead><tbody id="ts-finance-monthly"></tbody></table></div></details>
+</details>
 <details id="ts-orbit-audit"><summary>SpaceX：逐年發射塔、頻率與GW計算</summary>
 <div class="text-small">每架能力＝啟用後各月年化頻率÷12，逐架加總；全部架的累計能力向下取整一次，形成每月新增規劃槽。主預測不另套場址或全機隊上限。許可／環評獨立列示、不參與容量封頂；此為技術容量情境，不代表已獲准或已發生發射。AI槽不等於全部投運。</div>
 <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年</th><th>啟用架數：年初→年底</th><th>單次MW：年初→年底</th><th>每台年化率：年初→年底</th><th>啟用台月數</th><th>架數×頻率技術能力</th><th>取整後規劃發射槽</th><th>AI分配槽</th><th>投運使用AI槽</th></tr></thead><tbody id="ts-orbit-flights"></tbody></table></div>
@@ -1902,6 +1912,8 @@ auditTable('ts-fsd-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.
 auditTable('ts-ground-annual',data[0].segments.filter(r=>r.company_id==='spacex'&&r.segment==='ground_compute').map(r=>[r.year,...['opening_it_mw','commissioned_new_it_mw','year_end_it_mw','average_it_mw','replacement_hardware_mw'].map(k=>fmt(r.drivers[k],1000)),fmt(r.capex_usd,1e9),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 auditTable('ts-optimus-annual',data[0].segments.filter(r=>r.company_id==='tesla'&&r.segment==='optimus_owned').map(r=>[r.year,fmt(r.drivers.production_units,10000),fmt(r.drivers.average_rented_robots,10000),fmt(r.drivers.monthly_rent_usd*12),fmt(r.revenue_usd,1e9),fmt(r.operating_profit_usd,1e9)]));
 auditTable('ts-share-annual',data[0].share_dilution.map(r=>[r.company,r.year,fmt(r.sbc_shares,1e8),fmt(r.resource_shares,1e8),fmt(r.gross_new_shares,1e8),fmt(r.closing_shares,1e8),fmt(r.original_holding_retained*100)+'%',fmt(r.cumulative_dilution*100)+'%']));
+auditTable('ts-payback-annual',data[0].segments.filter(r=>r.company_id==='spacex'&&['ground_compute','orbital_compute'].includes(r.segment)).map(r=>[r.year,r.segment==='ground_compute'?'地面':'太空',fmt(r.drivers.full_capital_usd_per_mw,1e6),fmt(r.drivers.effective_price_usd_per_billable_mw_hour),fmt(r.drivers.annual_cash_contribution_usd_per_mw,1e6),fmt(r.drivers.simple_payback_months)]));
+auditTable('ts-finance-annual',data[0].companies.spacex.map(r=>[r.year,...['capex_usd','economic_fcf_usd','finance_lease_additions_usd','cash_debt_draws_usd','debt_principal_repaid_usd','stock_payment_usd','cash_usd','debt_usd'].map(k=>fmt(r[k],1e9))]));
 const seriesColors=['var(--viz-series-1)','var(--viz-series-2)'];
 let rows=[],selectedData=null;
 year.innerHTML=data[0].companies.tesla.map(r=>'<option>'+r.year+'</option>').join('');
@@ -1969,11 +1981,14 @@ function selection(){
  if(orbital){const d=orbital.drivers;el('ts-current-detail').textContent=r.year+' 太空算力：年底 '+fmt(d.year_end_it_mw/1000)+' GW／平均 '+fmt(d.average_it_mw/1000)+' GW；退役 '+fmt(d.retired_it_mw/1000)+' GW；業務成本 '+fmt(d.segment_cost_per_billable_mw_hour_usd)+' 美元／計費 MW-hour。';}
  else if(robots){const d=robots.drivers;el('ts-current-detail').textContent=r.year+' Optimus：年底 '+fmt(d.closing_fleet/10000)+' 萬台／平均內用 '+fmt(d.average_internal_robots/10000)+' 萬台／平均付費出租 '+fmt(d.average_rented_robots/10000)+' 萬台／每台年租 '+fmt(d.monthly_rent_usd*12)+' 美元；本年替換 '+fmt(d.replacement_units/10000)+' 萬台。';}
  else el('ts-current-detail').textContent='';
+ const sxMonth=selectedData.companies.spacex.find(s=>s.year===r.year);
+ el('ts-monthly-title').textContent=r.year+' 年SpaceX逐月資金';
+ auditTable('ts-finance-monthly',(sxMonth.monthly_financing||[]).map(m=>[m.month,...['cash_operating_before_interest_tax_usd','capex_usd','lease_additions_usd','credit_draw_usd','credit_repaid_usd','stock_payment_usd','closing_cash_usd','closing_credit_usd'].map(k=>fmt(m[k],1e9))]));
  el('ts-revenue').textContent=fmt(r.revenue_usd,1e9);el('ts-income').textContent=fmt(r.net_income_usd,1e9);el('ts-price').textContent=fmt(r.price_pe_usd);el('ts-sotp').textContent='P/E '+fmt(r.pe_multiple)+' 倍；分部估值 '+fmt(r.price_sotp_usd)+' 美元／股';
  el('ts-business-label').textContent=r.year+' 年各業務明細（十億美元）';
  el('ts-business').innerHTML=selectedData.segments.filter(s=>s.company_id===company.value&&s.year===r.year).sort((a,b)=>b.revenue_usd-a.revenue_usd).map(s=>'<tr><td>'+s.segment_name+'</td><td class="text-end">'+fmt(s.revenue_usd,1e9)+'</td><td class="text-end">'+fmt(s.operating_profit_usd,1e9)+'</td></tr>').join('');
  el('ts-equity-payment').innerHTML=[
- ['換股前現金需求（十億美元）',fmt(r.funding_gap_before_stock_usd,1e9)],
+ ['本年換股資金需求合計（十億美元）',fmt(r.funding_gap_before_stock_usd,1e9)],
  ['本年股票支付資源（十億美元）',fmt(r.stock_payment_usd,1e9)],
  ['本年資源對價新增股數（百萬股）',fmt(r.resource_shares_issued,1e6)],
  ['本年資源對價新股占年底股本',fmt(r.resource_dilution_fraction*100)+'%'],

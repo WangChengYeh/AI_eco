@@ -301,6 +301,71 @@
       "status": "mixed_current_baseline_and_proposed_envelopes",
       "checked_at": "2026-11-20",
       "mapping_note": "資訊用途，不映射為主預測場址或逐架上限。Starbase擬議Phase1/2與佛州環評方案不保證已取得營運許可；各場條件須分別閱讀。"
+    },
+    {
+      "id": "spacex_si_payback_statement",
+      "company": "SpaceX",
+      "metric": "SI payback months upper boundary",
+      "period": "2026-10-26",
+      "value": 12,
+      "unit": "months",
+      "source": "https://ir.spacex.com/updates/releases-details/2026/SPACEX-SECURES-40-BILLION-IN-THE-LARGEST-GPU-FINANCING-EVER-2026-EnDqGhTAB3/",
+      "status": "company_disclosed",
+      "mapping_note": "公司稱現有SI投資少於一年；未披露分子分母、項目或完整成本範圍；12月是模型邊界而非精確實績。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_apollo_conditional_financing",
+      "company": "SpaceX",
+      "metric": "conditional GPU finance lease principal",
+      "period": "2026-10-26",
+      "value": 40000000000.0,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000110465926118614/tm2628247d1_8k.htm",
+      "status": "company_disclosed",
+      "mapping_note": "尚有交割條件，預計2027上半年設備交付起租，約5–5.25年，季度期初還本金1/20加固定利率，利率待定。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_revolver_limit",
+      "company": "SpaceX",
+      "metric": "SpaceX amended revolving facility limit",
+      "period": "2026-Q3",
+      "value": 5000000000.0,
+      "unit": "USD",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "2026Q3未提用；含信用狀子額度與財務契約；2031-05-19到期，不等於現金或保證可提滿。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_debt_maturities",
+      "company": "SpaceX",
+      "metric": "scheduled principal 2027 through2030",
+      "period": "2026-Q3",
+      "value": [
+        2425000000.0,
+        2867000000.0,
+        3422000000.0,
+        3597000000.0
+      ],
+      "unit": "USD/year",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "此表不提供2031單年本金；債券五批自2031起到期，不能當2031零還款。",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_notes_coupon",
+      "company": "SpaceX",
+      "metric": "notes weighted average coupon",
+      "period": "2026-Q3",
+      "value": 0.05855,
+      "unit": "fraction/year",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm",
+      "status": "company_disclosed",
+      "mapping_note": "僅25B債券票息，非全部借款有效利率；用於統一舊債屬模型代理。",
+      "checked_at": "2026-11-20"
     }
   ]
 }

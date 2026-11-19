@@ -120,7 +120,7 @@ class LifecycleEconomics(unittest.TestCase):
         for rows in r["companies"].values():
             for a in rows:
                 self.assertAlmostEqual(a["resource_shares_issued"] * (a["stock_payment_price_usd"] or 0), a["stock_payment_usd"], delta=.01)
-                self.assertAlmostEqual(a["cash_capex_usd"] + a["stock_paid_capex_usd"], a["capex_usd"], delta=.01)
+                self.assertAlmostEqual(a["cash_capex_usd"] + a["stock_paid_capex_usd"] + a.get("finance_lease_additions_usd", 0), a["capex_usd"], delta=.01)
                 self.assertGreaterEqual(a["cash_usd"], -.01)
         old = {}
         for s in r["segments"]:

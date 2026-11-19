@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-20",
-  "coverage": "22項使用者輸入及25項命題；星艦容量改純逐架頻率乘啟用時間加總，移除場址／全機隊封頂，許可獨立列示。",
+  "coverage": "23項使用者輸入及26項命題；新增SI回收口徑、設備租賃與有限信用額度；精確校準價格及融資代理不冒稱公司指引。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -218,6 +218,18 @@
       "url": "https://ir.spacex.com/updates/releases-details/2026/SPACEX-SECURES-40-BILLION-IN-THE-LARGEST-GPU-FINANCING-EVER-2026-EnDqGhTAB3/",
       "access": "primary_text_read",
       "access_note": "已讀公司2026-10-26公告，40B為附交割條件融資租賃承諾，不是本次已交付設備。"
+    },
+    "payback_ir": {
+      "title": "SpaceX CFO SI回收及融資公告",
+      "url": "https://ir.spacex.com/updates/releases-details/2026/SPACEX-SECURES-40-BILLION-IN-THE-LARGEST-GPU-FINANCING-EVER-2026-EnDqGhTAB3/",
+      "access": "primary_text_read",
+      "access_note": "2026-11-20重讀公司原文；區分管理層回收主張、尚待交割承諾及模型校準。"
+    },
+    "apollo_8k": {
+      "title": "SpaceX Apollo條件式設備租賃8-K",
+      "url": "https://www.sec.gov/Archives/edgar/data/1181412/000110465926118614/tm2628247d1_8k.htm",
+      "access": "primary_text_read",
+      "access_note": "2026-11-20重讀公司原文；區分管理層回收主張、尚待交割承諾及模型校準。"
     }
   },
   "claims": [
@@ -801,7 +813,7 @@
       "verdict": "partial_support",
       "verdict_label": "支持管理層目標方向；月度時程、成本與多年擴張仍為模型假設",
       "finding": "SEC已披露2026Q3名目容量1.7GW；第三方逐字稿支持3→13GW的條件目標。JLL提供產業成本代理，公司40B租賃承諾支持資源動員方向。",
-      "limits": "13GW不是已交付容量；平均8GW依均勻投運推導。18%多年成長、設備價格降3%、4／20年壽命、期初零齡與15M基建預算未獲SpaceX驗證。GW不衡量不同GPU的同品質任務效能。Apollo租賃尚未納入負債與付款表，不能同時當新現金與免費設備。",
+      "limits": "13GW不是已交付容量；平均8GW依均勻投運推導。18%多年成長、設備價格降3%、4／20年壽命、期初零齡與15M基建預算未獲SpaceX驗證。GW不衡量不同GPU的同品質任務效能。Apollo條件式租賃已按模型排程納入負債及付款，利率、批次及交割仍待驗證，不能同時當新現金與免費設備。",
       "forecast_action": "以月中批次計3→13GW，平均8GW；2028起按年底容量18%曲線。硬體25M、基建15M美元/MW；按4／20年批次折舊與替換，新增成本進capex與FCF，資金缺口依既有股票資源支付假設計稀釋。"
     },
     {
@@ -828,6 +840,30 @@
         "tesla_q3",
         "baron_host",
         "rental_report"
+      ],
+      "searched_at": "2026-11-20"
+    },
+    {
+      "id": "spacex_payback_financing",
+      "title": "SpaceX一年內回本與資金時點",
+      "claim": "一年內回本是否足以支付當期擴張、避免增發",
+      "user_values": {
+        "spacex_payback_financing_update": "依一年內回本主張重新校準回收口徑及租賃／借款／增發，完整成本與股數均保留"
+      },
+      "verdict": "partial_support",
+      "verdict_label": "官方支持SI少於一年，完整口徑與未來仍未證實",
+      "finding": "CFO公告稱SI投資少於一年回收；SEC載40B條件式GPU租賃、2027上半年分批起租、季度期初本金及利息。信用額度有上限與到期日。",
+      "limits": "未披露逐案分子分母、完整成本或租價；不支持所有未來地面／太空項目都一年回本，也不保證融資可交割或新增授信。2031到期本金、現金回款及實際利率仍待校準。",
+      "musk_search": "已查Musk算力容量及公司SI回收訊息；一年內回收的本輪可核驗來源為CFO公告，不冒稱Musk逐項成本承諾。 搜尋亦取得第三方對Musk稱融資closed的轉述；原貼本輪未直接核驗，交割狀態以已讀8-K及公司附條件公告限縮，未取得後續完成交割的可核驗公告。",
+      "forecast_action": "2027地面以完整投資12個月稅前分部簡單回收反推價格，後續保留降價；太空獨立計算。月度先回款／全額資本投入，再條件式租賃、有限信用、剩餘股票支付；本金、利息、到期及稀釋同步。",
+      "search_queries": [
+        "site:ir.spacex.com Apollo 40 billion financing closed November 2026",
+        "Elon Musk SpaceX SI compute payback less than one year 2026"
+      ],
+      "source_ids": [
+        "payback_ir",
+        "apollo_8k",
+        "spacex_sec"
       ],
       "searched_at": "2026-11-20"
     }

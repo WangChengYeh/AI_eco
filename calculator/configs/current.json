@@ -28,7 +28,8 @@
       "ground_year_end_mw_2027": 13000,
       "optimus_annual_rent_usd_2030": 27000,
       "optimus_annual_rent_usd_2031": 24300,
-      "orbital_launch_capacity_method": "pad_frequency"
+      "orbital_launch_capacity_method": "pad_frequency",
+      "spacex_payback_financing_update": "依一年內回本主張重新校準回收口徑及租賃／借款／增發，完整成本與股數均保留"
     },
     "additional_assumptions": {
       "commissioning_start_month_2027": 10,
@@ -52,6 +53,13 @@
         "annual_decline_rate": 0.1,
         "decline_start_year": 2030,
         "scope": "當年全部付費租賃，包含既有與新增機器人；本模型只至2031"
+      },
+      "ground_payback_calibration": {
+        "year": 2027,
+        "target_months": 12,
+        "scope": "full_hardware_plus_infrastructure_unlevered_pretax_segment_cash",
+        "price_implied_usd_per_billable_mw_hour": 10506.001304666654,
+        "not_company_disclosed_price": true
       }
     },
     "analysis_id": "tesla_spacex",
@@ -431,14 +439,23 @@
         "growth": 0.08,
         "annual": {}
       },
-      "interest_rate": 0.06,
+      "interest_rate": 0.05855,
       "tax_rate": 0.21,
       "pe_multiple": 40,
       "corporate_ev_cost_multiple": 5,
       "nwc_revenue_ratio": 0.03,
       "opening_nwc_usd": 1000000000.0,
       "debt_issued_usd": 0,
-      "debt_repaid_usd": 0,
+      "debt_repaid_usd": {
+        "value": 0,
+        "annual": {
+          "2027": 2425000000.0,
+          "2028": 2867000000.0,
+          "2029": 3422000000.0,
+          "2030": 3597000000.0,
+          "2031": 5000000000.0
+        }
+      },
       "equity_raised_usd": 0,
       "equity_issue_price_usd": 100,
       "sbc_dilution_rate": 0.015,
@@ -607,7 +624,7 @@
           "external_utilization": 0.75,
           "internal_utilization": 0.7,
           "price_usd_per_billable_mw_hour": {
-            "value": 3500,
+            "value": 10506.001304666654,
             "growth": -0.06,
             "annual": {}
           },
@@ -626,7 +643,7 @@
           },
           "capex_usd": 0,
           "ev_sales_multiple": 4,
-          "notes": "依Musk 2026Q3第三方逐字稿：2026年底約2.5–3GW、2027新增10GW，主預測取年初3GW→年底13GW，月度均勻投運，全年平均8GW。非已確認實績或原片核驗。2028起年底容量沿用18%成長（模型假設）；20GW以上僅作目標邊界，不納入主預測。新增與汰換按歷史成本批次折舊；硬體25M美元/MW為JLL產業高端代理，基建15M含液冷殼體12.43M與土地／額外供電等2.57M預備額；非SpaceX報價或已驗證完整預算。硬體4年、基建20年，期初資產視為零齡並以同單位成本估值，期初購置不重複計capex。Apollo40B租賃尚有交割條件，未另增現金或債務，避免與股票支付情境重複融資。",
+          "notes": "依Musk 2026Q3第三方逐字稿：2026年底約2.5–3GW、2027新增10GW，主預測取年初3GW→年底13GW，月度均勻投運，全年平均8GW。非已確認實績或原片核驗。2028起年底容量沿用18%成長（模型假設）；20GW以上僅作目標邊界，不納入主預測。新增與汰換按歷史成本批次折舊；硬體25M美元/MW為JLL產業高端代理，基建15M含液冷殼體12.43M與土地／額外供電等2.57M預備額；非SpaceX報價或已驗證完整預算。硬體4年、基建20年，期初資產視為零齡並以同單位成本估值，期初購置不重複計capex。 2027以完整硬體加基建40M美元/MW、扣現金營運成本及分部研發後、稅前無槓桿12個月簡單回收為邊界反推租價；此為校準假設，非公司披露價格或完整回收定義。後續價格仍每年降6%，不強制每年一年回本。Apollo40B條件式租賃於2027上半年分六批進帳，保留完整資產與折舊，負債與付款另列。",
           "volume_unit": "billable MW-hour",
           "capacity_ramp": {
             "opening_it_mw": 3000,
@@ -1010,6 +1027,25 @@
         "discount_rate": 0,
         "cash_buffer_usd": 0,
         "notes": "理論001的情境假設：供應商接受股份直接支付資源，資本支出優先，再抵付合格現金營運支出。參考協議價為示例，未連結同年稀釋後估值，並非已簽約或無限融資的實證。"
+      },
+      "monthly_finance": {
+        "enabled": true,
+        "credit_limit_usd": 5000000000.0,
+        "credit_interest_rate": 0.065,
+        "credit_expiry_year": 2031,
+        "credit_expiry_month": 5,
+        "cash_buffer_usd": 0,
+        "lease_commitment_usd": {
+          "value": 0,
+          "annual": {
+            "2027": 40000000000.0
+          }
+        },
+        "lease_start_month": 1,
+        "lease_delivery_months": 6,
+        "lease_term_months": 60,
+        "lease_interest_rate": 0.065,
+        "notes": "條件式Apollo承諾僅2027計40B；假設1–6月各交付1/6，季度期初本金1/20及利息。6.5%未披露實際利率代理，未另虛構未來設備融資。5B信用額度假設符合契約並全可動用，2031年5月到期須償還，不自動續約；未合併子公司額度。既有債務2027–30用披露到期額，2031債券五批中首批假設5B（未披露各批本金）；既有租賃0.983B仍含期初債務，其到期分配待校準。舊債統一5.855%為代理，非各項真實有效利率。營運按月回款，其他業務與營運資金均分月份，未假設客戶預收。"
       }
     }
   },

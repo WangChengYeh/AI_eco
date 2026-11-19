@@ -31,14 +31,27 @@ def reconcile(result):
             pretax=row['operating_profit_usd']-row['interest_usd']
             eq(row['net_income_usd'],pretax-row['tax_usd'],'net profit')
             eq(row['economic_fcf_usd'],row['net_income_usd']+row['da_usd']-row['capex_usd']-row['delta_nwc_usd'],'economic FCF')
-            eq(row['cash_fcf_usd'],row['economic_fcf_usd']+row['sbc_expense_usd']+row['stock_payment_usd'],'cash FCF')
-            eq(row['cash_usd'],prior_cash+row['cash_fcf_usd']+p('debt_issued_usd')-p('debt_repaid_usd')+p('equity_raised_usd')-p('buybacks_usd')-p('dividends_usd'),'liquidity rollforward')
-            eq(row['debt_usd'],prior_debt+p('debt_issued_usd')-p('debt_repaid_usd'),'debt rollforward')
+            eq(row['cash_fcf_usd'],row['economic_fcf_usd']+row['sbc_expense_usd']+row['stock_payment_usd']+row.get('finance_lease_additions_usd',0),'cash FCF')
+            eq(row['cash_usd'],prior_cash+row['cash_fcf_usd']+row.get('cash_debt_draws_usd',p('debt_issued_usd'))-row.get('debt_principal_repaid_usd',p('debt_repaid_usd'))+p('equity_raised_usd')-p('buybacks_usd')-p('dividends_usd'),'liquidity rollforward')
+            eq(row['debt_usd'],prior_debt+row.get('cash_debt_draws_usd',p('debt_issued_usd'))+row.get('finance_lease_additions_usd',0)-row.get('debt_principal_repaid_usd',p('debt_repaid_usd')),'debt rollforward')
             eq(row['shares'],prior_shares*p('stock_split',1)*(1+p('sbc_dilution_rate'))+row['cash_equity_shares_issued']+row['resource_shares_issued']-(p('buybacks_usd')/p('buyback_price_usd') if p('buybacks_usd') else 0),'share rollforward')
             eq(row['stock_payment_usd'],row['resource_shares_issued']*(row['stock_payment_price_usd'] or 0),'resource equity consideration')
-            eq(row['capex_usd'],row['cash_capex_usd']+row['stock_paid_capex_usd'],'cash/noncash capex')
+            eq(row['capex_usd'],row['cash_capex_usd']+row['stock_paid_capex_usd']+row.get('finance_lease_additions_usd',0),'cash/noncash capex')
             if row['price_pe_usd'] is not None: eq(row['price_pe_usd']*row['shares'],row['net_income_usd']*row['pe_multiple'],'P/E price share basis')
             if row['price_sotp_usd'] is not None:eq(row['price_sotp_usd']*row['shares'],row['sotp_equity_value_usd'],'SOTP price share basis')
+            if 'monthly_financing' in row:
+                months=row['monthly_financing']
+                if len(months)!=12:raise ValueError('missing monthly finance rows')
+                for key in ('capex_usd','interest_usd','interest_paid_usd','tax_usd','stock_payment_usd','resource_shares_issued'):
+                    eq(sum(m[key] for m in months),row[key],'monthly annual sum '+key)
+                eq(row['tax_usd'],max(pretax,0)*p('tax_rate',.21),'YTD monthly tax')
+                mc,md=prior_cash,prior_debt
+                for m in months:
+                    eq(m['closing_cash_usd'],mc+m['cash_operating_before_interest_tax_usd']-m['interest_paid_usd']-m['tax_usd']-m['capex_usd']-m['working_capital_change_usd']+m['lease_additions_usd']+m['legacy_debt_draw_usd']-m['legacy_debt_repaid_usd']-m['lease_principal_usd']+m['credit_draw_usd']-m['credit_repaid_usd']+m['stock_payment_usd']+(p('equity_raised_usd')-p('buybacks_usd')-p('dividends_usd'))/12,'monthly cash bridge')
+                    eq(m['closing_debt_usd'],md+m['lease_additions_usd']+m['legacy_debt_draw_usd']-m['legacy_debt_repaid_usd']-m['lease_principal_usd']+m['credit_draw_usd']-m['credit_repaid_usd'],'monthly debt bridge')
+                    checks+=1
+                    if m['closing_credit_usd']>m['credit_limit_usd']+.01:raise ValueError('credit exceeds available facility')
+                    mc,md=m['closing_cash_usd'],m['closing_debt_usd']
             prior_cash,prior_debt,prior_shares=row['cash_usd'],row['debt_usd'],row['shares']
     inventory={}
     for row in result['segments']:
@@ -58,6 +71,10 @@ def reconcile(result):
         if spec['kind'] in ('compute','orbital_compute') and row['active']:
             hours=24*(366 if calendar.isleap(year) else 365)
             eq(d['calendar_hours'],hours,'calendar hours')
+            if d.get('simple_payback_months') is not None:
+                cash_unit=(row['revenue_usd']-row['cogs_usd']+row['da_usd']-row['opex_usd'])/d['average_it_mw']
+                eq(d['annual_cash_contribution_usd_per_mw'],cash_unit,'unit pretax cash contribution')
+                eq(d['simple_payback_months']*cash_unit/12,d['full_capital_usd_per_mw'],'full capital payback')
             eq(row['revenue_usd'],d['average_it_mw']*p('external_share',1)*p('external_utilization',1)*p('availability',1)*hours*p('price_usd_per_billable_mw_hour'),'compute billed revenue')
         if spec['kind']=='compute' and 'capacity_ramp' in spec and row['active']:
             ramp=spec['capacity_ramp']

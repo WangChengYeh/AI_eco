@@ -170,9 +170,12 @@ def asset_rollforward(state, year, new_assets, service_life, da_life,
                              "born": v["born"] + v["life"],
                              "life": service_life, "da_life": da_life})
     average = depreciation = writeoff = book = closing = pending = 0.0
+    monthly_units = [0.0] * 12
     for v in vintages:
         born, dead = v["born"], v["born"] + v["life"]
         value = v["units"] * v["cost"]
+        for i in range(12):
+            monthly_units[i] += v["units"] * max(min(year+(i+1)/12,dead)-max(year+i/12,born),0)*12
         average += v["units"] * max(min(year + 1, dead) - max(year, born), 0)
         depreciation += value / v["da_life"] * max(min(year + 1, dead, born + v["da_life"]) - max(year, born), 0)
         if year <= dead < year + 1:
@@ -186,7 +189,9 @@ def asset_rollforward(state, year, new_assets, service_life, da_life,
     state["asset_vintages"] = [v for v in vintages if v["born"] + v["life"] >= year + 1]
     return {"opening": opening, "closing": closing, "average": average,
             "retirements": sum(v["units"] for v in expired), "replacements": replacements,
-            "da": depreciation + writeoff, "writeoff": writeoff, "book": book, "pending": pending}
+            "da": depreciation + writeoff, "writeoff": writeoff, "book": book, "pending": pending,
+            "monthly_average_units": monthly_units,
+            "replacement_events": [{"month": min(int((v["born"]+v["life"]-year)*12+1e-7)+1,12), "units":v["units"]} for v in expired] if replace else []}
 
 
 def robotaxi_production(ramp, year, base_year):
@@ -376,10 +381,17 @@ def ground_capacity_rollforward(ramp, year, base_year, state):
     hardware, infra = ledgers["hardware"], ledgers["infrastructure"]
     state["ground_closing_mw"] = hardware["closing"]
     monthly_adds = [additions * w for w in weights]
-    monthly_average = [opening + sum(monthly_adds[:m]) + monthly_adds[m] / 2 for m in range(12)]
+    monthly_average = hardware["monthly_average_units"]
+    monthly_capital = {}
+    for asset in ("hardware", "infrastructure"):
+        monthly_capital[asset]=[q*p(asset+"_cost_usd_per_mw") for q in monthly_adds]
+        for event in ledgers[asset]["replacement_events"]:
+            monthly_capital[asset][event["month"]-1]+=event["units"]*p(asset+"_cost_usd_per_mw")
     drivers = {"opening_it_mw": opening, "year_end_it_mw": hardware["closing"],
         "commissioned_new_it_mw": additions, "average_it_mw": hardware["average"],
         "monthly_new_it_mw": monthly_adds, "monthly_average_it_mw": monthly_average,
+        "monthly_hardware_capex_usd": monthly_capital["hardware"],
+        "monthly_capex_usd": [a+b for a,b in zip(monthly_capital["hardware"],monthly_capital["infrastructure"])],
         "retired_hardware_mw": hardware["retirements"],
         "replacement_hardware_mw": hardware["replacements"],
         "replacement_infrastructure_mw": infra["replacements"],
@@ -637,6 +649,7 @@ def segment_forecast(segment, year, base_year, state):
                         opening_unit_cost=max(book - inventory * hardware, 0) / opening if opening else 0)
                     opening, closing, mw = lifecycle["opening"], lifecycle["closing"], lifecycle["average"]
                     retired_mw = lifecycle["retirements"]
+                    launch_drivers["monthly_average_it_mw"] = lifecycle["monthly_average_units"]
                     extra_da = lifecycle["da"] + writeoff
                     state.update(commissioned_mw=closing,
                                  orbital_book=lifecycle["book"] + sum(q * cost for q, cost in state["inventory_lots"]))
@@ -646,6 +659,8 @@ def segment_forecast(segment, year, base_year, state):
                                    "retired_it_mw": retired_mw,
                                    "commissioning_start_month": month, "deployment_writeoff_usd": writeoff,
                                    "closing_net_book_value_usd": state["orbital_book"], **launch_drivers}
+                if deployed_monthly is not None:
+                    orbital_drivers["monthly_capex_usd"] = [q*hardware+d*launch for q,d in zip(manufactured_monthly,deployed_monthly)]
             elif "capacity_ramp" in segment:
                 if "average_it_mw" in segment or "hardware_da_usd_per_mw_year" in segment:
                     raise ModelError("capacity_ramp cannot also set average_it_mw or manual hardware depreciation")
@@ -668,16 +683,28 @@ def segment_forecast(segment, year, base_year, state):
                 extra_da = mw * p("hardware_da_usd_per_mw_year")
             cogs = energy_kwh * p("electricity_usd_per_kwh") + mw * p("cash_overhead_usd_per_mw_year") + extra_da
             inputs = {"average_it_mw": mw, "external_share": external, "internal_share": internal,
-                      "billable_mwh": billable_mwh, "calendar_hours": calendar_hours, "electricity_kwh": energy_kwh, **orbital_drivers}
+                      "billable_mwh": billable_mwh, "calendar_hours": calendar_hours, "electricity_kwh": energy_kwh,
+                      "effective_price_usd_per_billable_mw_hour": p("price_usd_per_billable_mw_hour"), **orbital_drivers}
     # Pre-launch R&D, capex and depreciation are intentionally NOT suppressed.
     opex, capex = p("opex_usd"), p("capex_usd") + revenue * p("capex_revenue_ratio") + extra_capex
     da = p("da_usd") + revenue * p("da_revenue_ratio") + extra_da
+    if "monthly_capex_usd" in inputs:
+        inputs["monthly_capex_usd"] = [v+(p("capex_usd")+revenue*p("capex_revenue_ratio"))/12 for v in inputs["monthly_capex_usd"]]
     # Explicit/revenue-based DA is part of COGS; special-kind DA already included.
     cogs += da - extra_da
     if kind in ("compute", "orbital_compute") and inputs.get("billable_mwh", 0):
         # Entire segment cost / external billed output: includes internal/idle
         # capacity costs, excludes corporate overhead and funding charges.
         inputs["segment_cost_per_billable_mw_hour_usd"] = (cogs + opex) / inputs["billable_mwh"]
+        if kind=="compute" and "capacity_ramp" in segment:
+            capital_unit=sum(parameter(segment["capacity_ramp"][k],year,base_year) for k in ("hardware_cost_usd_per_mw","infrastructure_cost_usd_per_mw"))
+        elif kind=="orbital_compute":capital_unit=p("hardware_cost_usd_per_mw")+p("deployment_cost_usd_per_mw")
+        else:capital_unit=0
+        cash_margin=revenue-(cogs-da)-opex
+        unit_cash=cash_margin/inputs["average_it_mw"] if inputs["average_it_mw"] else 0
+        inputs.update(full_capital_usd_per_mw=capital_unit,
+            annual_cash_contribution_usd_per_mw=unit_cash,
+            simple_payback_months=capital_unit/unit_cash*12 if capital_unit and unit_cash>0 else None)
     if kind == "robot_fleet" and inputs.get("average_fleet", 0):
         inputs["segment_cost_per_robot_year_usd"] = (cogs + opex) / inputs["average_fleet"]
     return {"active": active, "volume_unit": segment.get("volume_unit", "see config notes"),
@@ -697,7 +724,7 @@ COMPANY_FIELDS = {
     "sbc_dilution_rate", "sbc_expense_usd", "stock_split", "dividends_usd", "buybacks_usd", "buyback_price_usd",
     "robotics_savings_usd", "robotics_max_cogs_share", "robotics_capex_usd", "robotics_da_usd",
     "passenger_production_capacity", "robotaxi_segment_id", "passenger_segment_id",
-    "stock_payment",
+    "stock_payment", "monthly_finance",
 }
 
 
@@ -755,6 +782,7 @@ def company_forecast(company, years):
     states, summaries, details = {}, [], []
     funding_failed = False
     stock_payment_assumed = False
+    finance_state = {}
     for year in years:
         def p(key, default=0, minimum=0, maximum=None):
             return parameter(company.get(key, default), year, base, key, minimum, maximum)
@@ -809,45 +837,72 @@ def company_forecast(company, years):
         sbc = p("sbc_expense_usd")
         corporate_opex = p("corporate_opex_usd") + robot_da + sbc
         operating = sum(row["operating_profit_usd"] for row in rows.values()) - corporate_opex
-        new_debt, repaid = p("debt_issued_usd"), p("debt_repaid_usd")
-        if repaid > debt + new_debt:
-            raise ModelError(f"{year}: debt repayment exceeds available debt")
-        closing_debt = debt + new_debt - repaid
-        interest = (debt + closing_debt) / 2 * p("interest_rate")
-        pretax = operating - interest
-        tax = max(pretax, 0) * p("tax_rate", 0.21, 0, 1)
-        net = pretax - tax
-        da = sum(row["da_usd"] for row in rows.values()) + robot_da
-        capex = sum(row["capex_usd"] for row in rows.values()) + p("robotics_capex_usd")
-        closing_nwc = revenue * p("nwc_revenue_ratio", 0, 0, 1)
-        delta_nwc = closing_nwc - nwc
-        economic_fcf = net + da - capex - delta_nwc
-        cash_fcf = economic_fcf + sbc
-        raised, buybacks, dividends = p("equity_raised_usd"), p("buybacks_usd"), p("dividends_usd")
-        split = p("stock_split", 1, 1e-9)
-        opening_shares = shares * split
-        issue_price, buyback_price = p("equity_issue_price_usd"), p("buyback_price_usd")
-        if raised and not issue_price:
-            raise ModelError("positive equity_raised_usd requires positive equity_issue_price_usd")
-        if buybacks and not buyback_price:
-            raise ModelError("positive buybacks_usd requires positive buyback_price_usd")
-        issued = raised / issue_price if raised else 0
-        retired = buybacks / buyback_price if buybacks else 0
-        cash_before_stock = cash + cash_fcf + new_debt - repaid + raised - buybacks - dividends
-        # Only resource expenditures are eligible; taxes, interest, dividends,
-        # debt repayments and noncash DA/SBC are not a new resource-payment pool.
-        cash_operating_cost = max(cogs + sum(row["opex_usd"] for row in rows.values()) + corporate_opex - da - sbc, 0)
-        stock = settle_resources_with_stock(company.get("stock_payment", {}), year, base,
-                                            cash_before_stock, capex, cash_operating_cost)
-        stock_payment_assumed = stock_payment_assumed or stock["stock_payment_usd"] > 0
-        cash_fcf += stock["stock_payment_usd"]
+        finance_fields = {}
+        if company.get("monthly_finance", {}).get("enabled", False):
+            from monthly_finance import finance_year
+            da = sum(row["da_usd"] for row in rows.values()) + robot_da
+            capex = sum(row["capex_usd"] for row in rows.values()) + p("robotics_capex_usd")
+            closing_nwc = revenue * p("nwc_revenue_ratio", 0, 0, 1)
+            delta_nwc = closing_nwc - nwc
+            finance_fields = finance_year(company,year,base,rows,finance_state,cash,debt,operating,
+                da,sbc,corporate_opex,robot_da,capex,delta_nwc,parameter,settle_resources_with_stock)
+            new_debt,repaid=finance_fields["cash_debt_draws_usd"],finance_fields["debt_principal_repaid_usd"]
+            closing_debt=finance_fields["debt_usd"]
+            interest,tax,net=(finance_fields[k] for k in ("interest_usd","tax_usd","net_income_usd"))
+            pretax=operating-interest
+            delta_nwc,economic_fcf,cash_fcf=(finance_fields[k] for k in ("delta_nwc_usd","economic_fcf_usd","cash_fcf_usd"))
+            raised,buybacks,dividends=p("equity_raised_usd"),p("buybacks_usd"),p("dividends_usd")
+            opening_shares=shares*p("stock_split",1,1e-9)
+            issue_price,buyback_price=p("equity_issue_price_usd"),p("buyback_price_usd")
+            if raised and not issue_price or buybacks and not buyback_price:raise ModelError("equity issuance/buyback requires price")
+            issued=raised/issue_price if raised else 0
+            retired=buybacks/buyback_price if buybacks else 0
+            cash_before_stock=finance_fields["cash_before_stock_payment_usd"]
+            stock={k:finance_fields[k] for k in ("stock_payment_usd","stock_paid_capex_usd","stock_paid_opex_usd","resource_shares_issued","stock_payment_price_usd")}
+            stock_payment_assumed=stock_payment_assumed or stock["stock_payment_usd"]>0
+        else:
+            new_debt, repaid = p("debt_issued_usd"), p("debt_repaid_usd")
+            if repaid > debt + new_debt:
+                raise ModelError(f"{year}: debt repayment exceeds available debt")
+            closing_debt = debt + new_debt - repaid
+            interest = (debt + closing_debt) / 2 * p("interest_rate")
+            pretax = operating - interest
+            tax = max(pretax, 0) * p("tax_rate", 0.21, 0, 1)
+            net = pretax - tax
+            da = sum(row["da_usd"] for row in rows.values()) + robot_da
+            capex = sum(row["capex_usd"] for row in rows.values()) + p("robotics_capex_usd")
+            closing_nwc = revenue * p("nwc_revenue_ratio", 0, 0, 1)
+            delta_nwc = closing_nwc - nwc
+            economic_fcf = net + da - capex - delta_nwc
+            cash_fcf = economic_fcf + sbc
+            raised, buybacks, dividends = p("equity_raised_usd"), p("buybacks_usd"), p("dividends_usd")
+            split = p("stock_split", 1, 1e-9)
+            opening_shares = shares * split
+            issue_price, buyback_price = p("equity_issue_price_usd"), p("buyback_price_usd")
+            if raised and not issue_price:
+                raise ModelError("positive equity_raised_usd requires positive equity_issue_price_usd")
+            if buybacks and not buyback_price:
+                raise ModelError("positive buybacks_usd requires positive buyback_price_usd")
+            issued = raised / issue_price if raised else 0
+            retired = buybacks / buyback_price if buybacks else 0
+            cash_before_stock = cash + cash_fcf + new_debt - repaid + raised - buybacks - dividends
+            # Only resource expenditures are eligible; taxes, interest, dividends,
+            # debt repayments and noncash DA/SBC are not a new resource-payment pool.
+            cash_operating_cost = max(cogs + sum(row["opex_usd"] for row in rows.values()) + corporate_opex - da - sbc, 0)
+            stock = settle_resources_with_stock(company.get("stock_payment", {}), year, base,
+                                                cash_before_stock, capex, cash_operating_cost)
+            stock_payment_assumed = stock_payment_assumed or stock["stock_payment_usd"] > 0
+            cash_fcf += stock["stock_payment_usd"]
         diluted = opening_shares * (1 + p("sbc_dilution_rate", 0, 0, 1)) + issued + stock["resource_shares_issued"] - retired
         if diluted <= 0:
             raise ModelError("buybacks cannot eliminate all outstanding shares")
         weighted = (opening_shares + diluted) / 2
-        closing_cash = cash_before_stock + stock["stock_payment_usd"]
+        if finance_fields:
+            # Resource shares issued mid-month; other annual share flows assumed uniform.
+            weighted += sum(m["resource_shares_issued"]*(12-m["month"]+.5)/12 for m in finance_fields["monthly_financing"]) - stock["resource_shares_issued"]/2
+        closing_cash = finance_fields.get("cash_usd", cash_before_stock + stock["stock_payment_usd"])
         # A negative balance is an unfunded deficit, never silently an overdraft/financing round.
-        funding_failed = funding_failed or closing_cash < 0
+        funding_failed = funding_failed or closing_cash < -0.01 or any(m["closing_cash_usd"] < -0.01 for m in finance_fields.get("monthly_financing", []))
         ev = sum(row["revenue_usd"] * row["ev_sales_multiple"] for row in rows.values()) - corporate_opex * p("corporate_ev_cost_multiple")
         equity = ev + closing_cash - closing_debt
         pe = p("pe_multiple")
@@ -860,7 +915,7 @@ def company_forecast(company, years):
             "interest_usd": interest, "tax_usd": tax, "net_income_usd": net,
             "da_usd": da, "capex_usd": capex, "delta_nwc_usd": delta_nwc,
             "economic_fcf_usd": economic_fcf, "cash_fcf_usd": cash_fcf,
-            "cash_capex_usd": capex - stock["stock_paid_capex_usd"],
+            "cash_capex_usd": capex - stock["stock_paid_capex_usd"] - finance_fields.get("finance_lease_additions_usd",0),
             "cash_before_stock_payment_usd": cash_before_stock,
             "funding_gap_before_stock_usd": max(0.0, -cash_before_stock),
             "cash_equity_raised_usd": raised, "cash_equity_shares_issued": issued,
@@ -881,6 +936,7 @@ def company_forecast(company, years):
             "price_sotp_unavailable_reason": "non_positive_equity_value" if equity <= 0 else None,
             "robotics_savings_usd": savings,
             "robotics_savings_requested_usd": requested_savings,
+            **finance_fields,
         }
         for key, row in rows.items():
             row["gross_margin"] = row["gross_profit_usd"] / row["revenue_usd"] if row["revenue_usd"] else None

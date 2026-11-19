@@ -1,6 +1,6 @@
 {
   "checked_at": "2026-11-20",
-  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。 Optimus租金曲線及2030／2031年租與使用者指令綁定。 發射容量改純逐架頻率加總，許可僅資訊。",
+  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。 Optimus租金曲線及2030／2031年租與使用者指令綁定。 發射容量改純逐架頻率加總，許可僅資訊。 地面回收租價與月度融資時程已映射，條件性及代理值明列。",
   "records": [
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.value",
@@ -654,6 +654,78 @@
       "basis": "使用者明確要求估算發射頻率乘發射架，移除額外場址封頂。",
       "fact_ids": [],
       "research_claim_id": "orbital_launch_network",
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.price_usd_per_billable_mw_hour.value",
+      "value": 10506.001304666654,
+      "unit": "USD/billable MW-hour",
+      "classification": "model_assumption",
+      "basis": "反推2027完整40M/MW投資在分部稅前現金貢獻下12個月回收的必要租價；不是已觀察售價。",
+      "fact_ids": [
+        "spacex_si_payback_statement"
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.interest_rate",
+      "value": 0.05855,
+      "unit": "fraction/year",
+      "classification": "model_assumption",
+      "basis": "把已披露債券票息作舊債統一代理，未代表各項實際利率。",
+      "fact_ids": [
+        "spacex_notes_coupon"
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.debt_repaid_usd",
+      "value": {
+        "value": 0,
+        "annual": {
+          "2027": 2425000000.0,
+          "2028": 2867000000.0,
+          "2029": 3422000000.0,
+          "2030": 3597000000.0,
+          "2031": 5000000000.0
+        }
+      },
+      "unit": "USD/year",
+      "classification": "model_assumption",
+      "basis": "2027–2030披露到期表；2031假設首批5B，未查得單批金額；原租賃付款時點尚待校準。",
+      "fact_ids": [
+        "spacex_debt_maturities"
+      ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.monthly_finance",
+      "value": {
+        "enabled": true,
+        "credit_limit_usd": 5000000000.0,
+        "credit_interest_rate": 0.065,
+        "credit_expiry_year": 2031,
+        "credit_expiry_month": 5,
+        "cash_buffer_usd": 0,
+        "lease_commitment_usd": {
+          "value": 0,
+          "annual": {
+            "2027": 40000000000.0
+          }
+        },
+        "lease_start_month": 1,
+        "lease_delivery_months": 6,
+        "lease_term_months": 60,
+        "lease_interest_rate": 0.065,
+        "notes": "條件式Apollo承諾僅2027計40B；假設1–6月各交付1/6，季度期初本金1/20及利息。6.5%未披露實際利率代理，未另虛構未來設備融資。5B信用額度假設符合契約並全可動用，2031年5月到期須償還，不自動續約；未合併子公司額度。既有債務2027–30用披露到期額，2031債券五批中首批假設5B（未披露各批本金）；既有租賃0.983B仍含期初債務，其到期分配待校準。舊債統一5.855%為代理，非各項真實有效利率。營運按月回款，其他業務與營運資金均分月份，未假設客戶預收。"
+      },
+      "unit": "schedule",
+      "classification": "model_assumption",
+      "basis": "條件式租賃本金與季度規則有來源；批次月份、60個月、6.5%利率、信用額度全可用及月度回款均為模型假設；到期不續約。",
+      "fact_ids": [
+        "spacex_apollo_conditional_financing",
+        "spacex_revolver_limit"
+      ],
       "checked_at": "2026-11-20"
     }
   ],
