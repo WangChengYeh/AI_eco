@@ -1,6 +1,6 @@
 {
   "checked_at": "2026-11-20",
-  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。 Optimus租金曲線及2030／2031年租與使用者指令綁定。 發射容量改純逐架頻率加總，許可僅資訊。 地面回收租價與月度融資時程已映射，條件性及代理值明列。",
+  "coverage": "Robotaxi關鍵參數及Optimus2027使用者產量；全模型未完成實證校準。 地面算力期初、年底目標、後續成長與資本成本／壽命已映射。 Optimus租金曲線及2030／2031年租與使用者指令綁定。 發射容量改純逐架頻率加總，許可僅資訊。 地面回收租價與月度融資時程已映射，條件性及代理值明列。 地面及太空2027–2031一年回收假設與逐年反推價格均已映射。",
   "records": [
     {
       "input_path": "companies.tesla.segments.robotaxi.production_ramp.annual_capacity_units.value",
@@ -661,7 +661,7 @@
       "value": 10506.001304666654,
       "unit": "USD/billable MW-hour",
       "classification": "model_assumption",
-      "basis": "反推2027完整40M/MW投資在分部稅前現金貢獻下12個月回收的必要租價；不是已觀察售價。",
+      "basis": "依使用者地面與太空均12個月回收要求，以完整40M/MW成本及主預測利用率反推2027價格；非公司報價。",
       "fact_ids": [
         "spacex_si_payback_statement"
       ],
@@ -726,6 +726,50 @@
         "spacex_apollo_conditional_financing",
         "spacex_revolver_limit"
       ],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "metadata.additional_assumptions.compute_payback_policy.target_months",
+      "value": 12,
+      "unit": "months",
+      "classification": "user_assumption",
+      "basis": "使用者本輪指定地面一年回本、太空也是；延續2027–2031全年主預測。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20",
+      "research_claim_id": "both_compute_one_year_payback"
+    },
+    {
+      "input_path": "companies.spacex.segments.ground_compute.price_usd_per_billable_mw_hour.annual",
+      "value": {
+        "2027": 10506.001304666654,
+        "2028": 10281.175593422226,
+        "2029": 10119.697017565695,
+        "2030": 9936.044855175125,
+        "2031": 9757.816708010303
+      },
+      "unit": "USD/billable MW-hour",
+      "classification": "model_assumption",
+      "basis": "逐年以完整設備與基建投入除以12個月稅前分部現金貢獻反推必要價格，取代固定年降6%。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.orbital_compute.price_usd_per_billable_mw_hour",
+      "value": {
+        "value": 6246.191155049384,
+        "growth": 0,
+        "annual": {
+          "2027": 6246.191155049384,
+          "2028": 5410.503342383543,
+          "2029": 5411.556825266841,
+          "2030": 5408.814567998087,
+          "2031": 5408.022590164895
+        }
+      },
+      "unit": "USD/billable MW-hour",
+      "classification": "model_assumption",
+      "basis": "保留硬體20M及部署5M/MW與全部維護、分部費用；以主預測計費容量反推12個月回收所需價格。",
+      "fact_ids": [],
       "checked_at": "2026-11-20"
     }
   ],
@@ -792,6 +836,10 @@
     {
       "input_path": "companies.spacex.segments.orbital_compute.launch_network.capacity_method",
       "user_key": "orbital_launch_capacity_method"
+    },
+    {
+      "input_path": "metadata.additional_assumptions.compute_payback_policy.target_months",
+      "user_key": "compute_payback_months"
     }
   ]
 }

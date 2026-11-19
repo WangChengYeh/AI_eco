@@ -60,20 +60,51 @@ class MonthlyFinance(unittest.TestCase):
         self.assertGreater(r['stock_payment_usd'],0)
         self.assertLessEqual(r['peak_credit_usd'],100)
 
-    def test_primary_calibration_is_pretax_full_cost_and_not_forced_in_future(self):
+    def test_primary_calibration_is_pretax_full_cost_for_both_every_year(self):
         c=json.loads((ROOT/'configs/current.json').read_text());r=forecast(c)
         g=[s for s in r['segments'] if s['segment']=='ground_compute']
         self.assertAlmostEqual(g[0]['drivers']['simple_payback_months'],12)
         self.assertEqual(g[0]['drivers']['full_capital_usd_per_mw'],40e6)
-        self.assertGreater(g[-1]['drivers']['simple_payback_months'],12)
+        self.assertTrue(all(abs(s['drivers']['simple_payback_months']-12)<1e-9 for s in g))
         self.assertAlmostEqual(g[0]['drivers']['annual_cash_contribution_usd_per_mw'],40e6)
         orbital=[s for s in r['segments'] if s['segment']=='orbital_compute']
-        self.assertEqual(orbital[0]['drivers']['effective_price_usd_per_billable_mw_hour'],3500)
-        self.assertGreater(orbital[0]['drivers']['simple_payback_months'],12)
+        self.assertGreater(orbital[0]['drivers']['effective_price_usd_per_billable_mw_hour'],3500)
+        self.assertTrue(all(abs(s['drivers']['simple_payback_months']-12)<1e-9 for s in orbital))
         self.assertEqual(r['companies']['spacex'][0]['finance_lease_additions_usd'],40e9)
         self.assertTrue(all(a['finance_lease_additions_usd']==0 for a in r['companies']['spacex'][1:]))
         self.assertGreater(reconcile(r),685)
         old=copy.deepcopy(c);old['companies']['spacex'].pop('monthly_finance')
         self.assertEqual(r['companies']['tesla'],forecast(old)['companies']['tesla'])
+
+    def test_calibration_preserves_capital_da_and_noncompute_segments(self):
+        from payback_calibration import calibrate
+        c=json.loads((ROOT/'configs/current.json').read_text())
+        old=copy.deepcopy(c)
+        for sid in ('ground_compute','orbital_compute'):
+            old['companies']['spacex']['segments'][sid]['price_usd_per_billable_mw_hour']={'value':3500,'growth':-.06}
+        a,b=forecast(old),forecast(calibrate(old))
+        self.assertEqual(a['companies']['tesla'],b['companies']['tesla'])
+        for x,y in zip(a['segments'],b['segments']):
+            if x['segment'] in ('ground_compute','orbital_compute'):
+                for key in ('capex_usd','da_usd','cogs_usd','opex_usd'):
+                    self.assertAlmostEqual(x[key],y[key],delta=.01)
+            else:self.assertEqual(x,y)
+
+    def test_sensitivity_keeps_prices_fixed_and_exposes_utilization_risk(self):
+        c=json.loads((ROOT/'configs/current.json').read_text())
+        a,b=forecast(c),forecast(c,'bear')
+        for x,y in zip(a['segments'],b['segments']):
+            if x['segment']=='ground_compute':
+                self.assertEqual(x['drivers']['effective_price_usd_per_billable_mw_hour'],y['drivers']['effective_price_usd_per_billable_mw_hour'])
+                self.assertGreater(y['drivers']['simple_payback_months'],12)
+
+    def test_target_price_drift_and_invalid_target_are_rejected(self):
+        from payback_calibration import validate_policy,calibrate
+        c=json.loads((ROOT/'configs/current.json').read_text());validate_policy(c)
+        self.assertEqual(c,calibrate(c))
+        c['companies']['spacex']['segments']['orbital_compute']['price_usd_per_billable_mw_hour']['annual']['2030']*=.9
+        with self.assertRaisesRegex(ValueError,'mismatch'):validate_policy(c)
+        c['metadata']['additional_assumptions']['compute_payback_policy']['target_months']=0
+        with self.assertRaisesRegex(ValueError,'positive'):calibrate(c)
 
 if __name__=='__main__':unittest.main()

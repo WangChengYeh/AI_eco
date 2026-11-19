@@ -29,7 +29,8 @@
       "optimus_annual_rent_usd_2030": 27000,
       "optimus_annual_rent_usd_2031": 24300,
       "orbital_launch_capacity_method": "pad_frequency",
-      "spacex_payback_financing_update": "依一年內回本主張重新校準回收口徑及租賃／借款／增發，完整成本與股數均保留"
+      "spacex_payback_financing_update": "依一年內回本主張重新校準回收口徑及租賃／借款／增發，完整成本與股數均保留",
+      "compute_payback_months": 12
     },
     "additional_assumptions": {
       "commissioning_start_month_2027": 10,
@@ -54,11 +55,22 @@
         "decline_start_year": 2030,
         "scope": "當年全部付費租賃，包含既有與新增機器人；本模型只至2031"
       },
-      "ground_payback_calibration": {
-        "year": 2027,
+      "compute_payback_policy": {
         "target_months": 12,
-        "scope": "full_hardware_plus_infrastructure_unlevered_pretax_segment_cash",
-        "price_implied_usd_per_billable_mw_hour": 10506.001304666654,
+        "segments": [
+          "ground_compute",
+          "orbital_compute"
+        ],
+        "years": [
+          2027,
+          2028,
+          2029,
+          2030,
+          2031
+        ],
+        "scope": "full_hardware_plus_infrastructure_or_deployment_unlevered_pretax_segment_cash",
+        "pricing_method": "annual_required_price_at_primary_utilization",
+        "sensitivity_policy": "hold_primary_calibrated_prices_fixed",
         "not_company_disclosed_price": true
       }
     },
@@ -625,8 +637,14 @@
           "internal_utilization": 0.7,
           "price_usd_per_billable_mw_hour": {
             "value": 10506.001304666654,
-            "growth": -0.06,
-            "annual": {}
+            "growth": 0,
+            "annual": {
+              "2027": 10506.001304666654,
+              "2028": 10281.175593422226,
+              "2029": 10119.697017565695,
+              "2030": 9936.044855175125,
+              "2031": 9757.816708010303
+            }
           },
           "electricity_usd_per_kwh": 0.08,
           "pue": 1.15,
@@ -643,7 +661,7 @@
           },
           "capex_usd": 0,
           "ev_sales_multiple": 4,
-          "notes": "依Musk 2026Q3第三方逐字稿：2026年底約2.5–3GW、2027新增10GW，主預測取年初3GW→年底13GW，月度均勻投運，全年平均8GW。非已確認實績或原片核驗。2028起年底容量沿用18%成長（模型假設）；20GW以上僅作目標邊界，不納入主預測。新增與汰換按歷史成本批次折舊；硬體25M美元/MW為JLL產業高端代理，基建15M含液冷殼體12.43M與土地／額外供電等2.57M預備額；非SpaceX報價或已驗證完整預算。硬體4年、基建20年，期初資產視為零齡並以同單位成本估值，期初購置不重複計capex。 2027以完整硬體加基建40M美元/MW、扣現金營運成本及分部研發後、稅前無槓桿12個月簡單回收為邊界反推租價；此為校準假設，非公司披露價格或完整回收定義。後續價格仍每年降6%，不強制每年一年回本。Apollo40B條件式租賃於2027上半年分六批進帳，保留完整資產與折舊，負債與付款另列。",
+          "notes": "依Musk 2026Q3第三方逐字稿：2026年底約2.5–3GW、2027新增10GW，主預測取年初3GW→年底13GW，月度均勻投運，全年平均8GW。非已確認實績或原片核驗。2028起年底容量沿用18%成長（模型假設）；20GW以上僅作目標邊界，不納入主預測。新增與汰換按歷史成本批次折舊；硬體25M美元/MW為JLL產業高端代理，基建15M含液冷殼體12.43M與土地／額外供電等2.57M預備額；非SpaceX報價或已驗證完整預算。硬體4年、基建20年，期初資產視為零齡並以同單位成本估值，期初購置不重複計capex。 依使用者指定，2027–2031地面與太空均以12個月稅前無槓桿分部簡單回收作條件，保留全部硬體與基建／部署成本，逐年反推必要租價；取代原每年降價6%曲線。價格為模型必要條件而非已簽客戶價格；敏感度固定主預測價格，利用率不達時回收會變長。",
           "volume_unit": "billable MW-hour",
           "capacity_ramp": {
             "opening_it_mw": 3000,
@@ -685,8 +703,15 @@
           "external_utilization": 0.75,
           "internal_utilization": 0.7,
           "price_usd_per_billable_mw_hour": {
-            "value": 3500,
-            "growth": -0.06
+            "value": 6246.191155049384,
+            "growth": 0,
+            "annual": {
+              "2027": 6246.191155049384,
+              "2028": 5410.503342383543,
+              "2029": 5411.556825266841,
+              "2030": 5408.814567998087,
+              "2031": 5408.022590164895
+            }
           },
           "electricity_usd_per_kwh": 0,
           "pue": 1,
@@ -699,7 +724,7 @@
           "capex_usd": 0,
           "ev_sales_multiple": 4,
           "volume_unit": "billable MW-hour",
-          "notes": "每架按啟用後月中年化頻率÷12計容量，逐架逐月相加，全球累計只向下取整一次，不另套場址或全機隊上限。每架頻率及啟用日期為模型假設，非Musk逐架指引或已取得許可。2027從10月投運、不回補前三季；7月起淨15MW/次；90%AI分配。衛星製造隨發射能力備貨，不設額外製造瓶頸，仍付硬體20M及部署5M美元/MW，4年退役。許可僅獨立資訊，技術容量不等於可合法執行或已發生發射。",
+          "notes": "每架按啟用後月中年化頻率÷12計容量，逐架逐月相加，全球累計只向下取整一次，不另套場址或全機隊上限。每架頻率及啟用日期為模型假設，非Musk逐架指引或已取得許可。2027從10月投運、不回補前三季；7月起淨15MW/次；90%AI分配。衛星製造隨發射能力備貨，不設額外製造瓶頸，仍付硬體20M及部署5M美元/MW，4年退役。許可僅獨立資訊，技術容量不等於可合法執行或已發生發射。 依使用者指定，2027–2031地面與太空均以12個月稅前無槓桿分部簡單回收作條件，保留全部硬體與基建／部署成本，逐年反推必要租價；取代原每年降價6%曲線。價格為模型必要條件而非已簽客戶價格；敏感度固定主預測價格，利用率不達時回收會變長。",
           "service_life_years": 4,
           "depreciation_life_years": 4,
           "launch_network": {

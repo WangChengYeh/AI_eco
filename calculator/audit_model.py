@@ -75,6 +75,9 @@ def reconcile(result):
                 cash_unit=(row['revenue_usd']-row['cogs_usd']+row['da_usd']-row['opex_usd'])/d['average_it_mw']
                 eq(d['annual_cash_contribution_usd_per_mw'],cash_unit,'unit pretax cash contribution')
                 eq(d['simple_payback_months']*cash_unit/12,d['full_capital_usd_per_mw'],'full capital payback')
+                policy=config.get('metadata',{}).get('additional_assumptions',{}).get('compute_payback_policy')
+                if policy and result['scenario']=='base' and cid=='spacex' and sid in policy['segments']:
+                    eq(d['simple_payback_months'],policy['target_months'],'user required primary annual payback')
             eq(row['revenue_usd'],d['average_it_mw']*p('external_share',1)*p('external_utilization',1)*p('availability',1)*hours*p('price_usd_per_billable_mw_hour'),'compute billed revenue')
         if spec['kind']=='compute' and 'capacity_ramp' in spec and row['active']:
             ramp=spec['capacity_ramp']

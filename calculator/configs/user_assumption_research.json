@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-20",
-  "coverage": "23項使用者輸入及26項命題；新增SI回收口徑、設備租賃與有限信用額度；精確校準價格及融資代理不冒稱公司指引。",
+  "coverage": "24項使用者輸入及27項命題；地面及太空逐年12個月回收為使用者條件，必要價格及需求未驗證。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -230,6 +230,12 @@
       "url": "https://www.sec.gov/Archives/edgar/data/1181412/000110465926118614/tm2628247d1_8k.htm",
       "access": "primary_text_read",
       "access_note": "2026-11-20重讀公司原文；區分管理層回收主張、尚待交割承諾及模型校準。"
+    },
+    "orbital_sec_primary": {
+      "title": "SpaceX招股文件：軌道算力技術、規模與經濟限制",
+      "url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/spaceexplorationtechnologi.htm",
+      "access": "primary_text_read",
+      "access_note": "本輪重讀軌道算力章節；具商業可行路徑主張與規模／技術風險，未找到逐年12個月完整投資回收證據。"
     }
   },
   "claims": [
@@ -855,7 +861,7 @@
       "finding": "CFO公告稱SI投資少於一年回收；SEC載40B條件式GPU租賃、2027上半年分批起租、季度期初本金及利息。信用額度有上限與到期日。",
       "limits": "未披露逐案分子分母、完整成本或租價；不支持所有未來地面／太空項目都一年回本，也不保證融資可交割或新增授信。2031到期本金、現金回款及實際利率仍待校準。",
       "musk_search": "已查Musk算力容量及公司SI回收訊息；一年內回收的本輪可核驗來源為CFO公告，不冒稱Musk逐項成本承諾。 搜尋亦取得第三方對Musk稱融資closed的轉述；原貼本輪未直接核驗，交割狀態以已讀8-K及公司附條件公告限縮，未取得後續完成交割的可核驗公告。",
-      "forecast_action": "2027地面以完整投資12個月稅前分部簡單回收反推價格，後續保留降價；太空獨立計算。月度先回款／全額資本投入，再條件式租賃、有限信用、剩餘股票支付；本金、利息、到期及稀釋同步。",
+      "forecast_action": "依本輪後續使用者指令，地面與太空各年度均12個月回收，完整成本保留、必要價格逐年反推。月度先回款與投入，再條件式租賃、有限信用、剩餘股票支付；本金、利息、到期及稀釋同步。",
       "search_queries": [
         "site:ir.spacex.com Apollo 40 billion financing closed November 2026",
         "Elon Musk SpaceX SI compute payback less than one year 2026"
@@ -864,6 +870,29 @@
         "payback_ir",
         "apollo_8k",
         "spacex_sec"
+      ],
+      "searched_at": "2026-11-20"
+    },
+    {
+      "id": "both_compute_one_year_payback",
+      "title": "地面與太空2027–2031均一年回本",
+      "claim": "使用者指定地面一年回本，太空也是；主預測兩類算力各年度均採12個月回收。",
+      "user_values": {
+        "compute_payback_months": 12
+      },
+      "verdict": "not_established",
+      "verdict_label": "使用者回收條件；尚未證實太空及未來各年度實現",
+      "finding": "公司已披露SI投資少於一年回收；軌道算力官方文件支持擴張方向，未披露逐年12個月完整成本回收。",
+      "limits": "地面既有回收敘述不能證實未來太空項目；新租價是必要條件，不是市場實績，亦不保證有足量外部付費需求。年度簡單回收不等於投運首年逐月回款。",
+      "musk_search": "搜尋Elon Musk orbital AI compute investment payback one year；取得Musk六個月算力回收可能性的轉述，非已核驗的太空逐年一年完整投資回收承諾。未把轉述升格為公司指引。",
+      "forecast_action": "保持投資／利用率／費用，逐年反推地面及太空必要租價，主預測每年12個月；取代兩類原年降6%價格。敏感度固定主預測價格，不隨需求不足自動提價。完整資金與股數再算。",
+      "search_queries": [
+        "site:spacex.com orbital compute payback one year",
+        "Elon Musk orbital AI compute investment payback one year"
+      ],
+      "source_ids": [
+        "payback_ir",
+        "orbital_sec_primary"
       ],
       "searched_at": "2026-11-20"
     }

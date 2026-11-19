@@ -52,7 +52,7 @@ def assumptions(config):
             ['地面算力（名目IT容量）', f"2027年初{v(ground['opening_it_mw'])/1000:g}GW→年底{v(ground['year_end_it_mw'])/1000:g}GW，均勻月度投運、平均{(v(ground['opening_it_mw'])+v(ground['year_end_it_mw']))/2000:g}GW；依Musk第三方逐字稿目標，非已確認實績；20GW以上未納入主預測"],
             ['地面算力（後續擴張）',f"2028起年底容量每年成長{ground['year_end_it_mw'].get('growth',0):.0%}，沿用模型假設，非公司多年指引"],
             ['地面算力（資本成本）',f"硬體{v(ground['hardware_cost_usd_per_mw'])/1e6:g}M、基建{v(ground['infrastructure_cost_usd_per_mw'])/1e6:g}M美元/MW；JLL產業代理與預備額，非SpaceX報價；硬體{ground['hardware_life_years']}年／基建{ground['infrastructure_life_years']}年折舊並到期替換；期初視為零齡，年初資產不重複購置"],
-            ['地面算力（計費與資金）', f"對外份額{v(spacex['segments']['ground_compute']['external_share']):.0%}、利用率{v(spacex['segments']['ground_compute']['external_utilization']):.0%}仍為模型假設；2027地面以完整投資12個月稅前分部簡單回收反推租價，非公司報價；後續仍每年降價6%。Apollo40B條件式租賃、5B有限信用及本金利息按月遞推，剩餘才增發"]
+            ['地面算力（計費與資金）', f"對外份額{v(spacex['segments']['ground_compute']['external_share']):.0%}、利用率{v(spacex['segments']['ground_compute']['external_utilization']):.0%}仍為模型假設；依使用者要求，2027–2031地面及太空均按完整投資12個月稅前分部簡單回收，逐年反推必要租價，取代原年降6%曲線；非公司報價。Apollo40B條件式租賃、5B有限信用及本金利息按月遞推，剩餘才增發"]
         ]
     rows += [['融資時點與限制', spacex.get('monthly_finance',{}).get('notes','採年度融資設定')]]
     return rows
@@ -151,10 +151,10 @@ def dilution_report(result):
         '- 年底股數＝拆股調整後年初股數＋員工股權新增＋現金募資新股＋資源支付新股−回購註銷。拆股不改變所有權比例。',
         '- 資源支付新股＝本年股票支付資源價值÷實際模型協議價；當年稀釋＝1−拆股調整後年初股數÷年底股數。累計稀釋＝1−拆股調整後期初固定持股÷年底股數；每年稀釋率不能直接相加。',
         '- 本輪兩公司均未設定現金募資、回購或拆股。Tesla雖有部分年度經濟FCF為負，仍可動用模型期初流動資金，沒有觸發額外資源新股，因此主要為每年1%員工股權增發；不代表真實世界沒有融資需要。',
-        f'- SpaceX已按月計入營運現金、40B條件式設備租賃及有限信用，再以股票支付剩餘合格資源。後段太空擴張仍產生資金缺口；供應商接受度、可交換資源範圍與每股{sx_price:g}美元基準協議價均為情境輸入，不是已簽約或能無限發股的證據。',
+        f'- SpaceX已按月計入營運現金、40B條件式設備租賃及有限信用，再以股票支付剩餘合格資源。只有當月缺口才啟用股票支付；供應商接受度、可交換資源範圍與每股{sx_price:g}美元基準協議價均為情境輸入，不是已簽約或能無限發股的證據。',
         '- 資源協議價保持獨立於同年度P/E及SOTP估值；公司估值上升不會自動提高發股價格。若以更高協議價換取相同資源，所需新股會減少；本輪沒有自行改價，也沒有以同年稀釋後估值回填發股價。',
         '- 所有權稀釋不等於持有資產價值必然同幅減少，還須檢查取得資源的收益、投入、負債及每股價值。此表為普通股數量口徑，未分A／B類投票權，也不是加權平均EPS股數、自由流通股或各類潛在權益工具完整fully-diluted口徑。',
-        '- 期初股數取2026-10-15申報錨點，假設至2026年底淨變動為0；[Tesla 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)、[SpaceX 10-Q](https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm)。本輪已校準地面必要收入並加入條件式租賃與有限信用；回收、融資來源及限制見[完整重算報告](spacex_payback_financing_2026-11-20.md)。來源分類見[reference_facts](../calculator/configs/reference_facts.json)，實際輸入見[current.json](../calculator/configs/current.json)。',
+        '- 期初股數取2026-10-15申報錨點，假設至2026年底淨變動為0；[Tesla 10-Q](https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm)、[SpaceX 10-Q](https://www.sec.gov/Archives/edgar/data/1181412/000162828026066880/spcx-20260930.htm)。本輪已依使用者要求校準地面與太空各年一年回收的必要收入，保留條件式租賃與有限信用；回收、融資來源及限制見[完整重算報告](spacex_payback_financing_2026-11-20.md)。來源分類見[reference_facts](../calculator/configs/reference_facts.json)，實際輸入見[current.json](../calculator/configs/current.json)。',
         '- 理論001的股份資源支付仍保留完整經濟成本；來源與假設查核見[使用者假設報告](user_assumption_review_2026-11-19.md)，產能與投入見[星艦報告](starship_launch_capacity_2026-11-20.md)。', '',
         '此報告、年度比較及網頁由同一份主預測結果生成；財務及股數公式由run_pipeline勾稽。', '']
     return '\n'.join(lines)
@@ -167,7 +167,7 @@ def payload(config,research,result):
     return [dict(scenario='base',evidence=evidence,assumptions=assumptions(config),companies=result['companies'],
         segments=[{k:v for k,v in row.items() if k in segment_keys} for row in result['segments']],
         opening_anchors=anchors,orbital_audit=orbital_audit(config,result),share_dilution=share_dilution_audit(result),
-        model_notice='條件式預測：部分期初財務值採2026Q3／10月申報錨點，假設至2026年底淨變動為0；其餘營運、估值與股票支付仍待驗證。2027地面租價為12個月稅前回收反推假設，非公司報價；設備租賃尚有條件。星艦為逐架技術容量情境，未依場址許可封頂，不代表已取得可執行任務額度。')]
+        model_notice='條件式預測：部分期初財務值採2026Q3／10月申報錨點，假設至2026年底淨變動為0；其餘營運、估值與股票支付仍待驗證。地面與太空2027–2031均按12個月稅前回收反推租價（使用者假設），非公司報價；設備租賃尚有條件。星艦為逐架技術容量情境，未依場址許可封頂，不代表已取得可執行任務額度。')]
 
 
 def render_document(config,research,result):

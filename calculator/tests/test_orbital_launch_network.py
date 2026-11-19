@@ -134,7 +134,7 @@ class LaunchNetwork(unittest.TestCase):
             self.assertGreater(high['capex_usd'],low['capex_usd'])
         self.assertEqual(ai90[0]['drivers']['deployed_monthly_mw'][:9],[0]*9)
         self.assertEqual(ninety['companies']['tesla'],fifty['companies']['tesla'])
-        self.assertGreater(ninety['companies']['spacex'][-1]['resource_shares_issued'],fifty['companies']['spacex'][-1]['resource_shares_issued'])
+        self.assertGreater(sum(r['resource_shares_issued'] for r in ninety['companies']['spacex']),sum(r['resource_shares_issued'] for r in fifty['companies']['spacex']))
 
     def test_independent_pads_add_capacity_without_global_cap(self):
         n=self.network();n['ai_flight_share']=1
@@ -223,4 +223,4 @@ class LaunchNetwork(unittest.TestCase):
         for a,b in zip(old['segments'],new['segments']):
             if b['segment']=='orbital_compute':self.assertGreater(b['capex_usd'],a['capex_usd'])
             else:self.assertEqual(a,b)
-        self.assertGreater(new['companies']['spacex'][-1]['resource_shares_issued'],old['companies']['spacex'][-1]['resource_shares_issued'])
+        self.assertGreater(sum(r['resource_shares_issued'] for r in new['companies']['spacex']),sum(r['resource_shares_issued'] for r in old['companies']['spacex']))

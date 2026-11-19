@@ -1,51 +1,51 @@
 {
-  "commit": "cc8a2d2c4716d4877468078e0ef22e6f085305fd",
+  "commit": "d8e79326af9d768c392655500ddcbd4a2313ef26",
   "purpose": "historical comparison only; never a forecast input",
   "spacex": [
     {
       "year": 2027,
-      "revenue_usd": 152521521375.00003,
-      "net_income_usd": 34910226779.99002,
-      "stock_payment_usd": 250270725111.26,
-      "shares": 16287486915.747599,
-      "price_pe_usd": 85.73508475696634,
-      "price_sotp_usd": 35.34505282969102
+      "revenue_usd": 379906898519.00006,
+      "net_income_usd": 213003427205.1773,
+      "stock_payment_usd": 43613669333.72599,
+      "shares": 14220916357.972258,
+      "price_pe_usd": 599.1271500187606,
+      "price_sotp_usd": 101.93777655286792
     },
     {
       "year": 2028,
-      "revenue_usd": 331927931119.00104,
-      "net_income_usd": 89152350708.17926,
-      "stock_payment_usd": 191685081084.14035,
-      "shares": 18448650030.325214,
-      "price_pe_usd": 193.29837264327503,
-      "price_sotp_usd": 70.24943084429891
+      "revenue_usd": 711556134958.9497,
+      "net_income_usd": 387685471365.322,
+      "stock_payment_usd": 0.0,
+      "shares": 14434230103.34184,
+      "price_pe_usd": 1074.3502593202095,
+      "price_sotp_usd": 199.61363005250826
     },
     {
       "year": 2029,
-      "revenue_usd": 701387676651.8827,
-      "net_income_usd": 212543509748.54065,
-      "stock_payment_usd": 568026989439.1649,
-      "shares": 24405649675.171738,
-      "price_pe_usd": 348.35132451280674,
-      "price_sotp_usd": 113.79109991670354
+      "revenue_usd": 1121320778701.7021,
+      "net_income_usd": 543388163933.39795,
+      "stock_payment_usd": 158313060761.81305,
+      "shares": 16233874162.510098,
+      "price_pe_usd": 1338.8995343780064,
+      "price_sotp_usd": 273.7234553154708
     },
     {
       "year": 2030,
-      "revenue_usd": 1609506369550.6323,
-      "net_income_usd": 499527031810.3681,
-      "stock_payment_usd": 1167965176976.2053,
-      "shares": 36451386190.06136,
-      "price_pe_usd": 548.1569663285578,
-      "price_sotp_usd": 175.95032447809987
+      "revenue_usd": 2075296166344.292,
+      "net_income_usd": 867021834177.2758,
+      "stock_payment_usd": 813399742118.2798,
+      "shares": 24611379696.130547,
+      "price_pe_usd": 1409.1397473561237,
+      "price_sotp_usd": 336.23078092990835
     },
     {
       "year": 2031,
-      "revenue_usd": 3308967978400.7334,
-      "net_income_usd": 985129209376.6327,
-      "stock_payment_usd": 2414550113578.8,
-      "shares": 61143658118.70027,
-      "price_pe_usd": 644.4686102778919,
-      "price_sotp_usd": 216.15224859399072
+      "revenue_usd": 3825622021004.2607,
+      "net_income_usd": 1393566161734.9194,
+      "stock_payment_usd": 2025595755261.476,
+      "shares": 45236507944.187256,
+      "price_pe_usd": 1232.2491059250635,
+      "price_sotp_usd": 338.2061758372154
     }
   ]
 }
