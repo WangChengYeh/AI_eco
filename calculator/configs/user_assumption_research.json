@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "checked_at": "2026-11-20",
-  "coverage": "15項使用者輸入及22項命題；補充HW3 Lite與2026年底500萬付費基數的關係，未重複計入舊車。",
+  "coverage": "16項使用者輸入及23項命題；AI發射任務分配由50%改為使用者假設90%，保留完整成本與稀釋。",
   "sources": {
     "tesla_q1": {
       "title": "Tesla 2026Q1 Update：長期Optimus產能",
@@ -188,6 +188,12 @@
       "url": "https://ir.tesla.com/_flysystem/s3/sec/000162828026049213/tsla-20260722-gen.pdf",
       "access": "primary_text_read",
       "access_note": "2026-11-20讀取原始PDF：合併PDF第10頁（Update印刷第8頁），公司記載在美國及南韓向AI3車主開始推送FSD v14 Lite。只支持特定市場開始推送，不證明全球所有HW3可用、500萬月租或Lite特別費率。"
+    },
+    "spacex_ai_strategy": {
+      "title": "SpaceX官方Updates：軌道資料中心與星艦",
+      "url": "https://new.spacex.com/updates",
+      "access": "primary_indexed_only",
+      "access_note": "2026-11-20官方搜尋索引提及AI衛星需求推動星艦高頻發射，並同時列Starlink及直連手機任務；直接讀取逾時。支持AI方向，不提供2027–2031精確90%任務分配。"
     }
   },
   "claims": [
@@ -710,6 +716,30 @@
       "source_ids": [
         "ai1",
         "musk_cadence_q3"
+      ],
+      "searched_at": "2026-11-20"
+    },
+    {
+      "id": "orbital_ai_flight_share",
+      "title": "90%的可用星艦任務分配AI",
+      "claim": "2027–2031可用星艦發射任務90%用於AI衛星部署。",
+      "user_values": {
+        "orbital_ai_flight_share": 0.9
+      },
+      "verdict": "not_established",
+      "verdict_label": "使用者指定90%，未獲官方比例指引證實",
+      "finding": "SpaceX官方AI1及Updates搜尋索引支持AI衛星與星艦擴張方向；官方亦有Starlink等其他任務。未找到逐年90%星艦任務分配承諾。",
+      "limits": "90%是星艦任務次數比例，不是全球入軌質量占比、全部SpaceX發射占比或算力出租率。餘10%留給其他用途；2027仍只從10月投運，不回補先前AI槽，實際投運任務不必等於全年90%。",
+      "musk_search": "2026-11-20搜尋SpaceX Musk Starship 90% AI launches與site:x.com/elonmusk Starship 90% AI，未取得可核對的90%AI任務原話；不得把85–90%全球入軌質量市占的說法挪作AI任務占比。",
+      "forecast_action": "只將launch_network.ai_flight_share由0.5改0.9；保持總發射率、塔數、15MW／次、10月投運、製造無瓶頸與完整成本。按逐月累計分配整數AI任務，重新計算GW、收入、capex與股票支付稀釋。",
+      "search_queries": [
+        "SpaceX Musk Starship \"90%\" \"AI\" launches",
+        "site:spacex.com orbital AI Starship launch capacity AI satellites 2026",
+        "site:x.com/elonmusk \"Starship\" \"90%\" \"AI\""
+      ],
+      "source_ids": [
+        "ai1",
+        "spacex_ai_strategy"
       ],
       "searched_at": "2026-11-20"
     }

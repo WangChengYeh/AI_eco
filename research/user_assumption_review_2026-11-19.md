@@ -4,7 +4,7 @@
 
 範圍：現行主預測全部使用者假設，加上原始理論的重要強版本。查核包含支持、反向及限縮證據；沒有找到支持不等於已證偽。公司目標、Musk預測、第三方逐字稿及已發生實績分開。
 
-本表包含15項使用者輸入及22項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
+本表包含16項使用者輸入及23項查核命題。具體有效參數以current.json及以下逐項記錄為準；搜尋覆蓋不代表指定年度產量、付費率、淨部署MW、供應無瓶頸或股票接受度已被證實。
 
 ## Optimus 2027全年100萬台
 
@@ -454,6 +454,26 @@
 
 - [SpaceX AI1官方頁](https://new.spacex.com/spacexai/starmind)：官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。
 - [2026-10-20 SpaceX電話會議第三方逐字稿](https://stockanalysis.com/stocks/spcx/transcripts/723936-q3-2026/)：2026-11-20重讀第三方逐字稿：Musk預期2027上半年某時每週一發、下半年每週兩發或更多；沒有逐塔限定。未直接核對原片。
+
+## 90%的可用星艦任務分配AI
+
+- 原命題：2027–2031可用星艦發射任務90%用於AI衛星部署。
+- 判定：**使用者指定90%，未獲官方比例指引證實**
+- 支持／相關證據：SpaceX官方AI1及Updates搜尋索引支持AI衛星與星艦擴張方向；官方亦有Starlink等其他任務。未找到逐年90%星艦任務分配承諾。
+- 限縮／相反證據：90%是星艦任務次數比例，不是全球入軌質量占比、全部SpaceX發射占比或算力出租率。餘10%留給其他用途；2027仍只從10月投運，不回補先前AI槽，實際投運任務不必等於全年90%。
+- Musk查核：2026-11-20搜尋SpaceX Musk Starship 90% AI launches與site:x.com/elonmusk Starship 90% AI，未取得可核對的90%AI任務原話；不得把85–90%全球入軌質量市占的說法挪作AI任務占比。
+- 計算處理：只將launch_network.ai_flight_share由0.5改0.9；保持總發射率、塔數、15MW／次、10月投運、製造無瓶頸與完整成本。按逐月累計分配整數AI任務，重新計算GW、收入、capex與股票支付稀釋。
+
+搜尋紀錄：
+
+- `SpaceX Musk Starship "90%" "AI" launches`
+- `site:spacex.com orbital AI Starship launch capacity AI satellites 2026`
+- `site:x.com/elonmusk "Starship" "90%" "AI"`
+
+來源：
+
+- [SpaceX AI1官方頁](https://new.spacex.com/spacexai/starmind)：官方搜尋索引可讀late2027起快速製造部署目標；直接開啟逾時，不能宣稱已讀完整頁或已實現。
+- [SpaceX官方Updates：軌道資料中心與星艦](https://new.spacex.com/updates)：2026-11-20官方搜尋索引提及AI衛星需求推動星艦高頻發射，並同時列Starlink及直連手機任務；直接讀取逾時。支持AI方向，不提供2027–2031精確90%任務分配。
 
 ## 更新規則
 

@@ -91,6 +91,8 @@ python calculator/forecast.py --out forecast_output
 
 ## 目前狀態
 
+2026-11-20 後續更新：AI發射分配由50%改為使用者假設90%，同步重算GW、完整投入與股票稀釋；最新數字見[容量與財務重算](research/starship_launch_capacity_2026-11-20.md)。
+
 2026-11-20 完成理論、數據、Python與HTML的全流程檢查。修正期初股數／流動資金／債務錨點、2028閏年計費與網頁假設同步；新增逐年FSD及太空算力明細。最新結果與未解缺口見[完整檢查報告](research/full_review_2026-11-20.md)。資料仍為部分錨定的條件式預測，並非全部參數已驗證。
 
 2026-11-19 新增 Python calculator，將營運假設、財務計算與每股估值分開；範例並非已驗證預測。

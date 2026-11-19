@@ -21,7 +21,8 @@
       "fsd_paid_subscribers_end2026": 5000000,
       "orbital_mw_per_launch_from_mid2027": 15,
       "orbital_manufacturing_unconstrained": true,
-      "fsd_opening_fleet_basis": "HW3／AI3的FSD Lite上線支持舊車訂閱；2026年底500萬為含舊車的付費總基數，非500萬再加HW3車數。Lite與其他訂閱暫用同一費率曲線，未另設硬體別價格。"
+      "fsd_opening_fleet_basis": "HW3／AI3的FSD Lite上線支持舊車訂閱；2026年底500萬為含舊車的付費總基數，非500萬再加HW3車數。Lite與其他訂閱暫用同一費率曲線，未另設硬體別價格。",
+      "orbital_ai_flight_share": 0.9
     },
     "additional_assumptions": {
       "commissioning_start_month_2027": 10,
@@ -666,7 +667,7 @@
             "payload_tonnes": 100,
             "it_kw_per_tonne": 75,
             "payload_efficiency": 0.8,
-            "ai_flight_share": 0.5,
+            "ai_flight_share": 0.9,
             "sites": [
               {
                 "id": "starbase",

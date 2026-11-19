@@ -248,7 +248,7 @@
         "payload_tonnes": 100,
         "it_kw_per_tonne": 75,
         "payload_efficiency": 0.8,
-        "ai_flight_share": 0.5,
+        "ai_flight_share": 0.9,
         "sites": [
           {
             "id": "starbase",
@@ -438,7 +438,7 @@
       },
       "unit": "sites, flights/year, tonnes, kW/tonne, fractions",
       "classification": "model_assumption",
-      "basis": "Musk目標做成機隊整體年度起終點爬坡，另受單台周轉與共用場址限制；2027年化52→104、2028年化104→365；2029以後倍增及許可擴容均為未驗證模型延伸，詳見research/starship_launch_capacity_2026-11-20.md。 2026-11-20使用者另指定2027年7月起淨部署15MW/次，見capacity_upgrade子項查核。",
+      "basis": "Musk目標做成機隊整體年度起終點爬坡，另受單台周轉與共用場址限制；2027年化52→104、2028年化104→365；2029以後倍增及許可擴容均為未驗證模型延伸，詳見research/starship_launch_capacity_2026-11-20.md。 2026-11-20使用者另指定2027年7月起淨部署15MW/次，見capacity_upgrade子項查核。 AI任務占比改為使用者指定90%，其餘10%留給其他任務；無官方90%分配指引。",
       "fact_ids": [],
       "checked_at": "2026-11-20"
     },
@@ -537,6 +537,16 @@
       ],
       "fact_value_rule": "exact_anchor",
       "checked_at": "2026-11-20"
+    },
+    {
+      "input_path": "companies.spacex.segments.orbital_compute.launch_network.ai_flight_share",
+      "value": 0.9,
+      "unit": "fraction of available Starship flights",
+      "classification": "user_assumption",
+      "basis": "使用者將AI發射分配由50%提高至90%；分母為模型可用星艦任務次數，非全部Falcon發射、載荷質量或已付費算力。按逐月累計發射向下取整，保留投運月份與所有成本。",
+      "fact_ids": [],
+      "checked_at": "2026-11-20",
+      "research_claim_id": "orbital_ai_flight_share"
     }
   ],
   "user_bindings": [
@@ -576,6 +586,10 @@
     {
       "user_key": "orbital_manufacturing_unconstrained",
       "input_path": "companies.spacex.segments.orbital_compute.manufacture_to_launch_capacity"
+    },
+    {
+      "input_path": "companies.spacex.segments.orbital_compute.launch_network.ai_flight_share",
+      "user_key": "orbital_ai_flight_share"
     }
   ]
 }
