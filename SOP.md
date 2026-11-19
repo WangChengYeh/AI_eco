@@ -46,6 +46,13 @@ Pipeline從固定模板與同一份Python結果生成`index.html`及`docs/index.
 
 按日期由新到舊排列；同日新紀錄置頂。此處記錄變更摘要，完整差異以[本檔Git歷史](https://github.com/WangChengYeh/AI_eco/commits/main/SOP.md)及所連結的commit為準。
 
+### 2026-11-20｜在各年度結果主表加入年底股數
+
+- 原因：使用者指定年度／營收／淨利／P/E／分部股價這張主表也要直接顯示股數。
+- 改動：在年度後新增「年底股數（億股）」，直接讀同列Python的shares；Tesla與SpaceX選單切換均適用。
+- 理論／數據／Forecast：純展示修改，沒有新增來源事實或變更計算假設；仍採年底普通股數量口徑。
+- 驗證：依SOP執行pipeline，122項測試及三組各685項公式勾稽通過，兩HTML入口一致。公開表格及切換驗證以本輪交付訊息與Actions確認。
+
 ### 2026-11-20｜新增Tesla與SpaceX逐年股數及稀釋報告
 
 - 原因：使用者要求估算SpaceX每年股數與稀釋、放進report，並追加Tesla一併比較。

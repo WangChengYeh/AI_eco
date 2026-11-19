@@ -1853,7 +1853,7 @@ html>body{padding:0}</style>
   <div class="tooltip" role="tooltip" id="ts-tooltip" hidden></div>
   <details open>
     <summary>各年度結果</summary>
-    <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年度</th><th class="text-end">營收¹</th><th class="text-end">淨利¹</th><th class="text-end">P/E 股價²</th><th class="text-end">分部股價²</th></tr></thead><tbody id="ts-annual"></tbody></table></div>
+    <div class="table-responsive"><table class="table table-sm"><thead><tr><th>年度</th><th class="text-end">年底股數（億股）</th><th class="text-end">營收¹</th><th class="text-end">淨利¹</th><th class="text-end">P/E 股價²</th><th class="text-end">分部股價²</th></tr></thead><tbody id="ts-annual"></tbody></table></div>
     <div class="text-small text-muted">¹ 十億美元　² 美元／股</div>
   </details>
   <details><summary id="ts-business-label">各業務明細</summary><div class="table-responsive"><table class="table table-sm"><thead><tr><th>業務</th><th class="text-end">營收¹</th><th class="text-end">營業利益¹</th></tr></thead><tbody id="ts-business"></tbody></table></div></details>
@@ -1985,7 +1985,7 @@ function selection(){
 function update(){
  tooltip.hidden=true;
  selectedData=data[0];rows=selectedData.companies[company.value];
- el('ts-annual').innerHTML=rows.map(r=>'<tr><td>'+r.year+'</td><td class="text-end">'+fmt(r.revenue_usd,1e9)+'</td><td class="text-end">'+fmt(r.net_income_usd,1e9)+'</td><td class="text-end">'+fmt(r.price_pe_usd)+'</td><td class="text-end">'+fmt(r.price_sotp_usd)+'</td></tr>').join('');
+ el('ts-annual').innerHTML=rows.map(r=>'<tr><td>'+r.year+'</td><td class="text-end">'+fmt(r.shares,1e8)+'</td><td class="text-end">'+fmt(r.revenue_usd,1e9)+'</td><td class="text-end">'+fmt(r.net_income_usd,1e9)+'</td><td class="text-end">'+fmt(r.price_pe_usd)+'</td><td class="text-end">'+fmt(r.price_sotp_usd)+'</td></tr>').join('');
  selection();draw();
 }
 definitions.forEach(def=>{def.keys.forEach((key,i)=>{const b=document.createElement('button');b.type='button';b.className='cursor-interaction';b.setAttribute('aria-pressed','true');b.innerHTML='<span class="ts-swatch" style="background:'+seriesColors[i]+'"></span>'+def.names[i];b.addEventListener('click',()=>{if(def.hidden.has(key))def.hidden.delete(key);else def.hidden.add(key);b.setAttribute('aria-pressed',String(!def.hidden.has(key)));chart(def);});el(def.legend).appendChild(b);});});
