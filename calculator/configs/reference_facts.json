@@ -366,6 +366,96 @@
       "status": "company_disclosed",
       "mapping_note": "僅25B債券票息，非全部借款有效利率；用於統一舊債屬模型代理。",
       "checked_at": "2026-11-20"
+    },
+    {
+      "id": "anthropic_spacexai_monthly_fee_20261117",
+      "company": "SpaceX",
+      "metric": "customer_disclosed_full_delivery_monthly_fee",
+      "value": 3100000000.0,
+      "unit": "USD/month",
+      "source": "https://ipo.anthropic.com/documents/us/prospectus.pdf",
+      "status": "customer_disclosed",
+      "period": "2026-11-17",
+      "checked_at": "2026-11-20",
+      "mapping_note": "本輪未映射至預測輸入。Anthropic多項SpaceXAI協議合計；預期2026年12月全部容量交付後適用，非已確認實收，無最新對齊MW，不與早期1.25B相加。"
+    },
+    {
+      "id": "anthropic_spacexai_total_max_20261117",
+      "company": "SpaceX",
+      "metric": "customer_disclosed_maximum_agreement_spend",
+      "value": 120500000000.0,
+      "unit": "USD",
+      "source": "https://ipo.anthropic.com/documents/us/prospectus.pdf",
+      "status": "customer_disclosed",
+      "period": "2026-11-17",
+      "checked_at": "2026-11-20",
+      "mapping_note": "本輪未映射至預測輸入。期間延伸至2029，屬合計最高支出且含取消權，不等於不可取消backlog或市值。"
+    },
+    {
+      "id": "anthropic_spacexai_cancellation_20261117",
+      "company": "SpaceX",
+      "metric": "customer_disclosed_cancellation_terms",
+      "value": {
+        "notice_days": 90,
+        "initial_noncancelable_end_months": [
+          "2027-01",
+          "2027-03"
+        ]
+      },
+      "unit": "terms",
+      "source": "https://ipo.anthropic.com/documents/us/prospectus.pdf",
+      "status": "customer_disclosed",
+      "period": "2026-11-17",
+      "checked_at": "2026-11-20",
+      "mapping_note": "本輪未映射至預測輸入。初始不可取消期間後各協議任一方可提前90天書面通知取消；不等於已取消。"
+    },
+    {
+      "id": "colossus_initial_build_days_nvidia_2024",
+      "company": "SpaceX",
+      "metric": "initial_colossus_facility_and_system_build",
+      "value": 122,
+      "unit": "days",
+      "source": "https://nvidianews.nvidia.com/news/spectrum-x-ethernet-networking-xai-colossus/",
+      "status": "supplier_disclosed",
+      "period": "2024-10-28",
+      "checked_at": "2026-11-20",
+      "mapping_note": "本輪未映射至預測輸入。特定歷史案例；不同於首個機櫃進場後19天開始訓練，不能外推所有GW新建場址。"
+    },
+    {
+      "id": "minihard_build_months_semianalysis_20261103",
+      "company": "SpaceX",
+      "metric": "minihard_observed_build_duration",
+      "value": 5,
+      "unit": "months",
+      "source": "https://newsletter.semianalysis.com/p/elon-is-doing-it-again-spacex-will",
+      "status": "third_party_research",
+      "period": "2026-11-03",
+      "checked_at": "2026-11-20",
+      "mapping_note": "本輪未映射至預測輸入。研究機構公開場址觀察，約五個月；非公司完工驗收文件。"
+    },
+    {
+      "id": "gun_range_build_target_semianalysis_20261103",
+      "company": "SpaceX",
+      "metric": "gun_range_target_build_duration",
+      "value": 4,
+      "unit": "months",
+      "source": "https://newsletter.semianalysis.com/p/elon-is-doing-it-again-spacex-will",
+      "status": "third_party_estimate",
+      "period": "2026-11-03",
+      "checked_at": "2026-11-20",
+      "mapping_note": "本輪未映射至預測輸入。目標四個月，不能記為已完工；研究同類比較多為8–12月，不支持全部競爭者1–4年。"
+    },
+    {
+      "id": "orbital_compute_2029_cfo_june_target",
+      "company": "SpaceX",
+      "metric": "orbital_compute_2029_management_outlook",
+      "value": "meaningful amounts of compute in space",
+      "unit": "qualitative",
+      "source": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026041761/fwp_cfointerview.htm",
+      "status": "management_target",
+      "period": "2026-06-08",
+      "checked_at": "2026-11-20",
+      "mapping_note": "本輪未映射至預測輸入。前瞻路徑；未提供2029太空占比，不能等同多數或一年回收實績。"
     }
   ]
 }

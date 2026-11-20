@@ -40,6 +40,7 @@
 
 ## 證據集
 
+- [SpaceX算力：客戶合約、建設速度與太空時程](evidence/spacex_compute_contracts_and_build_speed_2026-11-20.md)：Anthropic最新金額及90天取消權、微軟租用意願、四個月建設口徑、2029太空占比與估值邊界。
 - [SpaceX：股權直接交換企業與資源](evidence/spacex_equity_resource_exchange.md)：分開列示已完成併購、共同控制交易及尚待最終交割的頻譜合約。
 - [Anthropic、OpenAI：供應商投資與資源動員](evidence/anthropic_openai_supplier_equity.md)：區分投資核准、投資公告、採購合作與股票抵付帳款。
 
